@@ -1,0 +1,54 @@
+---
+const year = new Date().getFullYear();
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+---
+<footer class="bg-navy-900 border-t border-navy-800 mt-20">
+  <div class="max-w-6xl mx-auto px-5 py-12 grid md:grid-cols-3 gap-10">
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
+          <svg viewBox="0 0 24 24" class="w-4 h-4 text-navy-900" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="16" y1="16" x2="21" y2="21" />
+          </svg>
+        </div>
+        <span class="font-extrabold text-white">Sherlock</span>
+      </div>
+      <p class="text-sm text-navy-400 leading-relaxed">
+        Il detective delle tue polizze assicurative. Analisi AI in italiano,
+        in 5 secondi.
+      </p>
+      <p class="text-xs text-navy-500 mt-4">
+        Sherlock è uno strumento di analisi AI. Non costituisce consulenza
+        legale professionale.
+      </p>
+    </div>
+
+    <div>
+      <div class="text-xs uppercase tracking-widest text-navy-500 mb-3">Sito</div>
+      <ul class="space-y-2 text-sm text-navy-300">
+        <li><a href="/" class="hover:text-white">Home</a></li>
+        <li><a href="/abbonati" class="hover:text-white">Abbonamento</a></li>
+        <li><a href="/guide" class="hover:text-white">Guide</a></li>
+        <li><a href="/privacy" class="hover:text-white">Privacy</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="text-xs uppercase tracking-widest text-navy-500 mb-3">App</div>
+      <ul class="space-y-2 text-sm text-navy-300">
+        <li>
+          <a href={playStoreUrl} target="_blank" rel="noopener" class="hover:text-white">
+            Scarica gratis su Google Play →
+          </a>
+        </li>
+        <li class="text-navy-500 text-xs pt-2">it.sherlock.polizze</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-navy-800 px-5 py-5 max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-navy-500">
+    <div>© {year} Sherlock — ScapLAB</div>
+    <div>Sviluppato in Italia 🇮🇹</div>
+  </div>
+</footer>

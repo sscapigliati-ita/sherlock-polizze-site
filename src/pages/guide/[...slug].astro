@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import CTACard from '../../components/CTACard.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guide');
+  return guides.map((g) => ({
+    params: { slug: g.id.replace(/\.mdx?$/, '') },
+    props: { g },
+  }));
+}
+
+const { g } = Astro.props;
+const { Content } = await render(g);
+
+const articleUrl = `https://sherlock-polizze.it/guide/${g.id.replace(/\.mdx?$/, '')}`;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: g.data.title,
+    description: g.data.description,
+    author: { '@type': 'Person', name: g.data.author },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Sherlock',
+      logo: { '@type': 'ImageObject', url: 'https://sherlock-polizze.it/icon.png' },
+    },
+    datePublished: g.data.date.toISOString().split('T')[0],
+    image: 'https://sherlock-polizze.it/og-cover.png',
+    mainEntityOfPage: articleUrl,
+  },
+];
+---
+<BaseLayout
+  title={g.data.title}
+  description={g.data.description}
+  type="article"
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <article class="prose-article px-5 py-12">
+    <div class="text-xs uppercase tracking-widest text-gold-400 mb-3">
+      {new Date(g.data.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })} · di {g.data.author}
+    </div>
+    <Content />
+    <CTACard />
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>

@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Sherlock — Detective Polizze',
+    url: 'https://sherlock-polizze.it',
+    inLanguage: 'it-IT',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Sherlock',
+      logo: { '@type': 'ImageObject', url: 'https://sherlock-polizze.it/icon.png' },
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'MobileApplication',
+    name: 'Sherlock — Detective Polizze',
+    operatingSystem: 'ANDROID',
+    applicationCategory: 'FinanceApplication',
+    downloadUrl: playStoreUrl,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+    inLanguage: 'it-IT',
+  },
+];
+---
+<BaseLayout
+  title="Sherlock — Analisi AI delle polizze assicurative | il detective delle tue polizze"
+  description="Carica la tua polizza, scopri esclusioni e clausole nascoste in 5 secondi. Genera reclami IVASS e diffide pronte all'uso. 5 analisi gratis."
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <section class="px-5 pt-16 pb-20 max-w-6xl mx-auto">
+    <div class="grid lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
+          <span class="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse"></span>
+          5 analisi gratis · Nessuna carta richiesta
+        </div>
+        <h1 class="text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.05] mb-5">
+          Finalmente capisci<br />
+          <span class="text-gold-400">cosa hai firmato</span>.
+        </h1>
+        <p class="text-lg text-navy-300 leading-relaxed mb-7 max-w-xl">
+          Sherlock analizza le tue polizze assicurative con l'intelligenza artificiale.
+          Trova le clausole nascoste, valuta i rischi e genera lettere di reclamo
+          pronte all'uso. In italiano, in pochi secondi.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 mb-6">
+          <a
+            href={playStoreUrl}
+            target="_blank"
+            rel="noopener"
+            class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
+          >
+            Scarica gratis su Google Play
+          </a>
+          <a
+            href="/abbonati"
+            class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition text-center"
+          >
+            Vedi i piani da 2,99€
+          </a>
+        </div>
+        <p class="text-xs text-navy-500">
+          Disponibile su Android · Pagamento sicuro via PayPal · Nessun rinnovo automatico
+        </p>
+      </div>
+
+      <div class="bg-gradient-to-br from-navy-800 to-navy-900 border border-navy-700 rounded-2xl p-6 shadow-2xl">
+        <div class="grid grid-cols-2 gap-4 mb-6 text-center">
+          <div>
+            <div class="text-3xl font-extrabold text-gold-400">130.000+</div>
+            <div class="text-xs text-navy-400">Follower social</div>
+          </div>
+          <div>
+            <div class="text-3xl font-extrabold text-gold-400">5 sec</div>
+            <div class="text-xs text-navy-400">Tempo medio analisi</div>
+          </div>
+          <div>
+            <div class="text-3xl font-extrabold text-gold-400">3 tipi</div>
+            <div class="text-xs text-navy-400">Di lettere legali</div>
+          </div>
+          <div>
+            <div class="text-3xl font-extrabold text-gold-400">100%</div>
+            <div class="text-xs text-navy-400">Privacy garantita</div>
+          </div>
+        </div>
+        <div class="border-t border-navy-700 pt-5">
+          <div class="text-xs uppercase tracking-widest text-navy-400 mb-2">Tipi di polizze</div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            {['RC auto','Casa','Vita','Salute','Infortuni','RC professionale','Viaggio','Multirischi'].map(t => (
+              <span class="bg-navy-800 text-navy-200 px-2.5 py-1 rounded">{t}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-navy-900 border-y border-navy-800 px-5 py-16">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">Come funziona</h2>
+      <p class="text-center text-navy-400 mb-12">Tre passi. Nessuna competenza tecnica richiesta.</p>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-navy-950 border border-navy-800 rounded-xl p-6">
+          <div class="w-10 h-10 rounded-lg bg-gold-400/15 text-gold-400 font-extrabold text-xl flex items-center justify-center mb-4">1</div>
+          <h3 class="text-xl font-bold text-white mb-2">Carica la polizza</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">
+            Fotografa il documento o carica il PDF direttamente dall'app Android.
+            Funziona con qualsiasi polizza assicurativa italiana.
+          </p>
+        </div>
+        <div class="bg-navy-950 border border-navy-800 rounded-xl p-6">
+          <div class="w-10 h-10 rounded-lg bg-gold-400/15 text-gold-400 font-extrabold text-xl flex items-center justify-center mb-4">2</div>
+          <h3 class="text-xl font-bold text-white mb-2">Sherlock analizza</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">
+            L'AI legge l'intero contratto, identifica garanzie, esclusioni,
+            clausole problematiche e valuta il livello di rischio complessivo.
+          </p>
+        </div>
+        <div class="bg-navy-950 border border-navy-800 rounded-xl p-6">
+          <div class="w-10 h-10 rounded-lg bg-gold-400/15 text-gold-400 font-extrabold text-xl flex items-center justify-center mb-4">3</div>
+          <h3 class="text-xl font-bold text-white mb-2">Agisci con consapevolezza</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">
+            Ricevi un report dettagliato e, se necessario, genera in un click la
+            lettera di reclamo, l'esposto IVASS o la diffida legale.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-5 py-16 max-w-6xl mx-auto">
+    <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">Tutto quello che fa Sherlock</h2>
+    <p class="text-center text-navy-400 mb-12">Un assistente legale assicurativo sempre disponibile, al costo di un caffè al mese.</p>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {[
+        { title: 'Analisi AI delle polizze', body: 'Auto, casa, vita, salute, RC professionale: Sherlock le analizza in secondi e ti spiega cosa c\'è scritto davvero, senza tecnicismi.' },
+        { title: 'Valutazione del rischio', body: 'Ogni polizza riceve un giudizio strutturato: rischio critico, alto, medio o basso. Sai esattamente cosa sei coperto.' },
+        { title: 'Lettere legali pronte', body: 'Reclamo formale, esposto IVASS e diffida stragiudiziale. Strutturati con i riferimenti normativi corretti, pronti da inviare via PEC.' },
+        { title: 'Clausole abusive', body: 'L\'AI riconosce le clausole vessatorie che le compagnie usano per limitare i rimborsi: decadenze, esclusioni nascoste, condizioni capestro.' },
+        { title: 'App Android nativa', body: 'Carica PDF o fotografie direttamente dallo smartphone. Interfaccia progettata per chi non ha dimestichezza con la tecnologia.' },
+        { title: 'Privacy totale', body: 'I documenti vengono analizzati server-side e mai conservati. Nessun dato personale ceduto a terzi. Il tuo contratto rimane tuo.' },
+      ].map(f => (
+        <div class="bg-navy-900 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 transition">
+          <h3 class="text-lg font-bold text-white mb-2">{f.title}</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">{f.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-gradient-to-br from-navy-900 to-navy-950 border-y border-navy-800 px-5 py-16">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-4">Inizia con 5 analisi gratuite</h2>
+      <p class="text-navy-300 mb-8">
+        Scarica l'app, carica la tua prima polizza, scopri cosa c'è scritto davvero.
+        Nessuna carta richiesta per iniziare.
+      </p>
+      <a
+        href={playStoreUrl}
+        target="_blank"
+        rel="noopener"
+        class="inline-block bg-gold-400 text-navy-900 font-bold px-7 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20"
+      >
+        Scarica Sherlock su Google Play →
+      </a>
+      <div class="mt-5 text-xs text-navy-500">
+        Nessun rinnovo automatico · Pagamento sicuro PayPal · Privacy garantita
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>

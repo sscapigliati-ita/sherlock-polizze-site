@@ -1,0 +1,181 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+
+const piani = [
+  { nome: 'Mensile', prezzo: '2,99€', mese: '2,99€/mese', sconto: null, recommended: false },
+  { nome: 'Semestrale', prezzo: '7,99€', mese: '1,33€/mese', sconto: 'Risparmi il 55%', recommended: false },
+  { nome: 'Annuale', prezzo: '14,99€', mese: '1,25€/mese', sconto: 'Risparmi il 58%', recommended: true },
+];
+
+const faqItems = [
+  {
+    q: 'Sherlock sostituisce un avvocato o un consulente assicurativo?',
+    a: "No. Sherlock è uno strumento di analisi AI che fornisce informazioni a scopo orientativo. Per consulenza legale o assicurativa professionale è necessario rivolgersi a un avvocato o un consulente iscritto all'albo.",
+  },
+  {
+    q: 'Che tipo di polizze posso analizzare?',
+    a: 'Polizze auto, casa, vita, salute, infortuni, RC professionale, viaggio e ramo danni in generale. Sherlock funziona con qualsiasi polizza assicurativa in italiano.',
+  },
+  {
+    q: 'Le lettere generate da Sherlock hanno valore legale?',
+    a: "Sherlock genera documenti strutturati con i riferimenti normativi corretti, pronti da firmare e inviare via PEC. La validità legale dipende dalla situazione specifica: per controversie complesse è sempre consigliata la verifica di un avvocato.",
+  },
+  {
+    q: "Come funziona il pagamento dell'abbonamento?",
+    a: 'Pagamento sicuro via PayPal. Nessun rinnovo automatico: alla scadenza puoi decidere se rinnovare o lasciar scadere. Disdici quando vuoi.',
+  },
+  {
+    q: 'Cosa succede ai documenti che carico?',
+    a: 'I PDF e le foto delle polizze vengono analizzati server-side e non vengono conservati. Nessun dato personale viene ceduto a terzi.',
+  },
+  {
+    q: 'Posso usare Sherlock su più dispositivi?',
+    a: "Sì. L'abbonamento è legato alla tua email: puoi usarlo sull'app Android su qualsiasi dispositivo Android effettuando l'accesso.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Sherlock — Detective Polizze',
+    description: 'Analisi AI delle polizze assicurative italiane',
+    image: 'https://sherlock-polizze.it/og-cover.png',
+    brand: { '@type': 'Brand', name: 'Sherlock' },
+    offers: piani.map((p) => ({
+      '@type': 'Offer',
+      name: `Piano ${p.nome}`,
+      price: p.prezzo.replace('€', '').replace(',', '.'),
+      priceCurrency: 'EUR',
+      availability: 'https://schema.org/InStock',
+      url: 'https://sherlock-polizze.it/abbonati',
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+<BaseLayout
+  title="Sherlock — Analisi AI delle polizze assicurative | da 2,99€/mese"
+  description="Carica la tua polizza assicurativa, scopri esclusioni e clausole nascoste in 5 secondi. Genera reclami IVASS e diffide pronte all'uso. 5 analisi gratuite, senza carta."
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <section class="px-5 pt-12 pb-10 max-w-4xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
+      5 analisi gratis · Nessuna carta richiesta
+    </div>
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
+      Analisi illimitate.<br />
+      <span class="text-gold-400">Disdici quando vuoi.</span>
+    </h1>
+    <p class="text-lg text-navy-300 max-w-2xl mx-auto">
+      Nessun rinnovo automatico. Pagamento sicuro via PayPal.
+      Dati mai ceduti a terzi.
+    </p>
+  </section>
+
+  <section class="px-5 pb-16 max-w-5xl mx-auto" id="abbonati">
+    <div class="grid md:grid-cols-3 gap-5">
+      {piani.map((p) => (
+        <div class={`rounded-2xl p-6 border ${p.recommended ? 'border-gold-400 bg-gradient-to-br from-navy-800 to-navy-900 shadow-2xl shadow-gold-400/10' : 'border-navy-700 bg-navy-900'}`}>
+          {p.recommended && (
+            <div class="bg-gold-400 text-navy-900 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block mb-3">
+              Più conveniente
+            </div>
+          )}
+          <div class="text-navy-400 text-sm mb-1">{p.nome}</div>
+          <div class="text-4xl font-extrabold text-white mb-1">{p.prezzo}</div>
+          <div class="text-navy-300 mb-3">{p.mese}</div>
+          {p.sconto && (
+            <div class="inline-block bg-emerald-500/10 text-emerald-400 text-xs font-bold px-2 py-1 rounded mb-4">
+              {p.sconto}
+            </div>
+          )}
+          <a
+            href={playStoreUrl}
+            target="_blank"
+            rel="noopener"
+            class={`block text-center font-bold px-5 py-3 rounded-lg transition w-full ${p.recommended ? 'bg-gold-400 text-navy-900 hover:bg-gold-300 shadow-lg shadow-gold-400/20' : 'border border-navy-600 text-navy-100 hover:bg-navy-800'}`}
+          >
+            Scegli {p.nome.toLowerCase()}
+          </a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-navy-900 border-y border-navy-800 px-5 py-14">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-extrabold text-white text-center mb-10">Cosa include l'abbonamento</h2>
+      <div class="grid md:grid-cols-2 gap-4 text-navy-200">
+        {[
+          'Analisi illimitate di polizze auto, casa, vita, salute, infortuni e RC professionale',
+          'Lettera di reclamo formale pronta per PEC',
+          'Esposto/ricorso IVASS pre-compilato',
+          'Diffida stragiudiziale con riferimenti normativi corretti',
+          'Sintesi operativa: cosa fare e cosa chiedere alla compagnia',
+          'Raccomandazioni personalizzate sul tuo caso specifico',
+          'Aggiornamenti continui delle clausole problematiche tracciate',
+          'Privacy totale: nessun documento conservato',
+        ].map(item => (
+          <div class="flex items-start gap-3">
+            <div class="w-6 h-6 rounded-full bg-gold-400/15 text-gold-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                <path fill-rule="evenodd" d="M16.704 5.295a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.295-7.29a1 1 0 011.41-.001z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <span class="text-sm leading-relaxed">{item}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="px-5 py-16 max-w-3xl mx-auto">
+    <h2 class="text-3xl font-extrabold text-white text-center mb-10">Domande frequenti</h2>
+    <div class="space-y-3">
+      {faqItems.map((f) => (
+        <details class="bg-navy-900 border border-navy-800 rounded-xl group">
+          <summary class="cursor-pointer p-5 font-semibold text-white flex justify-between items-center list-none">
+            <span>{f.q}</span>
+            <span class="text-gold-400 text-2xl leading-none group-open:rotate-45 transition">+</span>
+          </summary>
+          <div class="px-5 pb-5 text-navy-300 leading-relaxed">{f.a}</div>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-gradient-to-br from-navy-900 to-navy-950 border-t border-navy-800 px-5 py-14">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl font-extrabold text-white mb-4">Pronto a capire cosa hai firmato?</h2>
+      <p class="text-navy-300 mb-7">
+        Scarica l'app, carica la tua prima polizza, ricevi il report in 5 secondi.
+        Le prime 5 analisi sono gratis.
+      </p>
+      <a
+        href={playStoreUrl}
+        target="_blank"
+        rel="noopener"
+        class="inline-block bg-gold-400 text-navy-900 font-bold px-7 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20"
+      >
+        Scarica gratis su Google Play →
+      </a>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>

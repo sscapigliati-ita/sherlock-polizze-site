@@ -1,0 +1,33 @@
+---
+export interface Props {
+  title?: string;
+  body?: string;
+}
+
+const {
+  title = 'Vuoi che Sherlock analizzi la tua polizza?',
+  body = 'Carica il PDF, ricevi il report in 5 secondi e — se serve — il reclamo o l\'esposto IVASS pronti da inviare. Prime 5 analisi gratis, senza carta.',
+} = Astro.props;
+
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+---
+<section class="my-12 rounded-2xl bg-gradient-to-br from-navy-800 to-navy-900 border border-navy-700 p-7">
+  <h3 class="text-2xl font-extrabold text-white mb-2">{title}</h3>
+  <p class="text-navy-300 mb-5">{body}</p>
+  <div class="flex flex-col sm:flex-row gap-3">
+    <a
+      href={playStoreUrl}
+      target="_blank"
+      rel="noopener"
+      class="bg-gold-400 text-navy-900 font-bold px-5 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20 text-center"
+    >
+      Scarica gratis ↓
+    </a>
+    <a
+      href="/abbonati"
+      class="border border-navy-600 text-navy-100 font-semibold px-5 py-3 rounded-lg hover:bg-navy-800 transition text-center"
+    >
+      Vedi i piani
+    </a>
+  </div>
+</section>
