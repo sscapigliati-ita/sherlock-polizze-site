@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://sherlock-polizze-site-6dwf.vercel.app',
+  site: 'https://sherlock-polizze-site-five.vercel.app',
   integrations: [sitemap(), mdx()],
   vite: {
     plugins: [tailwindcss()],

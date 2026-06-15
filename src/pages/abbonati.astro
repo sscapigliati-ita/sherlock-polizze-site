@@ -44,7 +44,7 @@ const jsonLd = [
     '@type': 'Product',
     name: 'Sherlock — Detective Polizze',
     description: 'Analisi AI delle polizze assicurative italiane',
-    image: 'https://sherlock-polizze-site-6dwf.vercel.app/og-cover.png',
+    image: 'https://sherlock-polizze-site-five.vercel.app/og-cover.png',
     brand: { '@type': 'Brand', name: 'Sherlock' },
     offers: piani.map((p) => ({
       '@type': 'Offer',
@@ -52,7 +52,7 @@ const jsonLd = [
       price: p.prezzo.replace('€', '').replace(',', '.'),
       priceCurrency: 'EUR',
       availability: 'https://schema.org/InStock',
-      url: 'https://sherlock-polizze-site-6dwf.vercel.app/abbonati',
+      url: 'https://sherlock-polizze-site-five.vercel.app/abbonati',
     })),
   },
   {
