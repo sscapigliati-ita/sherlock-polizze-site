@@ -4,6 +4,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+// Backend Manus che gestisce il flusso PayPal (form email + redirect a PayPal)
+const subscribeUrl = 'https://sherlockapi-rwygcyfs.manus.space/abbonati#abbonati';
 
 const piani = [
   { nome: 'Mensile', prezzo: '2,99€', mese: '2,99€/mese', sconto: null, recommended: false },
@@ -105,9 +107,7 @@ const jsonLd = [
             </div>
           )}
           <a
-            href={playStoreUrl}
-            target="_blank"
-            rel="noopener"
+            href={subscribeUrl}
             class={`block text-center font-bold px-5 py-3 rounded-lg transition w-full ${p.recommended ? 'bg-gold-400 text-navy-900 hover:bg-gold-300 shadow-lg shadow-gold-400/20' : 'border border-navy-600 text-navy-100 hover:bg-navy-800'}`}
           >
             Scegli {p.nome.toLowerCase()}
