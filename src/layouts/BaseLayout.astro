@@ -13,7 +13,7 @@ export interface Props {
 const {
   title,
   description,
-  image = 'https://sherlock-polizze.it/og-cover.png',
+  image = new URL('/og-cover.png', Astro.site).toString(),
   type = 'website',
   canonical,
   jsonLd = [],
