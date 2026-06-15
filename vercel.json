@@ -6,6 +6,10 @@
     {
       "source": "/.well-known/assetlinks.json",
       "destination": "/well-known/assetlinks.json"
+    },
+    {
+      "source": "/googlea8b3c155b0ce48ba.html",
+      "destination": "/googlea8b3c155b0ce48ba.html"
     }
   ],
   "headers": [
