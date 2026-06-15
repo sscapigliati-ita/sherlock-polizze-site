@@ -2,9 +2,22 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/.well-known/assetlinks.json",
+      "destination": "/well-known/assetlinks.json"
+    }
+  ],
   "headers": [
     {
       "source": "/.well-known/assetlinks.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/well-known/assetlinks.json",
       "headers": [
         { "key": "Content-Type", "value": "application/json" }
       ]
