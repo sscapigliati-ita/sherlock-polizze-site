@@ -178,6 +178,124 @@ Manus probabilmente non supporta redirect lato server (è una SPA). In tal caso,
 
 ---
 
+## Step 7 — Backend AI (env vars su Vercel)
+
+Il sito ora ospita anche le API che l'app Android chiama per analisi e generazione lettere (`/api/analizza`, `/api/lettera`). Senza le variabili d'ambiente impostate su Vercel, le chiamate restituiscono `500 Backend non configurato`.
+
+### Variabili da impostare
+
+Vai su **Vercel → progetto sherlock-polizze-site → Settings → Environment Variables** e aggiungi:
+
+| Nome | Valore | Obbligatoria |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | `sk-ant-…` (la tua chiave Anthropic) | ✅ sì |
+| `ANTHROPIC_MODEL` | `claude-sonnet-4-6` (default) o `claude-opus-4-8` per qualità massima | no |
+| `PRO_CODES` | Lista codici Pro validi separati da virgola | no (se vuoto: dev mode) |
+
+Per ognuna seleziona environment: **Production, Preview, Development**.
+
+### Codici Pro iniziali
+
+Hai 10 codici validi pronti all'uso. Mettili nella env var `PRO_CODES` esattamente così (una sola stringa, virgole, senza spazi):
+
+```
+SHK-EAH2-KY3D,SHK-ICOY-GU0E,SHK-U881-QQKF,SHK-IHLF-20SC,SHK-TDA4-60MF,SHK-BZF2-IUGE,SHK-J0QD-FBWB,SHK-1SQG-H9IC,SHK-YZPH-S25G,SHK-92C3-G2OA
+```
+
+Per generarne altri:
+
+```powershell
+cd C:\Users\Stefano\sherlock-site
+node scripts/genera-codici.mjs 20
+```
+
+**Importante**: se `PRO_CODES` è vuoto, il backend accetta qualsiasi codice con checksum valido (modalità dev/test, insicuro per produzione). Lascialo vuoto solo per test locali.
+
+### Dopo aver salvato le env vars
+
+Vercel **non ridepoya automaticamente** dopo aver aggiunto env vars. Vai su **Deployments → ultimo deploy → ⋯ → Redeploy** per applicarle.
+
+### Verifica che funzioni
+
+Apri questo URL nel browser (sostituisci con il tuo dominio):
+
+```
+https://sherlock-polizze-site-b46pfkwts-sstefano-s-projects.vercel.app/api/analizza
+```
+
+- Se risponde con un errore JSON tipo `{"error":"Body JSON non valido"}` → ✅ backend attivo, env var ok
+- Se risponde `{"error":"Backend non configurato (ANTHROPIC_API_KEY mancante)"}` → manca env var
+- Se 404 → ricontrolla che il deploy sia avvenuto dopo aver installato `@astrojs/vercel` e modificato `astro.config.mjs`
+
+---
+
+## Step 8 — Flusso PayPal (sostituisce manus.space)
+
+Il sito ora gestisce direttamente il pagamento degli abbonamenti via PayPal REST API. Il vecchio backend `manus.space` non serve più una volta che questo è attivo.
+
+### Pagine
+
+| URL | Cosa fa |
+|---|---|
+| `/abbonati` | Pricing page (era già lì) — ora linka ai piani interni |
+| `/abbonamento/mensile` | Form email + pulsante "Paga con PayPal 2,99€" |
+| `/abbonamento/semestrale` | idem 7,99€ |
+| `/abbonamento/annuale` | idem 14,99€ |
+| `/abbonamento/conferma` | Pagina post-pagamento: cattura ordine, mostra codice Pro |
+
+### Endpoint API
+
+| Metodo | URL | Cosa fa |
+|---|---|---|
+| `POST` | `/api/paypal/create-order` | Body `{piano, email}` → crea ordine PayPal, ritorna `{orderId, approveUrl}` |
+| `POST` | `/api/paypal/capture-order` | Body `{orderId}` → cattura pagamento, genera codice SHK-XXXX-XXXX, salva in KV, invia mail |
+
+### Env vars necessarie su Vercel
+
+| Nome | Da dove | Obbligatoria |
+|---|---|---|
+| `PAYPAL_CLIENT_ID` | developer.paypal.com → My Apps & Credentials → Live | ✅ sì |
+| `PAYPAL_SECRET` | stessa pagina (mostra il Secret) | ✅ sì |
+| `PAYPAL_MODE` | `live` (default) o `sandbox` per test | no |
+| `RESEND_API_KEY` | resend.com → API Keys (gratis 100 mail/giorno) | ✅ sì (per inviare codice) |
+| `MAIL_FROM` | es. `Sherlock <noreply@sherlock-polizze.it>` (dominio da verificare su Resend) | no |
+| `MAIL_REPLY_TO` | `stefano.scapigliati@gmail.com` (default) | no |
+
+### Vercel KV (storage codici emessi)
+
+Senza KV, i codici emessi tramite pagamento PayPal vengono salvati solo **in memoria** della singola invocazione serverless → al successivo deploy/cold-start sono persi (l'utente avrà un codice valido per checksum ma il backend potrebbe rifiutarlo per la lettera Pro). 
+
+**Per produzione configura Vercel KV**:
+
+1. Vai su Vercel → progetto → **Storage** → **Create Database**
+2. Scegli **KV** (Redis)
+3. Nome: `sherlock-codici-pro`
+4. Region: `Frankfurt fra1` (più vicino all'Italia)
+5. Plan: **Hobby** (gratis, 256MB)
+6. Click **Continue** → **Connect to Project** → seleziona `sherlock-polizze-site`
+7. Vercel inietta automaticamente `KV_URL`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`
+
+Dopo il setup, **redeploya** (Settings → Deployments → Redeploy) per applicare.
+
+### Test end-to-end (modalità sandbox)
+
+1. Su PayPal Developer Dashboard: crea un'app **Sandbox** (separata dalla Live)
+2. Su Vercel imposta `PAYPAL_MODE=sandbox`, `PAYPAL_CLIENT_ID` e `PAYPAL_SECRET` con le credenziali sandbox
+3. Su Resend usa il mittente di test `onboarding@resend.dev`
+4. Vai su `https://<tuo-vercel>/abbonamento/mensile`
+5. Compila email, paga con un account PayPal sandbox (creato in developer.paypal.com → Sandbox → Accounts)
+6. Dovresti tornare su `/abbonamento/conferma` con il codice mostrato + email ricevuta
+
+Quando confermi che tutto funziona, passa `PAYPAL_MODE=live` con le credenziali live.
+
+### Aggiornare il listing Play Console e bio social
+
+Quando il flow PayPal nuovo funziona, sostituisci ovunque `https://sherlockapi-rwygcyfs.manus.space` con `https://<tuo-vercel>` (vedi Step 4 e 5).
+
+Poi puoi **spegnere il vecchio backend manus.space**.
+
+---
+
 ## Come fare aggiornamenti futuri al sito
 
 Ogni volta che vuoi cambiare qualcosa (es. pubblicare un nuovo articolo):

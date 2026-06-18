@@ -1,17 +1,19 @@
 ---
+export const prerender = true;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
-// Backend Manus che gestisce il flusso PayPal (form email + redirect a PayPal)
-const subscribeUrl = 'https://sherlockapi-rwygcyfs.manus.space/abbonati#abbonati';
 
 const piani = [
-  { nome: 'Mensile', prezzo: '2,99€', mese: '2,99€/mese', sconto: null, recommended: false },
-  { nome: 'Semestrale', prezzo: '7,99€', mese: '1,33€/mese', sconto: 'Risparmi il 55%', recommended: false },
-  { nome: 'Annuale', prezzo: '14,99€', mese: '1,25€/mese', sconto: 'Risparmi il 58%', recommended: true },
+  { id: 'mensile', nome: 'Mensile', prezzo: '2,99€', mese: '2,99€/mese', sconto: null, recommended: false },
+  { id: 'semestrale', nome: 'Semestrale', prezzo: '7,99€', mese: '1,33€/mese', sconto: 'Risparmi il 55%', recommended: false },
+  { id: 'annuale', nome: 'Annuale', prezzo: '14,99€', mese: '1,25€/mese', sconto: 'Risparmi il 58%', recommended: true },
 ];
+
+// CTA generica → punta al piano consigliato
+const ctaUrl = '/abbonamento/annuale';
 
 const faqItems = [
   {
@@ -54,7 +56,7 @@ const jsonLd = [
       price: p.prezzo.replace('€', '').replace(',', '.'),
       priceCurrency: 'EUR',
       availability: 'https://schema.org/InStock',
-      url: 'https://sherlock-polizze-site-five.vercel.app/abbonati',
+      url: 'https://sherlock-polizze-site-b46pfkwts-sstefano-s-projects.vercel.app/abbonati',
     })),
   },
   {
@@ -108,7 +110,7 @@ const jsonLd = [
             </div>
           )}
           <a
-            href={subscribeUrl}
+            href={`/abbonamento/${p.id}`}
             class={`block text-center font-bold px-5 py-3 rounded-lg transition w-full ${p.recommended ? 'bg-gold-400 text-navy-900 hover:bg-gold-300 shadow-lg shadow-gold-400/20' : 'border border-navy-600 text-navy-100 hover:bg-navy-800'}`}
           >
             Scegli {p.nome.toLowerCase()}
@@ -133,7 +135,7 @@ const jsonLd = [
           IVASS con struttura e riferimenti normativi.
         </p>
         <a
-          href={subscribeUrl}
+          href={ctaUrl}
           class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20"
         >
           Sblocca le lettere Pro →

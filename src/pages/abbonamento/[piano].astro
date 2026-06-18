@@ -1,0 +1,123 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { piano: 'mensile' } },
+    { params: { piano: 'semestrale' } },
+    { params: { piano: 'annuale' } },
+  ];
+}
+
+const { piano } = Astro.params as { piano: 'mensile' | 'semestrale' | 'annuale' };
+
+const dettagli = {
+  mensile: { nome: 'Mensile', prezzo: '2,99 €', mese: '2,99 €/mese', sconto: null },
+  semestrale: { nome: 'Semestrale', prezzo: '7,99 €', mese: '1,33 €/mese', sconto: 'Risparmi il 55%' },
+  annuale: { nome: 'Annuale', prezzo: '14,99 €', mese: '1,25 €/mese', sconto: 'Risparmi il 58%' },
+}[piano];
+
+const annullato = Astro.url.searchParams.get('annullato') === '1';
+---
+<BaseLayout
+  title={`Sherlock Pro — Piano ${dettagli.nome} | ${dettagli.prezzo}`}
+  description={`Sottoscrivi Sherlock Pro piano ${dettagli.nome.toLowerCase()} a ${dettagli.prezzo}. Pagamento sicuro PayPal. Codice di attivazione via email.`}
+>
+  <Header slot="header" />
+
+  <section class="px-5 py-12 max-w-xl mx-auto">
+    <a href="/abbonati" class="text-sm text-gold-400 hover:underline">&larr; Tutti i piani</a>
+
+    <h1 class="text-3xl font-extrabold text-white mt-4 mb-2">Piano {dettagli.nome}</h1>
+    <p class="text-gray-400 mb-6">Riceverai il codice di attivazione via email subito dopo il pagamento.</p>
+
+    {annullato && (
+      <div class="bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg px-4 py-3 mb-6 text-sm">
+        Pagamento annullato. Puoi riprovare quando vuoi.
+      </div>
+    )}
+
+    <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-6 mb-6">
+      <div class="flex items-baseline gap-2 mb-1">
+        <span class="text-4xl font-extrabold text-gold-400">{dettagli.prezzo}</span>
+        <span class="text-sm text-gray-500">una tantum</span>
+      </div>
+      <div class="text-sm text-gray-400">Equivalente a {dettagli.mese}</div>
+      {dettagli.sconto && <div class="inline-block mt-3 text-xs bg-gold-400/20 text-gold-400 px-2 py-1 rounded">{dettagli.sconto}</div>}
+    </div>
+
+    <form id="form-abbonamento" class="space-y-4">
+      <input type="hidden" name="piano" value={piano} />
+      <div>
+        <label for="email" class="block text-sm text-gray-300 mb-2">La tua email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          placeholder="nome@esempio.it"
+          class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 focus:border-gold-400 focus:outline-none"
+        />
+        <p class="text-xs text-gray-500 mt-2">Riceverai il codice di attivazione a questa email. Usala anche nell'app.</p>
+      </div>
+
+      <button
+        type="submit"
+        id="btn-paga"
+        class="w-full bg-[#ffc439] hover:bg-[#f5b800] text-slate-900 font-bold py-3 rounded-lg transition"
+      >
+        Paga con PayPal — {dettagli.prezzo}
+      </button>
+
+      <div id="err-abbonamento" class="hidden bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg px-4 py-3 text-sm"></div>
+
+      <p class="text-xs text-gray-500 text-center">
+        Pagamento sicuro tramite PayPal · Nessun rinnovo automatico · Disdici quando vuoi
+      </p>
+    </form>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('form-abbonamento') as HTMLFormElement | null;
+  const btn = document.getElementById('btn-paga') as HTMLButtonElement | null;
+  const err = document.getElementById('err-abbonamento') as HTMLDivElement | null;
+
+  if (form && btn && err) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const piano = fd.get('piano') as string;
+      const email = (fd.get('email') as string).trim();
+
+      btn.disabled = true;
+      btn.textContent = 'Reindirizzamento a PayPal...';
+      err.classList.add('hidden');
+
+      try {
+        const r = await fetch('/api/paypal/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ piano, email }),
+        });
+        const data = await r.json();
+        if (!r.ok || !data.approveUrl) {
+          throw new Error(data.error ?? 'Errore inatteso');
+        }
+        // Salva email + piano in sessionStorage per la pagina conferma (fallback se PayPal non li ritorna nei query)
+        sessionStorage.setItem('sherlock_pending', JSON.stringify({ piano, email, orderId: data.orderId }));
+        window.location.href = data.approveUrl;
+      } catch (e: any) {
+        err.textContent = e?.message ?? 'Errore';
+        err.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = 'Riprova';
+      }
+    });
+  }
+</script>
