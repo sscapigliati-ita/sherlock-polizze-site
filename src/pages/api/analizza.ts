@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAnthropicKey, getModel } from '../../lib/auth';
+import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
 
 export const prerender = false;
 
@@ -23,8 +24,23 @@ function json(body: unknown, status = 200): Response {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  const t0 = Date.now();
+  const requestId = nuovoRequestId();
+  const ip = estraiIp(request);
+  const traccia = (esito: EventoAPI['esito'], errore?: string) =>
+    loggaEvento({
+      ts: new Date().toISOString(),
+      tipo: 'analizza',
+      esito,
+      errore,
+      requestId,
+      ip,
+      ms: Date.now() - t0,
+    }).catch(() => undefined);
+
   const apiKey = getAnthropicKey();
   if (!apiKey) {
+    void traccia('errore', 'ANTHROPIC_API_KEY mancante');
     return json({ error: 'Backend non configurato (ANTHROPIC_API_KEY mancante)' }, 500);
   }
 
@@ -32,11 +48,13 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     payload = await request.json();
   } catch {
+    void traccia('bloccato', 'Body JSON non valido');
     return json({ error: 'Body JSON non valido' }, 400);
   }
 
   const { documento_base64, mime } = payload;
   if (!documento_base64 || !mime) {
+    void traccia('bloccato', 'documento_base64 e mime richiesti');
     return json({ error: 'documento_base64 e mime richiesti' }, 400);
   }
 
@@ -71,19 +89,23 @@ export const POST: APIRoute = async ({ request }) => {
 
   const data = await upstream.json();
   if (data?.error) {
+    void traccia('errore', data.error.message ?? 'Errore Anthropic');
     return json({ error: data.error.message ?? 'Errore Anthropic' }, 502);
   }
 
   const testo: string = data?.content?.[0]?.text ?? '';
   const match = testo.match(/\{[\s\S]*\}/);
   if (!match) {
+    void traccia('errore', 'Risposta AI non valida');
     return json({ error: 'Risposta AI non valida' }, 502);
   }
 
   try {
     const analisi = JSON.parse(match[0]);
+    void traccia('ok');
     return json(analisi);
   } catch {
+    void traccia('errore', 'JSON AI malformato');
     return json({ error: 'JSON AI malformato' }, 502);
   }
 };

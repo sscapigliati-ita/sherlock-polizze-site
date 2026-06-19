@@ -46,3 +46,38 @@ export async function leggiCodicePro(codice: string): Promise<RecordPro | null> 
 export async function codicePresente(codice: string): Promise<boolean> {
   return (await leggiCodicePro(codice)) !== null;
 }
+
+export type SintesiAbbonati = {
+  records: RecordPro[];
+  totali: number;
+  attivi: number;
+  ricavoEuroCent: number;
+};
+
+const PREZZI_CENT: Record<RecordPro['piano'], number> = {
+  mensile: 299,
+  semestrale: 799,
+  annuale: 1499,
+};
+
+export async function leggiAbbonati(): Promise<SintesiAbbonati> {
+  let records: RecordPro[];
+  if (kvConfigurato()) {
+    const codici = await kv.smembers('pro:codici');
+    if (!codici.length) {
+      records = [];
+    } else {
+      const chiavi = codici.map((c) => `pro:${c}`);
+      const recs = await kv.mget<RecordPro[]>(...chiavi);
+      records = recs.filter((r): r is RecordPro => Boolean(r));
+    }
+  } else {
+    records = Array.from(fallback.values());
+  }
+
+  records.sort((a, b) => b.dataEmissione.localeCompare(a.dataEmissione));
+  const oraIso = new Date().toISOString();
+  const attivi = records.filter((r) => r.dataScadenza > oraIso).length;
+  const ricavoEuroCent = records.reduce((s, r) => s + (PREZZI_CENT[r.piano] ?? 0), 0);
+  return { records, totali: records.length, attivi, ricavoEuroCent };
+}
