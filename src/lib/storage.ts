@@ -1,8 +1,27 @@
 import { Redis } from '@upstash/redis';
 
+function envVar(name: string): string | undefined {
+  return (
+    (import.meta.env as Record<string, string | undefined>)[name] ?? process.env[name] ?? undefined
+  );
+}
+
+function urlRedis(): string | undefined {
+  return envVar('UPSTASH_REDIS_REST_URL') ?? envVar('KV_REST_API_URL');
+}
+
+function tokenRedis(): string | undefined {
+  return envVar('UPSTASH_REDIS_REST_TOKEN') ?? envVar('KV_REST_API_TOKEN');
+}
+
 let _kv: Redis | null = null;
 function kv(): Redis {
-  if (!_kv) _kv = Redis.fromEnv();
+  if (!_kv) {
+    const url = urlRedis();
+    const token = tokenRedis();
+    if (!url || !token) throw new Error('Upstash/KV non configurato');
+    _kv = new Redis({ url, token });
+  }
   return _kv;
 }
 
@@ -16,11 +35,7 @@ export type RecordPro = {
 };
 
 function kvConfigurato(): boolean {
-  // Upstash Redis (via Vercel Marketplace) inietta UPSTASH_REDIS_REST_URL/TOKEN
-  return Boolean(
-    (import.meta.env.UPSTASH_REDIS_REST_URL ?? process.env.UPSTASH_REDIS_REST_URL) &&
-      (import.meta.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN),
-  );
+  return Boolean(urlRedis() && tokenRedis());
 }
 
 // Fallback in-memory per dev senza KV (NON adatto a produzione: ogni invocazione serverless è isolata)
