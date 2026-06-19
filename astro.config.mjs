@@ -7,7 +7,7 @@ import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://sherlock-polizze-site-b46pfkwts-sstefano-s-projects.vercel.app',
+  site: 'https://sherlock-polizze-site-five.vercel.app',
   trailingSlash: 'never',
   output: 'server',
   adapter: vercel(),

@@ -220,7 +220,7 @@ Vercel **non ridepoya automaticamente** dopo aver aggiunto env vars. Vai su **De
 Apri questo URL nel browser (sostituisci con il tuo dominio):
 
 ```
-https://sherlock-polizze-site-b46pfkwts-sstefano-s-projects.vercel.app/api/analizza
+https://sherlock-polizze-site-five.vercel.app/api/analizza
 ```
 
 - Se risponde con un errore JSON tipo `{"error":"Body JSON non valido"}` → ✅ backend attivo, env var ok
