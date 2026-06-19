@@ -1,4 +1,10 @@
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+let _kv: Redis | null = null;
+function kv(): Redis {
+  if (!_kv) _kv = Redis.fromEnv();
+  return _kv;
+}
 
 export type RecordPro = {
   codice: string;
@@ -10,10 +16,10 @@ export type RecordPro = {
 };
 
 function kvConfigurato(): boolean {
-  // Vercel KV inietta KV_REST_API_URL e KV_REST_API_TOKEN quando il KV è collegato al progetto
+  // Upstash Redis (via Vercel Marketplace) inietta UPSTASH_REDIS_REST_URL/TOKEN
   return Boolean(
-    (import.meta.env.KV_REST_API_URL ?? process.env.KV_REST_API_URL) &&
-      (import.meta.env.KV_REST_API_TOKEN ?? process.env.KV_REST_API_TOKEN),
+    (import.meta.env.UPSTASH_REDIS_REST_URL ?? process.env.UPSTASH_REDIS_REST_URL) &&
+      (import.meta.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN),
   );
 }
 
@@ -23,9 +29,9 @@ const fallback = new Map<string, RecordPro>();
 export async function salvaCodicePro(rec: RecordPro): Promise<void> {
   const key = `pro:${rec.codice}`;
   if (kvConfigurato()) {
-    await kv.set(key, rec);
-    await kv.sadd('pro:codici', rec.codice);
-    await kv.sadd(`pro:email:${rec.email.toLowerCase()}`, rec.codice);
+    await kv().set(key, rec);
+    await kv().sadd('pro:codici', rec.codice);
+    await kv().sadd(`pro:email:${rec.email.toLowerCase()}`, rec.codice);
   } else {
     fallback.set(key, rec);
     console.warn(
@@ -37,7 +43,7 @@ export async function salvaCodicePro(rec: RecordPro): Promise<void> {
 export async function leggiCodicePro(codice: string): Promise<RecordPro | null> {
   const key = `pro:${codice.trim().toUpperCase()}`;
   if (kvConfigurato()) {
-    const rec = await kv.get<RecordPro>(key);
+    const rec = await kv().get<RecordPro>(key);
     return rec ?? null;
   }
   return fallback.get(key) ?? null;
@@ -63,12 +69,12 @@ const PREZZI_CENT: Record<RecordPro['piano'], number> = {
 export async function leggiAbbonati(): Promise<SintesiAbbonati> {
   let records: RecordPro[];
   if (kvConfigurato()) {
-    const codici = await kv.smembers('pro:codici');
+    const codici = await kv().smembers('pro:codici');
     if (!codici.length) {
       records = [];
     } else {
       const chiavi = codici.map((c) => `pro:${c}`);
-      const recs = await kv.mget<RecordPro[]>(...chiavi);
+      const recs = await kv().mget<RecordPro[]>(...chiavi);
       records = recs.filter((r): r is RecordPro => Boolean(r));
     }
   } else {

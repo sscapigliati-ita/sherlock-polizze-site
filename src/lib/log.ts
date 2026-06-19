@@ -1,4 +1,10 @@
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+let _kv: Redis | null = null;
+function kv(): Redis {
+  if (!_kv) _kv = Redis.fromEnv();
+  return _kv;
+}
 
 export type EventoAPI = {
   ts: string; // ISO timestamp
@@ -12,8 +18,8 @@ export type EventoAPI = {
 
 function kvOn(): boolean {
   return Boolean(
-    (import.meta.env.KV_REST_API_URL ?? process.env.KV_REST_API_URL) &&
-      (import.meta.env.KV_REST_API_TOKEN ?? process.env.KV_REST_API_TOKEN),
+    (import.meta.env.UPSTASH_REDIS_REST_URL ?? process.env.UPSTASH_REDIS_REST_URL) &&
+      (import.meta.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN),
   );
 }
 
@@ -34,27 +40,28 @@ export async function loggaEvento(ev: EventoAPI): Promise<void> {
     return;
   }
 
+  const r = kv();
   // Lista circolare con LPUSH + LTRIM
-  await kv.lpush(LOG_KEY, JSON.stringify(ev));
-  await kv.ltrim(LOG_KEY, 0, LOG_MAX - 1);
+  await r.lpush(LOG_KEY, JSON.stringify(ev));
+  await r.ltrim(LOG_KEY, 0, LOG_MAX - 1);
 
   // Counter aggregati
   const g = dateKey(new Date(ev.ts));
-  await kv.incr(`count:${ev.tipo}:${g}`);
-  await kv.incr(`count:${ev.tipo}:total`);
+  await r.incr(`count:${ev.tipo}:${g}`);
+  await r.incr(`count:${ev.tipo}:total`);
   if (ev.esito === 'errore') {
-    await kv.incr(`count:errore:${g}`);
-    await kv.incr(`count:errore:total`);
+    await r.incr(`count:errore:${g}`);
+    await r.incr(`count:errore:total`);
   }
   if (ev.esito === 'bloccato') {
-    await kv.incr(`count:bloccato:${g}`);
-    await kv.incr(`count:bloccato:total`);
+    await r.incr(`count:bloccato:${g}`);
+    await r.incr(`count:bloccato:total`);
   }
 }
 
 export async function leggiUltimiEventi(limit = 50): Promise<EventoAPI[]> {
   if (!kvOn()) return fallbackLog.slice(0, limit);
-  const righe = await kv.lrange<string>(LOG_KEY, 0, limit - 1);
+  const righe = await kv().lrange<string>(LOG_KEY, 0, limit - 1);
   return righe
     .map((r) => {
       try {
@@ -96,13 +103,14 @@ export async function leggiStats(): Promise<StatsAPI> {
     };
   }
 
+  const r = kv();
   const [analisiT, analisiO, lettereT, lettereO, erroriT, bloccatiT] = await Promise.all([
-    kv.get<number>('count:analizza:total'),
-    kv.get<number>(`count:analizza:${oggi}`),
-    kv.get<number>('count:lettera:total'),
-    kv.get<number>(`count:lettera:${oggi}`),
-    kv.get<number>('count:errore:total'),
-    kv.get<number>('count:bloccato:total'),
+    r.get<number>('count:analizza:total'),
+    r.get<number>(`count:analizza:${oggi}`),
+    r.get<number>('count:lettera:total'),
+    r.get<number>(`count:lettera:${oggi}`),
+    r.get<number>('count:errore:total'),
+    r.get<number>('count:bloccato:total'),
   ]);
 
   const giorni: string[] = [];
@@ -114,8 +122,8 @@ export async function leggiStats(): Promise<StatsAPI> {
   const perGiornoRaw = await Promise.all(
     giorni.map(async (g) => {
       const [a, e] = await Promise.all([
-        kv.get<number>(`count:analizza:${g}`),
-        kv.get<number>(`count:errore:${g}`),
+        r.get<number>(`count:analizza:${g}`),
+        r.get<number>(`count:errore:${g}`),
       ]);
       return { giorno: g, analisi: a ?? 0, errori: e ?? 0 };
     }),
