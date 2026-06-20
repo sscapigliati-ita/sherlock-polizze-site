@@ -56,18 +56,18 @@ const jsonLd = [
         </p>
         <div class="flex flex-col sm:flex-row gap-3 mb-6">
           <a
+            href="/abbonati"
+            class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
+          >
+            Abbonati ora — da 1,25€/mese
+          </a>
+          <a
             href={playStoreUrl}
             target="_blank"
             rel="noopener"
-            class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
-          >
-            Scarica gratis su Google Play
-          </a>
-          <a
-            href="/abbonati"
             class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition text-center"
           >
-            Vedi i piani da 2,99€
+            Scarica gratis l'app
           </a>
         </div>
         <p class="text-xs text-navy-500">
@@ -198,19 +198,27 @@ const jsonLd = [
 
   <section class="bg-gradient-to-br from-navy-900 to-navy-950 border-b border-navy-800 px-5 py-16">
     <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-4">Inizia con 5 analisi gratuite</h2>
+      <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-4">Pronto a capire cosa hai firmato?</h2>
       <p class="text-navy-300 mb-8">
-        Scarica l'app, carica la tua prima polizza, scopri cosa c'è scritto davvero.
-        Nessuna carta richiesta per iniziare.
+        Sblocca analisi illimitate, reclami e ricorsi IVASS pronti per PEC.
+        Da 1,25€/mese con il piano annuale. Nessun rinnovo automatico.
       </p>
-      <a
-        href={playStoreUrl}
-        target="_blank"
-        rel="noopener"
-        class="inline-block bg-gold-400 text-navy-900 font-bold px-7 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20"
-      >
-        Scarica Sherlock su Google Play →
-      </a>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a
+          href="/abbonati"
+          class="inline-block bg-gold-400 text-navy-900 font-bold px-7 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20"
+        >
+          Abbonati ora →
+        </a>
+        <a
+          href={playStoreUrl}
+          target="_blank"
+          rel="noopener"
+          class="inline-block border border-navy-600 text-navy-100 font-semibold px-7 py-4 rounded-lg hover:bg-navy-800 transition"
+        >
+          Prova gratis (5 analisi)
+        </a>
+      </div>
       <div class="mt-5 text-xs text-navy-500">
         Nessun rinnovo automatico · Pagamento sicuro PayPal · Privacy garantita
       </div>
