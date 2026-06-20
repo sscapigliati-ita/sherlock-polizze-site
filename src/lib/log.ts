@@ -49,6 +49,13 @@ function dateKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+function baseline(name: string): number {
+  const v = envVar(name);
+  if (!v) return 0;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
 export async function loggaEvento(ev: EventoAPI): Promise<void> {
   if (!kvOn()) {
     fallbackLog.unshift(ev);
@@ -146,12 +153,14 @@ export async function leggiStats(): Promise<StatsAPI> {
   );
 
   return {
-    analisiTotali: analisiT ?? 0,
+    // Baseline: somma cumulativa storica importata da una piattaforma precedente
+    // (es. dashboard Manus pre-migrazione). Configurabile via env BASELINE_*.
+    analisiTotali: (analisiT ?? 0) + baseline('BASELINE_ANALISI_TOTALI'),
     analisiOggi: analisiO ?? 0,
-    lettereTotali: lettereT ?? 0,
+    lettereTotali: (lettereT ?? 0) + baseline('BASELINE_LETTERE_TOTALI'),
     lettereOggi: lettereO ?? 0,
-    erroriTotali: erroriT ?? 0,
-    bloccatiTotali: bloccatiT ?? 0,
+    erroriTotali: (erroriT ?? 0) + baseline('BASELINE_ERRORI_TOTALI'),
+    bloccatiTotali: (bloccatiT ?? 0) + baseline('BASELINE_BLOCCATI_TOTALI'),
     perGiorno: perGiornoRaw,
   };
 }
