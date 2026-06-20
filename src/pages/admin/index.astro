@@ -20,8 +20,11 @@ const oggiBreve = (g: string) => {
   return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
 };
 
+// Vercel functions girano in UTC; forzo Europe/Rome così la dashboard mostra
+// orari coerenti col fuso italiano (CEST in estate, CET in inverno).
 const fmtData = (iso: string) =>
   new Date(iso).toLocaleString('it-IT', {
+    timeZone: 'Europe/Rome',
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -30,6 +33,7 @@ const fmtData = (iso: string) =>
   });
 const fmtSoloData = (iso: string) =>
   new Date(iso).toLocaleDateString('it-IT', {
+    timeZone: 'Europe/Rome',
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
