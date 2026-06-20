@@ -5,23 +5,77 @@ import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib
 export const prerender = false;
 // Hobby+Fluid Compute supporta fino a 300s; Anthropic con un PDF intero impiega
 // in media 20-40s, quindi 60s è una soglia confortevole per non andare in timeout
-// (default Hobby pre-Fluid era 10s, motivo per cui l'app vedeva "errore" dopo ~10s)
 export const maxDuration = 60;
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
 const SYS =
   'Sei Sherlock, esperto analista di polizze assicurative italiane (d.lgs. 209/2005, artt. 1882-1932 c.c., normativa IVASS). ' +
-  'OUTPUT: rispondi con SOLO un oggetto JSON valido. ' +
-  'NIENTE markdown, NIENTE blocchi ```json, NIENTE testo prima o dopo, NIENTE commenti. ' +
-  'Il primo carattere della tua risposta DEVE essere "{" e l\'ultimo carattere DEVE essere "}". ' +
-  'Tutte le virgolette devono essere doppie ("), niente apici singoli. Niente trailing commas. ' +
-  'Struttura: {"compagnia":"","tipo_polizza":"","numero_polizza":"","rischio":"BASSO|MEDIO|ALTO|CRITICO","riepilogo":"",' +
-  '"coperture":[{"titolo":"","descrizione":"","massimale":""}],' +
-  '"esclusioni_critiche":[{"titolo":"","descrizione":"","gravita":"alta|media|bassa","articolo":""}],' +
-  '"clausole_rischiose":[{"titolo":"","testo_originale":"","perche_rischiosa":"","gravita":"alta|media|bassa"}],' +
-  '"termini_decadenza":[{"evento":"","termine":"","conseguenza":""}],' +
-  '"onere_prova":"","base_legale_contestabile":[""],"raccomandazioni":[""],"domande_da_fare":[""]}';
+  'Analizza il documento e chiama il tool report_analisi_polizza con tutti i campi dello schema.';
+
+// Schema JSON forzato — l'output di Anthropic via tool_use È garantito JSON valido
+// conforme a questo schema, evitando completamente l'errore "JSON AI malformato".
+const SCHEMA_REPORT = {
+  type: 'object',
+  required: ['compagnia', 'tipo_polizza', 'rischio', 'riepilogo'],
+  properties: {
+    compagnia: { type: 'string' },
+    tipo_polizza: { type: 'string' },
+    numero_polizza: { type: 'string' },
+    rischio: { type: 'string', enum: ['BASSO', 'MEDIO', 'ALTO', 'CRITICO'] },
+    riepilogo: { type: 'string' },
+    coperture: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          titolo: { type: 'string' },
+          descrizione: { type: 'string' },
+          massimale: { type: 'string' },
+        },
+      },
+    },
+    esclusioni_critiche: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          titolo: { type: 'string' },
+          descrizione: { type: 'string' },
+          gravita: { type: 'string', enum: ['alta', 'media', 'bassa'] },
+          articolo: { type: 'string' },
+        },
+      },
+    },
+    clausole_rischiose: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          titolo: { type: 'string' },
+          testo_originale: { type: 'string' },
+          perche_rischiosa: { type: 'string' },
+          gravita: { type: 'string', enum: ['alta', 'media', 'bassa'] },
+        },
+      },
+    },
+    termini_decadenza: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          evento: { type: 'string' },
+          termine: { type: 'string' },
+          conseguenza: { type: 'string' },
+        },
+      },
+    },
+    onere_prova: { type: 'string' },
+    base_legale_contestabile: { type: 'array', items: { type: 'string' } },
+    raccomandazioni: { type: 'array', items: { type: 'string' } },
+    domande_da_fare: { type: 'array', items: { type: 'string' } },
+  },
+};
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -72,11 +126,11 @@ export const POST: APIRoute = async ({ request }) => {
           type: 'document',
           source: { type: 'base64', media_type: 'application/pdf', data: documento_base64 },
         },
-        { type: 'text', text: 'Analizza questa polizza.' },
+        { type: 'text', text: 'Analizza questa polizza chiamando il tool.' },
       ]
     : [
         { type: 'image', source: { type: 'base64', media_type: mime, data: documento_base64 } },
-        { type: 'text', text: 'Analizza questa polizza.' },
+        { type: 'text', text: 'Analizza questa polizza chiamando il tool.' },
       ];
 
   const upstream = await fetch(ANTHROPIC_API_URL, {
@@ -88,8 +142,17 @@ export const POST: APIRoute = async ({ request }) => {
     },
     body: JSON.stringify({
       model: getModel(),
-      max_tokens: 4096,
+      max_tokens: 8192,
       system: SYS,
+      tools: [
+        {
+          name: 'report_analisi_polizza',
+          description:
+            'Restituisci il report completo dell\'analisi di una polizza assicurativa italiana.',
+          input_schema: SCHEMA_REPORT,
+        },
+      ],
+      tool_choice: { type: 'tool', name: 'report_analisi_polizza' },
       messages: [{ role: 'user', content }],
     }),
   });
@@ -100,32 +163,18 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: data.error.message ?? 'Errore Anthropic' }, 502);
   }
 
-  const testo: string = data?.content?.[0]?.text ?? '';
-  // Strip markdown code blocks se Anthropic decide di metterli nonostante il SYS
-  let grezzo = testo.replace(/```(?:json)?\s*/gi, '').replace(/```\s*$/g, '').trim();
-  // Estrae il blocco JSON delimitato dalle parentesi più esterne
-  const inizio = grezzo.indexOf('{');
-  const fine = grezzo.lastIndexOf('}');
-  if (inizio === -1 || fine === -1 || fine <= inizio) {
-    void traccia('errore', 'Risposta AI non valida');
-    return json({ error: 'Risposta AI non valida' }, 502);
-  }
-  grezzo = grezzo.slice(inizio, fine + 1);
+  // Con tool_choice forzato, content contiene un blocco di tipo "tool_use" con .input
+  // già parsato dal lato Anthropic in oggetto JSON valido.
+  const blocchi = (data?.content ?? []) as Array<{ type: string; input?: unknown; text?: string }>;
+  const toolUse = blocchi.find((b) => b.type === 'tool_use');
 
-  try {
-    const analisi = JSON.parse(grezzo);
+  if (toolUse?.input && typeof toolUse.input === 'object') {
     void traccia('ok');
-    return json(analisi);
-  } catch (e: any) {
-    // Tentativo soft di recupero: rimuovi trailing commas prima di }, ]
-    const ripulito = grezzo.replace(/,\s*([}\]])/g, '$1');
-    try {
-      const analisi = JSON.parse(ripulito);
-      void traccia('ok');
-      return json(analisi);
-    } catch {
-      void traccia('errore', `JSON AI malformato: ${String(e?.message ?? e).slice(0, 160)}`);
-      return json({ error: 'JSON AI malformato' }, 502);
-    }
+    return json(toolUse.input);
   }
+
+  // Fallback estremo: a volte il modello restituisce solo testo (es. rifiuto, errore di lettura).
+  const testo = blocchi.find((b) => b.type === 'text')?.text ?? '';
+  void traccia('errore', `Tool non chiamato. Risposta testuale: ${testo.slice(0, 160)}`);
+  return json({ error: 'Risposta AI non valida (tool non chiamato)' }, 502);
 };
