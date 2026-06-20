@@ -3,6 +3,10 @@ import { getAnthropicKey, getModel } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
 
 export const prerender = false;
+// Hobby+Fluid Compute supporta fino a 300s; Anthropic con un PDF intero impiega
+// in media 20-40s, quindi 60s è una soglia confortevole per non andare in timeout
+// (default Hobby pre-Fluid era 10s, motivo per cui l'app vedeva "errore" dopo ~10s)
+export const maxDuration = 60;
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
