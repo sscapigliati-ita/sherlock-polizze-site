@@ -3,11 +3,9 @@ import { getAnthropicKey, getModel } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
 
 export const prerender = false;
-// Hobby+Fluid Compute supporta fino a 300s. Polizze grandi (PDF condizioni generali
-// + frontespizio) possono richiedere 60-100s ad Anthropic. Tengo 120s come margine
-// — sotto questo valore l'app Android (readTimeout 120s) vedeva "read timed out"
-// perché la function veniva killed mentre Claude stava ancora lavorando.
-export const maxDuration = 120;
+// Cap massimo Hobby+Fluid Compute. Il modello Haiku 4.5 normalmente sta sotto i
+// 30 secondi, ma teniamo il margine massimo per i casi peggiori (PDF di 30+ pagine).
+export const maxDuration = 300;
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 

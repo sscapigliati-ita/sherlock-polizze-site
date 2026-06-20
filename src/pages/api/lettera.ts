@@ -3,7 +3,7 @@ import { getAnthropicKey, getModel, validaCodicePro } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
 
 export const prerender = false;
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
