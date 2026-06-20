@@ -12,7 +12,10 @@ const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
 const SYS =
   'Sei Sherlock, esperto analista di polizze assicurative italiane (d.lgs. 209/2005, artt. 1882-1932 c.c., normativa IVASS). ' +
-  'Analizza il documento e restituisci SOLO un JSON valido. ' +
+  'OUTPUT: rispondi con SOLO un oggetto JSON valido. ' +
+  'NIENTE markdown, NIENTE blocchi ```json, NIENTE testo prima o dopo, NIENTE commenti. ' +
+  'Il primo carattere della tua risposta DEVE essere "{" e l\'ultimo carattere DEVE essere "}". ' +
+  'Tutte le virgolette devono essere doppie ("), niente apici singoli. Niente trailing commas. ' +
   'Struttura: {"compagnia":"","tipo_polizza":"","numero_polizza":"","rischio":"BASSO|MEDIO|ALTO|CRITICO","riepilogo":"",' +
   '"coperture":[{"titolo":"","descrizione":"","massimale":""}],' +
   '"esclusioni_critiche":[{"titolo":"","descrizione":"","gravita":"alta|media|bassa","articolo":""}],' +
@@ -87,12 +90,7 @@ export const POST: APIRoute = async ({ request }) => {
       model: getModel(),
       max_tokens: 4096,
       system: SYS,
-      // Prefill assistant con "{" — Anthropic continua da quel carattere e di fatto
-      // non può più sbagliare a infilare markdown/commentari davanti al JSON
-      messages: [
-        { role: 'user', content },
-        { role: 'assistant', content: [{ type: 'text', text: '{' }] },
-      ],
+      messages: [{ role: 'user', content }],
     }),
   });
 
@@ -103,10 +101,8 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const testo: string = data?.content?.[0]?.text ?? '';
-  // Aggiungo il "{" del prefill che non è incluso nella risposta
-  let grezzo = '{' + testo;
-  // Strip markdown code blocks se presenti (cintura+bretelle)
-  grezzo = grezzo.replace(/```(?:json)?\s*/gi, '').replace(/```\s*$/g, '');
+  // Strip markdown code blocks se Anthropic decide di metterli nonostante il SYS
+  let grezzo = testo.replace(/```(?:json)?\s*/gi, '').replace(/```\s*$/g, '').trim();
   // Estrae il blocco JSON delimitato dalle parentesi più esterne
   const inizio = grezzo.indexOf('{');
   const fine = grezzo.lastIndexOf('}');
@@ -114,13 +110,22 @@ export const POST: APIRoute = async ({ request }) => {
     void traccia('errore', 'Risposta AI non valida');
     return json({ error: 'Risposta AI non valida' }, 502);
   }
+  grezzo = grezzo.slice(inizio, fine + 1);
 
   try {
-    const analisi = JSON.parse(grezzo.slice(inizio, fine + 1));
+    const analisi = JSON.parse(grezzo);
     void traccia('ok');
     return json(analisi);
   } catch (e: any) {
-    void traccia('errore', `JSON AI malformato: ${String(e?.message ?? e).slice(0, 120)}`);
-    return json({ error: 'JSON AI malformato' }, 502);
+    // Tentativo soft di recupero: rimuovi trailing commas prima di }, ]
+    const ripulito = grezzo.replace(/,\s*([}\]])/g, '$1');
+    try {
+      const analisi = JSON.parse(ripulito);
+      void traccia('ok');
+      return json(analisi);
+    } catch {
+      void traccia('errore', `JSON AI malformato: ${String(e?.message ?? e).slice(0, 160)}`);
+      return json({ error: 'JSON AI malformato' }, 502);
+    }
   }
 };
