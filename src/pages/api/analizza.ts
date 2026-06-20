@@ -159,8 +159,20 @@ export const POST: APIRoute = async ({ request }) => {
 
   const data = await upstream.json();
   if (data?.error) {
-    void traccia('errore', data.error.message ?? 'Errore Anthropic');
-    return json({ error: data.error.message ?? 'Errore Anthropic' }, 502);
+    const msgRaw = String(data.error.message ?? '');
+    void traccia('errore', msgRaw);
+    // Traduco gli errori più frequenti di Anthropic in italiano user-friendly
+    let msg = msgRaw;
+    if (/prompt is too long|too many tokens|context length/i.test(msgRaw)) {
+      msg =
+        'Documento troppo grande per essere analizzato in un\'unica volta. ' +
+        'Suggerimento: carica solo le sezioni più importanti — frontespizio, condizioni generali e clausole speciali — invece dell\'intero PDF.';
+    } else if (/could not process image|invalid_request_error|unsupported.*media/i.test(msgRaw)) {
+      msg = 'Documento non leggibile. Assicurati che la foto sia nitida e ben illuminata, o carica un PDF testuale.';
+    } else if (/rate_limit|overloaded/i.test(msgRaw)) {
+      msg = 'Servizio AI temporaneamente sovraccarico. Riprova tra qualche minuto.';
+    }
+    return json({ error: msg }, 502);
   }
 
   // Con tool_choice forzato, content contiene un blocco di tipo "tool_use" con .input
