@@ -7,13 +7,10 @@ import Footer from '../components/Footer.astro';
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
 
 const piani = [
-  { id: 'mensile', nome: 'Mensile', prezzo: '2,99€', mese: '2,99€/mese', sconto: null, recommended: false },
-  { id: 'semestrale', nome: 'Semestrale', prezzo: '7,99€', mese: '1,33€/mese', sconto: 'Risparmi il 55%', recommended: false },
-  { id: 'annuale', nome: 'Annuale', prezzo: '14,99€', mese: '1,25€/mese', sconto: 'Risparmi il 58%', recommended: true },
+  { id: 'mensile', nome: 'Mensile', prezzo: '2,99 €', alMese: '2,99 €/mese', badge: null, recommended: false },
+  { id: 'semestrale', nome: 'Semestrale', prezzo: '7,99 €', alMese: '1,33 €/mese', badge: 'Risparmi 55%', recommended: false },
+  { id: 'annuale', nome: 'Annuale', prezzo: '14,99 €', alMese: '1,25 €/mese', badge: 'Più conveniente', recommended: true },
 ];
-
-// CTA generica → punta al piano consigliato
-const ctaUrl = '/abbonamento/annuale';
 
 const faqItems = [
   {
@@ -22,23 +19,19 @@ const faqItems = [
   },
   {
     q: 'Che tipo di polizze posso analizzare?',
-    a: 'Polizze auto, casa, vita, salute, infortuni, RC professionale, viaggio e ramo danni in generale. Sherlock funziona con qualsiasi polizza assicurativa in italiano.',
+    a: 'Polizze auto, casa, vita, salute, infortuni, RC professionale, viaggio e ramo danni in generale.',
   },
   {
-    q: 'Le lettere generate da Sherlock hanno valore legale?',
-    a: "Sherlock genera documenti strutturati con i riferimenti normativi corretti, pronti da firmare e inviare via PEC. La validità legale dipende dalla situazione specifica: per controversie complesse è sempre consigliata la verifica di un avvocato.",
+    q: 'Le lettere generate hanno valore legale?',
+    a: "Sherlock genera documenti strutturati con i riferimenti normativi corretti, pronti da firmare e inviare via PEC. La validità legale dipende dalla situazione specifica.",
   },
   {
-    q: "Come funziona il pagamento dell'abbonamento?",
-    a: 'Pagamento sicuro via PayPal. Nessun rinnovo automatico: alla scadenza puoi decidere se rinnovare o lasciar scadere. Disdici quando vuoi.',
+    q: "Come funziona il pagamento?",
+    a: 'Pagamento sicuro via PayPal. Nessun rinnovo automatico: alla scadenza puoi decidere se rinnovare. Disdici quando vuoi.',
   },
   {
-    q: 'Cosa succede ai documenti che carico?',
-    a: 'I PDF e le foto delle polizze vengono analizzati server-side e non vengono conservati. Nessun dato personale viene ceduto a terzi.',
-  },
-  {
-    q: 'Posso usare Sherlock su più dispositivi?',
-    a: "Sì. L'abbonamento è legato alla tua email: puoi usarlo sull'app Android su qualsiasi dispositivo Android effettuando l'accesso.",
+    q: 'Posso usarlo su più dispositivi?',
+    a: "Sì. L'abbonamento è legato alla tua email: lo attivi inserendo lo stesso codice su qualsiasi telefono Android.",
   },
 ];
 
@@ -53,7 +46,7 @@ const jsonLd = [
     offers: piani.map((p) => ({
       '@type': 'Offer',
       name: `Piano ${p.nome}`,
-      price: p.prezzo.replace('€', '').replace(',', '.'),
+      price: p.prezzo.replace('€', '').replace(',', '.').trim(),
       priceCurrency: 'EUR',
       availability: 'https://schema.org/InStock',
       url: 'https://sherlock-polizze-site-five.vercel.app/abbonati',
@@ -71,101 +64,139 @@ const jsonLd = [
 ];
 ---
 <BaseLayout
-  title="Sherlock — Analisi AI delle polizze assicurative | da 2,99€/mese"
-  description="Carica la tua polizza assicurativa, scopri esclusioni e clausole nascoste in 5 secondi. Genera reclami IVASS e diffide pronte all'uso. 5 analisi gratuite, senza carta."
+  title="Sherlock — Abbonati da 2,99€ | Analisi AI illimitate delle polizze"
+  description="Sottoscrivi Sherlock Pro: analisi illimitate, lettere di reclamo, ricorsi IVASS e diffide pronte all'uso. Pagamento sicuro PayPal. Da 1,25€/mese con il piano annuale."
   jsonLd={jsonLd}
 >
   <Header slot="header" />
 
-  <section class="px-5 pt-12 pb-10 max-w-4xl mx-auto text-center">
+  <section class="px-5 pt-12 pb-6 max-w-5xl mx-auto text-center">
     <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
-      5 analisi gratis · Nessuna carta richiesta
+      Analisi illimitate · Lettere Pro · Nessun rinnovo automatico
     </div>
     <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
-      Analisi illimitate.<br />
-      <span class="text-gold-400">Lettere pronte da inviare.</span>
+      Scegli il tuo <span class="text-gold-400">piano</span>
     </h1>
     <p class="text-lg text-navy-300 max-w-2xl mx-auto">
-      Sherlock Pro trasforma le criticità trovate nella polizza in reclami,
-      diffide e segnalazioni IVASS strutturate. Nessun rinnovo automatico,
-      pagamento sicuro via PayPal.
+      Sherlock Pro trasforma le criticità trovate nella polizza in
+      reclami, diffide e segnalazioni IVASS strutturate.
     </p>
   </section>
 
-  <section class="px-5 pb-16 max-w-5xl mx-auto" id="abbonati">
-    <div class="grid md:grid-cols-3 gap-5">
-      {piani.map((p) => (
-        <div class={`rounded-2xl p-6 border ${p.recommended ? 'border-gold-400 bg-gradient-to-br from-navy-800 to-navy-900 shadow-2xl shadow-gold-400/10' : 'border-navy-700 bg-navy-900'}`}>
-          {p.recommended && (
-            <div class="bg-gold-400 text-navy-900 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block mb-3">
-              Più conveniente
-            </div>
-          )}
-          <div class="text-navy-400 text-sm mb-1">{p.nome}</div>
-          <div class="text-4xl font-extrabold text-white mb-1">{p.prezzo}</div>
-          <div class="text-navy-300 mb-3">{p.mese}</div>
-          {p.sconto && (
-            <div class="inline-block bg-emerald-500/10 text-emerald-400 text-xs font-bold px-2 py-1 rounded mb-4">
-              {p.sconto}
-            </div>
-          )}
-          <a
-            href={`/abbonamento/${p.id}`}
-            class={`block text-center font-bold px-5 py-3 rounded-lg transition w-full ${p.recommended ? 'bg-gold-400 text-navy-900 hover:bg-gold-300 shadow-lg shadow-gold-400/20' : 'border border-navy-600 text-navy-100 hover:bg-navy-800'}`}
-          >
-            Scegli {p.nome.toLowerCase()}
-          </a>
-        </div>
-      ))}
-    </div>
-  </section>
+  <section class="px-5 pb-16 max-w-5xl mx-auto" id="checkout">
+    <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
 
-  <section class="px-5 pb-16 max-w-5xl mx-auto">
-    <div class="rounded-2xl border border-gold-400/30 bg-gradient-to-br from-gold-400/10 to-navy-900 p-6 md:p-8 grid md:grid-cols-[1.1fr_0.9fr] gap-8 items-center">
+      <!-- COLONNA SINISTRA: selezione piano -->
       <div>
-        <div class="text-gold-400 text-xs font-bold uppercase tracking-widest mb-3">
-          Il valore premium
+        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold mb-3">Seleziona il piano</div>
+        <div class="space-y-3" id="piani-list">
+          {piani.map((p, i) => (
+            <label
+              for={`p-${p.id}`}
+              data-piano={p.id}
+              data-prezzo={p.prezzo}
+              class={`piano-radio block rounded-xl border p-5 cursor-pointer transition ${p.recommended ? 'border-gold-400 bg-gradient-to-br from-navy-800 to-navy-900' : 'border-navy-700 bg-navy-900 hover:border-navy-600'}`}
+            >
+              <input
+                type="radio"
+                name="piano"
+                id={`p-${p.id}`}
+                value={p.id}
+                checked={p.recommended}
+                class="hidden peer"
+              />
+              <div class="flex items-center gap-4">
+                <div class="w-5 h-5 rounded-full border-2 border-navy-500 flex items-center justify-center flex-shrink-0 piano-dot">
+                  <div class="w-2.5 h-2.5 rounded-full bg-gold-400 hidden piano-dot-inner"></div>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-bold text-white text-lg">{p.nome}</span>
+                    {p.badge && (
+                      <span class={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded ${p.recommended ? 'bg-gold-400 text-navy-900' : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'}`}>
+                        {p.badge}
+                      </span>
+                    )}
+                  </div>
+                  <div class="text-sm text-navy-300">{p.alMese}</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-extrabold text-white">{p.prezzo}</div>
+                  <div class="text-xs text-navy-400">una tantum</div>
+                </div>
+              </div>
+            </label>
+          ))}
         </div>
-        <h2 class="text-3xl font-extrabold text-white mb-4">
-          Non solo “rischio alto”. Anche la lettera per contestarlo.
-        </h2>
-        <p class="text-navy-300 leading-relaxed mb-5">
-          Dopo l'analisi, Sherlock Pro prepara una bozza formale basata sulla tua
-          polizza: reclamo alla compagnia, diffida stragiudiziale o segnalazione
-          IVASS con struttura e riferimenti normativi.
-        </p>
-        <a
-          href={ctaUrl}
-          class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20"
-        >
-          Sblocca le lettere Pro →
-        </a>
+
+        <!-- Tabella comparativa -->
+        <div class="mt-6 rounded-xl border border-navy-700 bg-navy-900 overflow-hidden">
+          <div class="grid grid-cols-3 text-[11px] uppercase tracking-widest text-navy-400 font-bold p-3 border-b border-navy-800">
+            <div>Piano</div><div class="text-right">Prezzo</div><div class="text-right">Al mese</div>
+          </div>
+          {piani.map((p) => (
+            <div class="grid grid-cols-3 p-3 border-b border-navy-800 last:border-0 text-sm">
+              <div class="text-navy-200 capitalize">{p.nome}</div>
+              <div class="text-right text-white font-bold">{p.prezzo}</div>
+              <div class="text-right text-gold-300">{p.alMese.replace('/mese', '')}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div class="bg-white text-navy-900 rounded-xl p-5 shadow-2xl rotate-1">
-        <div class="text-xs uppercase tracking-widest text-navy-500 font-bold mb-4">
-          Anteprima lettera
+      <!-- COLONNA DESTRA: riassunto + email + PayPal -->
+      <aside class="lg:sticky lg:top-24 lg:self-start">
+        <div class="rounded-xl border border-gold-400/30 bg-gradient-to-br from-navy-900 to-navy-800 p-6 shadow-xl shadow-gold-400/10">
+          <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-2">Riepilogo</div>
+          <div class="text-2xl font-extrabold text-white mb-1" id="summary-titolo">Piano Annuale — 14,99 €</div>
+          <div class="text-sm text-navy-300 mb-5" id="summary-sub">Equivalente a 1,25 €/mese</div>
+
+          <form id="form-pay" class="space-y-4">
+            <input type="hidden" name="piano" id="piano-hidden" value="annuale" />
+            <div>
+              <label for="email" class="block text-sm text-gray-300 mb-2">La tua email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="nome@esempio.it"
+                class="w-full bg-navy-950 border border-navy-700 text-white rounded-lg px-4 py-3 focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/20"
+              />
+              <p class="text-xs text-navy-500 mt-2">Riceverai il codice di attivazione qui. Usa la stessa email nell'app.</p>
+            </div>
+
+            <button
+              type="submit"
+              id="btn-pay"
+              class="w-full bg-[#ffc439] hover:bg-[#f5b800] text-slate-900 font-bold py-3.5 rounded-lg transition flex items-center justify-center gap-2"
+            >
+              <span id="btn-pay-text">Continua con PayPal</span>
+            </button>
+
+            <div id="err-pay" class="hidden bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg px-4 py-3 text-sm"></div>
+
+            <ul class="space-y-2 text-xs text-navy-300 pt-3 border-t border-navy-700">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5">✓</span>
+                <span>Analisi illimitate attivate subito</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5">✓</span>
+                <span>Riceverai il codice di attivazione via email</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5">✓</span>
+                <span>Pagamento sicuro PayPal · nessun rinnovo automatico</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 mt-0.5">✓</span>
+                <span>Soddisfatti o rimborsati entro 7 giorni</span>
+              </li>
+            </ul>
+          </form>
         </div>
-        <div class="font-bold mb-3">
-          Oggetto: reclamo formale relativo alla polizza
-        </div>
-        <p class="text-sm leading-relaxed text-navy-700">
-          Spett.le Compagnia,<br />
-          con la presente intendo contestare la gestione della copertura
-          assicurativa relativa a...
-        </p>
-        <div class="mt-5 rounded-lg bg-navy-100 p-4 relative overflow-hidden">
-          <div class="space-y-2 opacity-35 blur-[2px]">
-            <div class="h-2 bg-navy-500 rounded w-full"></div>
-            <div class="h-2 bg-navy-500 rounded w-11/12"></div>
-            <div class="h-2 bg-navy-500 rounded w-10/12"></div>
-            <div class="h-2 bg-navy-500 rounded w-full"></div>
-          </div>
-          <div class="absolute inset-0 flex items-center justify-center text-xs font-bold text-navy-900">
-            Completa con Sherlock Pro
-          </div>
-        </div>
-      </div>
+      </aside>
     </div>
   </section>
 
@@ -174,7 +205,7 @@ const jsonLd = [
       <h2 class="text-3xl font-extrabold text-white text-center mb-10">Cosa include l'abbonamento</h2>
       <div class="grid md:grid-cols-2 gap-4 text-navy-200">
         {[
-          'Analisi illimitate di polizze auto, casa, vita, salute, infortuni e RC professionale',
+          'Analisi illimitate di polizze auto, casa, vita, salute, infortuni, RC professionale',
           'Lettera di reclamo formale pronta per PEC',
           'Esposto/ricorso IVASS pre-compilato',
           'Diffida stragiudiziale con riferimenti normativi corretti',
@@ -211,23 +242,76 @@ const jsonLd = [
     </div>
   </section>
 
-  <section class="bg-gradient-to-br from-navy-900 to-navy-950 border-t border-navy-800 px-5 py-14">
-    <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-3xl font-extrabold text-white mb-4">Pronto a capire cosa hai firmato?</h2>
-      <p class="text-navy-300 mb-7">
-        Scarica l'app, carica la tua prima polizza, ricevi il report in 5 secondi.
-        Le prime 5 analisi sono gratis.
-      </p>
-      <a
-        href={playStoreUrl}
-        target="_blank"
-        rel="noopener"
-        class="inline-block bg-gold-400 text-navy-900 font-bold px-7 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20"
-      >
-        Scarica gratis su Google Play →
-      </a>
-    </div>
-  </section>
-
   <Footer slot="footer" />
 </BaseLayout>
+
+<script>
+  const DETT = {
+    mensile: { titolo: 'Piano Mensile — 2,99 €', sub: 'Equivalente a 2,99 €/mese' },
+    semestrale: { titolo: 'Piano Semestrale — 7,99 €', sub: 'Equivalente a 1,33 €/mese · Risparmi 55%' },
+    annuale: { titolo: 'Piano Annuale — 14,99 €', sub: 'Equivalente a 1,25 €/mese · Risparmi 58%' },
+  } as const;
+  type Piano = keyof typeof DETT;
+
+  function aggiornaUI(p: Piano) {
+    const titolo = document.getElementById('summary-titolo');
+    const sub = document.getElementById('summary-sub');
+    const hid = document.getElementById('piano-hidden') as HTMLInputElement | null;
+    const btnText = document.getElementById('btn-pay-text');
+    if (titolo) titolo.textContent = DETT[p].titolo;
+    if (sub) sub.textContent = DETT[p].sub;
+    if (hid) hid.value = p;
+    if (btnText) btnText.textContent = `Continua con PayPal · ${DETT[p].titolo.split('—')[1]?.trim() ?? ''}`;
+    document.querySelectorAll('.piano-radio').forEach((el) => {
+      const labelEl = el as HTMLElement;
+      const attivo = labelEl.dataset.piano === p;
+      labelEl.classList.toggle('!border-gold-400', attivo);
+      const dot = labelEl.querySelector('.piano-dot') as HTMLElement | null;
+      const dotInner = labelEl.querySelector('.piano-dot-inner') as HTMLElement | null;
+      if (dot) dot.classList.toggle('!border-gold-400', attivo);
+      if (dotInner) dotInner.classList.toggle('hidden', !attivo);
+    });
+  }
+
+  document.querySelectorAll('input[name="piano"]').forEach((r) => {
+    r.addEventListener('change', (e) => {
+      const v = (e.target as HTMLInputElement).value as Piano;
+      aggiornaUI(v);
+    });
+  });
+  // Inizializza UI con il piano selezionato di default (annuale)
+  const checked = document.querySelector<HTMLInputElement>('input[name="piano"]:checked');
+  if (checked) aggiornaUI(checked.value as Piano);
+
+  const form = document.getElementById('form-pay') as HTMLFormElement | null;
+  const btn = document.getElementById('btn-pay') as HTMLButtonElement | null;
+  const btnText = document.getElementById('btn-pay-text');
+  const err = document.getElementById('err-pay') as HTMLDivElement | null;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!btn || !err) return;
+    const fd = new FormData(form);
+    const piano = String(fd.get('piano') ?? 'annuale');
+    const email = String(fd.get('email') ?? '').trim();
+    btn.disabled = true;
+    if (btnText) btnText.textContent = 'Reindirizzamento a PayPal…';
+    err.classList.add('hidden');
+    try {
+      const r = await fetch('/api/paypal/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ piano, email }),
+      });
+      const data = await r.json();
+      if (!r.ok || !data.approveUrl) throw new Error(data.error ?? 'Errore inatteso');
+      sessionStorage.setItem('sherlock_pending', JSON.stringify({ piano, email, orderId: data.orderId }));
+      window.location.href = data.approveUrl;
+    } catch (e: any) {
+      err.textContent = e?.message ?? 'Errore';
+      err.classList.remove('hidden');
+      btn.disabled = false;
+      if (btnText) btnText.textContent = 'Riprova';
+    }
+  });
+</script>
