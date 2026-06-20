@@ -87,7 +87,12 @@ export const POST: APIRoute = async ({ request }) => {
       model: getModel(),
       max_tokens: 4096,
       system: SYS,
-      messages: [{ role: 'user', content }],
+      // Prefill assistant con "{" — Anthropic continua da quel carattere e di fatto
+      // non può più sbagliare a infilare markdown/commentari davanti al JSON
+      messages: [
+        { role: 'user', content },
+        { role: 'assistant', content: [{ type: 'text', text: '{' }] },
+      ],
     }),
   });
 
@@ -98,18 +103,24 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const testo: string = data?.content?.[0]?.text ?? '';
-  const match = testo.match(/\{[\s\S]*\}/);
-  if (!match) {
+  // Aggiungo il "{" del prefill che non è incluso nella risposta
+  let grezzo = '{' + testo;
+  // Strip markdown code blocks se presenti (cintura+bretelle)
+  grezzo = grezzo.replace(/```(?:json)?\s*/gi, '').replace(/```\s*$/g, '');
+  // Estrae il blocco JSON delimitato dalle parentesi più esterne
+  const inizio = grezzo.indexOf('{');
+  const fine = grezzo.lastIndexOf('}');
+  if (inizio === -1 || fine === -1 || fine <= inizio) {
     void traccia('errore', 'Risposta AI non valida');
     return json({ error: 'Risposta AI non valida' }, 502);
   }
 
   try {
-    const analisi = JSON.parse(match[0]);
+    const analisi = JSON.parse(grezzo.slice(inizio, fine + 1));
     void traccia('ok');
     return json(analisi);
-  } catch {
-    void traccia('errore', 'JSON AI malformato');
+  } catch (e: any) {
+    void traccia('errore', `JSON AI malformato: ${String(e?.message ?? e).slice(0, 120)}`);
     return json({ error: 'JSON AI malformato' }, 502);
   }
 };
