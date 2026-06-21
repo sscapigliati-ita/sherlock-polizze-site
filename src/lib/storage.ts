@@ -125,11 +125,11 @@ export async function leggiAbbonati(): Promise<SintesiAbbonati> {
   const attivi = records.filter((r) => r.dataScadenza > oraIso).length;
   const ricavoEuroCent = records.reduce((s, r) => s + (PREZZI_CENT[r.piano] ?? 0), 0);
 
-  // Storico Manus (non migrabile da API)
+  // Storico Manus: gli abbonati erano test (l'utente stesso + parenti), zeriamo
   const baselineDefaults: Record<string, number> = {
-    BASELINE_ABBONAMENTI_TOTALI: 10,
-    BASELINE_ABBONATI_ATTIVI: 4,
-    BASELINE_RICAVO_CENT: 1196,
+    BASELINE_ABBONAMENTI_TOTALI: 0,
+    BASELINE_ABBONATI_ATTIVI: 0,
+    BASELINE_RICAVO_CENT: 0,
   };
   function baseline(name: string): number {
     const v = envVar(name);

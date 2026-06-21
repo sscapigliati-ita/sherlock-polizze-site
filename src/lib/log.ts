@@ -58,6 +58,10 @@ const BASELINE_DEFAULTS: Record<string, number> = {
   BASELINE_BLOCCATI_TOTALI: 125,
 };
 
+// Grafico "Analisi per giorno — ultimi 7 giorni" del Manus al 19/06/2026.
+// Indice 0 = giorno più vecchio dei 7, indice 6 = giorno più recente.
+const BASELINE_PER_GIORNO = [80, 120, 90, 100, 130, 230, 250];
+
 function baseline(name: string): number {
   const v = envVar(name);
   if (v) {
@@ -154,12 +158,14 @@ export async function leggiStats(): Promise<StatsAPI> {
     giorni.push(dateKey(d));
   }
   const perGiornoRaw = await Promise.all(
-    giorni.map(async (g) => {
+    giorni.map(async (g, idx) => {
       const [a, e] = await Promise.all([
         r.get<number>(`count:analizza:${g}`),
         r.get<number>(`count:errore:${g}`),
       ]);
-      return { giorno: g, analisi: a ?? 0, errori: e ?? 0 };
+      // Sommo la baseline Manus a ogni giorno (sono valori "storici cosmetici")
+      const aBase = BASELINE_PER_GIORNO[idx] ?? 0;
+      return { giorno: g, analisi: (a ?? 0) + aBase, errori: e ?? 0 };
     }),
   );
 
