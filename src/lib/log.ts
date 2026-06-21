@@ -60,7 +60,7 @@ const BASELINE_DEFAULTS: Record<string, number> = {
 
 // Grafico "Analisi per giorno — ultimi 7 giorni" del Manus al 19/06/2026.
 // Indice 0 = giorno più vecchio dei 7, indice 6 = giorno più recente.
-const BASELINE_PER_GIORNO = [80, 120, 90, 100, 130, 230, 250];
+const BASELINE_PER_GIORNO = [250, 230, 130, 100, 90, 120, 80];
 
 function baseline(name: string): number {
   const v = envVar(name);
