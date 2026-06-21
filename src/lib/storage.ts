@@ -68,6 +68,30 @@ export async function codicePresente(codice: string): Promise<boolean> {
   return (await leggiCodicePro(codice)) !== null;
 }
 
+export async function codiciAttiviPerEmail(email: string): Promise<RecordPro[]> {
+  const emailNorm = email.trim().toLowerCase();
+  const oraIso = new Date().toISOString();
+
+  let codici: string[];
+  if (kvConfigurato()) {
+    const raw = (await kv().smembers(`pro:email:${emailNorm}`)) as string[];
+    codici = raw ?? [];
+  } else {
+    codici = Array.from(fallback.values())
+      .filter((r) => r.email.toLowerCase() === emailNorm)
+      .map((r) => r.codice);
+  }
+
+  const records: RecordPro[] = [];
+  for (const c of codici) {
+    const r = await leggiCodicePro(c);
+    if (r && r.dataScadenza > oraIso) records.push(r);
+  }
+  // più recente per primo
+  records.sort((a, b) => b.dataEmissione.localeCompare(a.dataEmissione));
+  return records;
+}
+
 export type SintesiAbbonati = {
   records: RecordPro[];
   totali: number;

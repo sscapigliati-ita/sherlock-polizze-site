@@ -9,9 +9,16 @@ export const maxDuration = 300;
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
-const SYS =
+const SYS_BASE =
   'Sei Sherlock, esperto analista di polizze assicurative italiane (d.lgs. 209/2005, artt. 1882-1932 c.c., normativa IVASS). ' +
   'Analizza il documento e chiama il tool report_analisi_polizza con tutti i campi dello schema.';
+
+const SYS_CON_SINISTRO =
+  SYS_BASE +
+  ' L\'utente ha descritto un sinistro: valuta se quel sinistro specifico sarebbe coperto dalla polizza, ' +
+  'incrociando le coperture, esclusioni, clausole e termini con i fatti descritti. Compila il campo ' +
+  'valutazione_sinistro con esito chiaro, motivazione tecnica, clausole della polizza che decidono il caso, ' +
+  'e una indicazione operativa concreta su cosa fare.';
 
 // Schema JSON forzato — l'output di Anthropic via tool_use È garantito JSON valido
 // conforme a questo schema, evitando completamente l'errore "JSON AI malformato".
@@ -74,6 +81,24 @@ const SCHEMA_REPORT = {
     base_legale_contestabile: { type: 'array', items: { type: 'string' } },
     raccomandazioni: { type: 'array', items: { type: 'string' } },
     domande_da_fare: { type: 'array', items: { type: 'string' } },
+    valutazione_sinistro: {
+      type: 'object',
+      description:
+        "Valutazione della copertura del sinistro descritto dall'utente. Compila SOLO se l'utente ha descritto un sinistro nel proprio messaggio. Lascia null altrimenti.",
+      properties: {
+        esito: {
+          type: 'string',
+          enum: ['COPERTO', 'NON_COPERTO', 'DUBBIO', 'DA_APPROFONDIRE'],
+        },
+        motivazione: { type: 'string', description: 'Spiegazione tecnica dell\'esito, citando articoli/clausole della polizza' },
+        clausole_rilevanti: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Articoli e clausole della polizza che decidono il caso',
+        },
+        cosa_fare: { type: 'string', description: 'Azione operativa concreta consigliata' },
+      },
+    },
   },
 };
 
@@ -105,7 +130,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'Backend non configurato (ANTHROPIC_API_KEY mancante)' }, 500);
   }
 
-  let payload: { documento_base64?: string; mime?: string };
+  let payload: { documento_base64?: string; mime?: string; sinistro_testo?: string };
   try {
     payload = await request.json();
   } catch {
@@ -114,23 +139,27 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const { documento_base64, mime } = payload;
+  const sinistroTesto = (payload.sinistro_testo ?? '').trim().slice(0, 3000);
   if (!documento_base64 || !mime) {
     void traccia('bloccato', 'documento_base64 e mime richiesti');
     return json({ error: 'documento_base64 e mime richiesti' }, 400);
   }
 
   const isPDF = mime === 'application/pdf';
+  const promptUtente = sinistroTesto
+    ? `Analizza questa polizza chiamando il tool. L'utente ha descritto questo sinistro: "${sinistroTesto}". Compila valutazione_sinistro nel tool.`
+    : 'Analizza questa polizza chiamando il tool.';
   const content = isPDF
     ? [
         {
           type: 'document',
           source: { type: 'base64', media_type: 'application/pdf', data: documento_base64 },
         },
-        { type: 'text', text: 'Analizza questa polizza chiamando il tool.' },
+        { type: 'text', text: promptUtente },
       ]
     : [
         { type: 'image', source: { type: 'base64', media_type: mime, data: documento_base64 } },
-        { type: 'text', text: 'Analizza questa polizza chiamando il tool.' },
+        { type: 'text', text: promptUtente },
       ];
 
   const upstream = await fetch(ANTHROPIC_API_URL, {
@@ -143,7 +172,7 @@ export const POST: APIRoute = async ({ request }) => {
     body: JSON.stringify({
       model: getModel(),
       max_tokens: 8192,
-      system: SYS,
+      system: sinistroTesto ? SYS_CON_SINISTRO : SYS_BASE,
       tools: [
         {
           name: 'report_analisi_polizza',
