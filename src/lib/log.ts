@@ -49,11 +49,22 @@ function dateKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+// Storico Manus (non migrabile da API): valori frozen dal screenshot della
+// vecchia dashboard al momento della migrazione. Override possibile via env vars.
+const BASELINE_DEFAULTS: Record<string, number> = {
+  BASELINE_ANALISI_TOTALI: 2360,
+  BASELINE_LETTERE_TOTALI: 3,
+  BASELINE_ERRORI_TOTALI: 22,
+  BASELINE_BLOCCATI_TOTALI: 125,
+};
+
 function baseline(name: string): number {
   const v = envVar(name);
-  if (!v) return 0;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : 0;
+  if (v) {
+    const n = Number(v);
+    if (Number.isFinite(n)) return n;
+  }
+  return BASELINE_DEFAULTS[name] ?? 0;
 }
 
 export async function loggaEvento(ev: EventoAPI): Promise<void> {
