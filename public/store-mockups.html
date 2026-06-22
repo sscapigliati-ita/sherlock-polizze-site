@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Sherlock — Play Store screenshot mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e;
+    font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', sans-serif;
+    color: #f1f5f9;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .toolbar {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #fcd34d;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .toolbar code {
+    background: rgba(0,0,0,0.4);
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #fbbf24;
+    font-family: monospace;
+  }
+  .frame-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    align-items: center;
+  }
+  .frame-label {
+    color: #94a3b8;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: 700;
+  }
+  /* PHONE SCREENSHOT FRAME: 1080×1920 (Play Store recommended) */
+  .frame {
+    width: 540px;          /* preview at 50% — export at full 1080 via DevTools device mode */
+    height: 960px;         /* preview at 50% */
+    background: linear-gradient(180deg, #070b18 0%, #0e1426 100%);
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+    transform-origin: top center;
+  }
+  /* Each frame is rendered at 540×960 in browser; when you screenshot via DevTools at 1080×1920 you get full Play Store resolution */
+  .frame-inner {
+    position: absolute;
+    inset: 0;
+    padding: 60px 36px 36px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* FRAME 1: Hero pronto soccorso */
+  #frame-1 .gold-badge {
+    align-self: flex-start;
+    background: rgba(251,191,36,0.12);
+    border: 1px solid rgba(251,191,36,0.4);
+    color: #fbbf24;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  #frame-1 h1 {
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    margin-bottom: 28px;
+  }
+  #frame-1 h1 .gold { color: #fbbf24; display: block; }
+  #frame-1 .lede {
+    font-size: 18px;
+    color: #cbd5e1;
+    line-height: 1.55;
+    margin-bottom: 36px;
+  }
+  #frame-1 .lede strong { color: #ffffff; }
+  #frame-1 .features {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #frame-1 .features li {
+    list-style: none;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: #e2e8f0;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #frame-1 .features li .ic { color: #fbbf24; font-size: 22px; }
+
+  /* FRAME 2: Polizza analizzata */
+  #frame-2 .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 24px;
+  }
+  #frame-2 .header .logo {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border-radius: 8px;
+  }
+  #frame-2 .header .name { font-weight: 800; color: #fff; font-size: 17px; }
+  #frame-2 .header .lang-row { margin-left: auto; display: flex; gap: 6px; font-size: 18px; }
+  #frame-2 .header .lang-row span { opacity: 0.5; }
+  #frame-2 .header .lang-row span.active { opacity: 1; }
+  #frame-2 .title { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+  #frame-2 .subtitle { font-size: 13px; color: #94a3b8; margin-bottom: 24px; }
+  #frame-2 .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  #frame-2 .meta {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  #frame-2 .meta .lbl {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  #frame-2 .meta .val { font-size: 15px; font-weight: 700; color: #fff; }
+  #frame-2 .meta .val.risk { color: #f87171; }
+  #frame-2 .section-title {
+    font-size: 12px;
+    color: #fb923c;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 6px 0 14px;
+  }
+  #frame-2 .clause {
+    background: rgba(248,113,113,0.06);
+    border: 1px solid rgba(248,113,113,0.3);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  #frame-2 .clause .ct { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 6px; }
+  #frame-2 .clause .cd { font-size: 12px; color: #cbd5e1; line-height: 1.5; }
+  #frame-2 .clause .cg { font-size: 11px; color: #fb923c; margin-top: 6px; font-style: italic; }
+
+  /* FRAME 3: Lettera generata */
+  #frame-3 .breadcrumb {
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
+  }
+  #frame-3 h2 {
+    font-size: 28px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 8px;
+    line-height: 1.15;
+  }
+  #frame-3 .doc-meta {
+    color: #94a3b8;
+    font-size: 13px;
+    margin-bottom: 22px;
+  }
+  #frame-3 .doc {
+    background: #f1ede0;
+    color: #1f1a0e;
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'Georgia', serif;
+    font-size: 13px;
+    line-height: 1.65;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  #frame-3 .doc .city { font-weight: 700; margin-bottom: 12px; font-size: 12px; color: #6b5a2e; }
+  #frame-3 .doc .to { font-weight: 700; margin-bottom: 12px; }
+  #frame-3 .doc .subj { font-weight: 700; margin-bottom: 14px; }
+  #frame-3 .doc p { margin-bottom: 12px; }
+  #frame-3 .doc .highlight { background: rgba(251,191,36,0.35); padding: 0 4px; }
+  #frame-3 .doc::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 100px;
+    background: linear-gradient(180deg, rgba(241,237,224,0), rgba(241,237,224,1));
+    pointer-events: none;
+  }
+  #frame-3 .cta-strip {
+    margin-top: 16px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #20160a;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 15px;
+  }
+
+  /* FRAME 4: Multilingua */
+  #frame-4 {
+    background:
+      radial-gradient(ellipse at top, rgba(251,191,36,0.12), transparent 60%),
+      linear-gradient(180deg, #070b18 0%, #0e1426 100%);
+  }
+  #frame-4 .frame-inner { justify-content: center; align-items: center; text-align: center; }
+  #frame-4 .badge {
+    background: rgba(251,191,36,0.12);
+    border: 1px solid rgba(251,191,36,0.4);
+    color: #fbbf24;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  #frame-4 h1 {
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  #frame-4 h1 .gold { color: #fbbf24; }
+  #frame-4 .lede {
+    font-size: 16px;
+    color: #cbd5e1;
+    line-height: 1.55;
+    margin-bottom: 36px;
+    max-width: 380px;
+  }
+  #frame-4 .flags {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 30px;
+  }
+  #frame-4 .flag-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 18px 12px;
+    text-align: center;
+  }
+  #frame-4 .flag-card .em { font-size: 42px; line-height: 1; margin-bottom: 8px; }
+  #frame-4 .flag-card .name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+  #frame-4 .note {
+    background: rgba(255,255,255,0.04);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  /* FRAME 5: Privacy */
+  #frame-5 .badge {
+    align-self: flex-start;
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.4);
+    color: #86efac;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  #frame-5 h1 {
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 14px;
+  }
+  #frame-5 .lede {
+    font-size: 16px;
+    color: #cbd5e1;
+    line-height: 1.55;
+    margin-bottom: 30px;
+  }
+  #frame-5 .item {
+    background: rgba(255,255,255,0.04);
+    border-left: 4px solid #fbbf24;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  #frame-5 .item .ico { font-size: 22px; margin-bottom: 6px; }
+  #frame-5 .item .t { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+  #frame-5 .item .d { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+  #frame-5 .item.warn { border-left-color: #f87171; }
+  #frame-5 .item.ok { border-left-color: #4ade80; }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <strong>Export per Play Store:</strong> apri DevTools (F12) → Toggle device toolbar (Ctrl+Shift+M) →
+    Edit / "Responsive" → set width <code>540</code>, height <code>960</code>, DPR <code>2.0</code>
+    → fai scroll a ciascun frame → ⋮ menu (in alto a destra del toolbar device) → <code>Capture screenshot</code>.
+    Output: 1080×1920 px, formato richiesto Play Store ✓. Genera 5 file PNG: <code>sherlock-screen-1.png</code> …
+    <code>sherlock-screen-5.png</code>.
+  </div>
+
+  <div class="frame-grid">
+
+    <!-- ====== FRAME 1: Hero ====== -->
+    <div>
+      <div class="frame-label">1 — Hero: pronto soccorso assicurativo</div>
+      <div class="frame" id="frame-1">
+        <div class="frame-inner">
+          <div class="gold-badge">⚡ 5 analisi gratis · niente carta</div>
+          <h1>
+            Polizza che<br>non capisci?
+            <span class="gold">Sinistro respinto?</span>
+          </h1>
+          <p class="lede">
+            Sherlock legge la polizza, ti dice <strong>dove non sei coperto</strong>,
+            e prepara <strong>reclami IVASS e PEC</strong> in pochi minuti.
+          </p>
+          <ul class="features">
+            <li><span class="ic">🔍</span>Analisi AI in 8 secondi</li>
+            <li><span class="ic">📝</span>Reclamo IVASS pronto via PEC</li>
+            <li><span class="ic">🔒</span>I tuoi PDF non vengono salvati</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== FRAME 2: Polizza analizzata ====== -->
+    <div>
+      <div class="frame-label">2 — Polizza analizzata con esclusioni critiche</div>
+      <div class="frame" id="frame-2">
+        <div class="frame-inner">
+          <div class="header">
+            <div class="logo"></div>
+            <div class="name">Sherlock</div>
+            <div class="lang-row">
+              <span class="active">🇮🇹</span><span>🇬🇧</span><span>🇪🇸</span>
+            </div>
+          </div>
+          <div class="title">Polizza RC Auto analizzata</div>
+          <div class="subtitle">8 secondi · Compagnia anonimizzata</div>
+          <div class="meta-grid">
+            <div class="meta"><div class="lbl">Massimale RC</div><div class="val">7,29 M €</div></div>
+            <div class="meta"><div class="lbl">Tipo</div><div class="val">RC Auto + kasko</div></div>
+            <div class="meta"><div class="lbl">Franchigia kasko</div><div class="val">25%</div></div>
+            <div class="meta"><div class="lbl">Rischio</div><div class="val risk">ALTO</div></div>
+          </div>
+          <div class="section-title">⚠ Esclusioni critiche</div>
+          <div class="clause">
+            <div class="ct">Conducente sotto 25 anni non dichiarato</div>
+            <div class="cd">Esclusione TOTALE della copertura se il conducente al momento del sinistro ha meno di 25 anni e non è stato dichiarato.</div>
+            <div class="cg">Gravità: alta — riguarda anche familiari conviventi</div>
+          </div>
+          <div class="clause">
+            <div class="ct">Decadenza per denuncia oltre 3 giorni</div>
+            <div class="cd">Clausola potenzialmente vessatoria ex art. 33 Cod. Cons. — il termine codicistico (art. 1913 c.c.) è di 8 giorni.</div>
+            <div class="cg">Contestabile in sede di reclamo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== FRAME 3: Lettera generata ====== -->
+    <div>
+      <div class="frame-label">3 — Reclamo IVASS generato (Pro)</div>
+      <div class="frame" id="frame-3">
+        <div class="frame-inner">
+          <div class="breadcrumb">Funzione Pro · pronto per PEC</div>
+          <h2>Reclamo IVASS<br>generato in 12 secondi</h2>
+          <div class="doc-meta">Personalizzato sulla TUA polizza, non un fac-simile</div>
+          <div class="doc">
+            <div class="city">Roma, 22 giugno 2026</div>
+            <div class="to">ALL'IST. PER LA VIGILANZA SULLE ASSICURAZIONI (IVASS)<br>Servizio Tutela del Consumatore</div>
+            <div class="subj">OGGETTO: Esposto ex art. 7 Reg. IVASS 24/2008 — polizza n. XXX-2024-YYYYYY</div>
+            <p>Il sottoscritto [Nome Cognome], titolare della polizza n. <span class="highlight">XXX-2024-YYYYYY</span>, ESPONE:</p>
+            <p>1. di essere titolare di polizza Furto/Incendio stipulata in data...</p>
+            <p>2. che in data X subiva il furto del veicolo regolarmente denunciato...</p>
+            <p>3. che con nota del Y la Compagnia comunicava il <span class="highlight">diniego di liquidazione</span>...</p>
+            <p>4. che la clausola invocata <span class="highlight">non è stata specificamente trattata né sottoscritta ai sensi dell'art. 1341 c.2 c.c.</span>...</p>
+          </div>
+          <div class="cta-strip">📩 Pronto per inviare via PEC</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== FRAME 4: Multilingua ====== -->
+    <div>
+      <div class="frame-label">4 — 6 lingue (Italia, EN, ES, FR, MY, ZH)</div>
+      <div class="frame" id="frame-4">
+        <div class="frame-inner">
+          <div class="badge">⚡ Novità v3.6</div>
+          <h1>App in <span class="gold">6 lingue</span></h1>
+          <p class="lede">
+            Tocca una bandiera. L'app e l'AI rispondono nella tua lingua.
+          </p>
+          <div class="flags">
+            <div class="flag-card"><div class="em">🇮🇹</div><div class="name">Italiano</div></div>
+            <div class="flag-card"><div class="em">🇬🇧</div><div class="name">English</div></div>
+            <div class="flag-card"><div class="em">🇪🇸</div><div class="name">Español</div></div>
+            <div class="flag-card"><div class="em">🇫🇷</div><div class="name">Français</div></div>
+            <div class="flag-card"><div class="em">🇲🇲</div><div class="name">မြန်မာ</div></div>
+            <div class="flag-card"><div class="em">🇨🇳</div><div class="name">中文</div></div>
+          </div>
+          <div class="note">
+            Anche l'analisi AI delle polizze risponde nella lingua selezionata —
+            non solo l'interfaccia.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== FRAME 5: Privacy ====== -->
+    <div>
+      <div class="frame-label">5 — Privacy reale (cosa NON facciamo)</div>
+      <div class="frame" id="frame-5">
+        <div class="frame-inner">
+          <div class="badge">🔒 Privacy seria</div>
+          <h1>Il tuo PDF non lo<br>salviamo. Davvero.</h1>
+          <p class="lede">
+            Il documento viene letto una volta dall'AI per il report, poi distrutto.
+            Niente database, niente training, niente vendite a terzi.
+          </p>
+          <div class="item ok">
+            <div class="ico">✅</div>
+            <div class="t">HTTPS / TLS 1.3</div>
+            <div class="d">Connessione cifrata end-to-end tra il telefono e il server.</div>
+          </div>
+          <div class="item ok">
+            <div class="ico">✅</div>
+            <div class="t">Distruzione automatica</div>
+            <div class="d">Il PDF esiste solo in memoria temporanea, eliminato a fine richiesta.</div>
+          </div>
+          <div class="item warn">
+            <div class="ico">❌</div>
+            <div class="t">Niente training AI</div>
+            <div class="d">I tuoi documenti non vengono usati per addestrare nessun modello.</div>
+          </div>
+          <div class="item warn">
+            <div class="ico">❌</div>
+            <div class="t">Niente vendita dati</div>
+            <div class="d">Mai venduti a compagnie, broker, comparatori o pubblicitari.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
