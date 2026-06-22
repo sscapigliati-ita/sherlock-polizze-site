@@ -119,7 +119,7 @@ stefano.scapigliati@gmail.com
 **Categoria secondaria**: Lifestyle o House & Home (se Play permette).
 **Tag** (Play Console permette fino a 5): polizze, reclami, IVASS, assicurazione, PEC.
 
-## Note di rilascio (versione 3.6)
+## Note di rilascio (versione 3.7 — quella da caricare adesso)
 
 Limite 500 caratteri per lingua. Modelli per copy-paste:
 
