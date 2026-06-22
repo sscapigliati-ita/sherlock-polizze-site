@@ -9,6 +9,24 @@ export const maxDuration = 300;
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
+const LANG_NAMES = {
+  it: 'italiano',
+  en: 'English',
+  es: 'español',
+  fr: 'français',
+  my: 'Burmese',
+  zh: 'Chinese (Simplified)',
+} as const;
+type LangCode = keyof typeof LANG_NAMES;
+
+function normalizzaLingua(raw: unknown): LangCode {
+  return typeof raw === 'string' && raw in LANG_NAMES ? (raw as LangCode) : 'it';
+}
+
+function istruzioneLingua(lang: LangCode): string {
+  return `\n\nIMPORTANT: Respond entirely in ${LANG_NAMES[lang]}, regardless of the document's original language. All headings, labels, summary text, exclusion descriptions, recommendations, and tool field values must be in ${LANG_NAMES[lang]}.`;
+}
+
 const SYS_BASE =
   'Sei Sherlock, esperto analista di polizze assicurative italiane (d.lgs. 209/2005, artt. 1882-1932 c.c., normativa IVASS). ' +
   'Analizza il documento e chiama il tool report_analisi_polizza con tutti i campi dello schema.';
@@ -130,7 +148,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'Backend non configurato (ANTHROPIC_API_KEY mancante)' }, 500);
   }
 
-  let payload: { documento_base64?: string; mime?: string; sinistro_testo?: string };
+  let payload: { documento_base64?: string; mime?: string; sinistro_testo?: string; lingua?: string };
   try {
     payload = await request.json();
   } catch {
@@ -140,6 +158,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const { documento_base64, mime } = payload;
   const sinistroTesto = (payload.sinistro_testo ?? '').trim().slice(0, 3000);
+  const lingua = normalizzaLingua(payload.lingua);
   if (!documento_base64 || !mime) {
     void traccia('bloccato', 'documento_base64 e mime richiesti');
     return json({ error: 'documento_base64 e mime richiesti' }, 400);
@@ -172,7 +191,7 @@ export const POST: APIRoute = async ({ request }) => {
     body: JSON.stringify({
       model: getModel(),
       max_tokens: 8192,
-      system: sinistroTesto ? SYS_CON_SINISTRO : SYS_BASE,
+      system: (sinistroTesto ? SYS_CON_SINISTRO : SYS_BASE) + istruzioneLingua(lingua),
       tools: [
         {
           name: 'report_analisi_polizza',
