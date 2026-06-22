@@ -1,0 +1,180 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+---
+<BaseLayout
+  title="Esempio di reclamo IVASS generato da Sherlock | Sherlock"
+  description="Ecco come si presenta un esposto IVASS prodotto da Sherlock: struttura, riferimenti normativi, dati assicurato, motivazione. Pronto per PEC."
+>
+  <Header slot="header" />
+
+  <article class="px-5 pt-12 pb-20 max-w-3xl mx-auto text-navy-100">
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
+      Esempio di reclamo IVASS
+    </h1>
+    <p class="text-navy-300 text-lg mb-2">
+      Sinistro respinto dalla compagnia. Sherlock ha generato questo esposto in
+      12 secondi, pronto per essere firmato e inviato via PEC.
+    </p>
+    <p class="text-xs text-navy-500 mb-10">
+      Dati anonimizzati. Esempio dimostrativo, non fa riferimento a un cliente reale.
+    </p>
+
+    <div class="bg-navy-900 border border-navy-800 rounded-2xl p-6 mb-8 font-mono text-sm leading-relaxed text-navy-100 whitespace-pre-wrap notranslate" translate="no">{`
+[Città], [Data]
+
+ALL'ISTITUTO PER LA VIGILANZA SULLE ASSICURAZIONI (IVASS)
+Servizio Tutela del Consumatore
+Via del Quirinale, 21 — 00187 Roma
+PEC: tutela.consumatore@pec.ivass.it
+
+OGGETTO: Esposto ex art. 7 Regolamento IVASS n. 24/2008 e succ. mod.
+         contro [Compagnia Assicurativa S.p.A.] — diniego liquidazione sinistro
+         polizza Furto/Incendio n. [XXX-2024-XXXXXX]
+
+Il sottoscritto [Nome Cognome], nato a [Luogo] il [data], C.F. [XXXXXXXXX],
+residente in [Indirizzo], in proprio,
+
+ESPONE
+
+1. di essere titolare della polizza n. [XXX-2024-XXXXXX] stipulata con
+   [Compagnia S.p.A.] in data [DD/MM/AAAA] per la copertura
+   Furto e Incendio del veicolo [marca/modello/targa], con massimale pari
+   al valore commerciale e scoperto del 10% (minimo 500 €);
+
+2. che in data [DD/MM/AAAA] subiva il furto del veicolo, regolarmente
+   denunciato all'Autorità di P.S. di [città] con verbale n. [XXX] in pari data;
+
+3. di aver tempestivamente denunciato il sinistro alla Compagnia in data
+   [DD/MM/AAAA], entro il termine di 3 giorni previsto dalla polizza e
+   comunque entro gli 8 giorni codicistici ex art. 1913 c.c.;
+
+4. che con nota del [DD/MM/AAAA] la Compagnia comunicava il diniego di
+   liquidazione, motivato sulla base della clausola art. [N] delle Condizioni
+   Generali che prevede l'esclusione della copertura "in caso di omessa
+   installazione del dispositivo antifurto satellitare omologato";
+
+5. che tale clausola non è stata specificamente trattata né sottoscritta ai
+   sensi dell'art. 1341 c. 2 c.c., trattandosi di contratto predisposto per
+   adesione, e che pertanto la stessa è inefficace nei confronti del consumatore;
+
+6. che ai sensi dell'art. 33 c. 2 lett. b del Codice del Consumo (d.lgs.
+   206/2005) la suddetta clausola è inoltre presunta vessatoria, in quanto
+   esclude in modo sproporzionato la responsabilità della Compagnia per
+   inadempimento;
+
+7. che la stessa esclusione non è stata in alcun modo esplicitata in fase
+   precontrattuale, contravvenendo all'obbligo di informativa chiara di cui
+   all'art. 184 d.lgs. 209/2005 (Codice delle Assicurazioni Private);
+
+8. che ai sensi del Regolamento IVASS n. 24/2008 il sottoscritto ha proposto
+   reclamo scritto alla Compagnia in data [DD/MM/AAAA], ricevuto e protocollato
+   in data [DD/MM/AAAA], al quale la Compagnia ha risposto con conferma del
+   diniego senza confutare nel merito i rilievi formulati.
+
+CHIEDE
+
+A codesto Spettabile Istituto di voler valutare la condotta della Compagnia
+[Compagnia S.p.A.] sotto i seguenti profili:
+
+  a) corretta applicazione delle disposizioni del Codice delle Assicurazioni
+     Private (d.lgs. 209/2005), in particolare degli artt. 183 e 184 in tema
+     di obblighi di comportamento e informativa;
+
+  b) rispetto del Regolamento IVASS n. 24/2008 in materia di gestione dei
+     reclami;
+
+  c) eventuale natura vessatoria della clausola di esclusione invocata, in
+     relazione alle disposizioni del Codice del Consumo (d.lgs. 206/2005,
+     artt. 33 ss.).
+
+A tale scopo, ALLEGA in copia:
+  • polizza assicurativa n. [XXX-2024-XXXXXX] e relative Condizioni Generali;
+  • denuncia di sinistro presentata alla Compagnia ([DD/MM/AAAA]);
+  • verbale di denuncia all'Autorità di P.S. n. [XXX];
+  • nota di diniego della Compagnia del [DD/MM/AAAA];
+  • reclamo formale del [DD/MM/AAAA] e risposta della Compagnia del [DD/MM/AAAA];
+  • copia documento d'identità del sottoscritto.
+
+Si autorizza il trattamento dei dati personali ai sensi del Reg. (UE) 2016/679
+(GDPR) e del d.lgs. 196/2003 e successive modifiche, esclusivamente ai fini
+del presente procedimento.
+
+In attesa di cortese riscontro, distinti saluti.
+
+                                                            [Nome Cognome]
+                                                          ___________________
+                                                                 (firma)
+
+Indirizzo PEC del sottoscritto per comunicazioni: [pec@dominio.it]
+Telefono: [+39 XXX XXX XXXX]
+`}</div>
+
+    <div class="grid sm:grid-cols-3 gap-4 mb-10">
+      <div class="bg-navy-900 border border-navy-800 rounded-lg p-4 text-center">
+        <div class="text-2xl font-extrabold text-gold-400">12 sec</div>
+        <div class="text-xs text-navy-400">Tempo di generazione</div>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-lg p-4 text-center">
+        <div class="text-2xl font-extrabold text-gold-400">8</div>
+        <div class="text-xs text-navy-400">Riferimenti normativi citati</div>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-lg p-4 text-center">
+        <div class="text-2xl font-extrabold text-gold-400">0 €</div>
+        <div class="text-xs text-navy-400">Spese vive (PEC esclusa)</div>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Cosa fa Sherlock prima di scrivere</h2>
+    <p class="mb-6 text-navy-200">
+      Per produrre un esposto efficace l'AI legge prima il tuo report di analisi
+      della polizza, identifica le clausole contestabili, recupera i riferimenti
+      normativi pertinenti (Codice delle Assicurazioni Private, Codice del Consumo,
+      Codice Civile, regolamenti IVASS) e li intreccia con i fatti del tuo caso.
+      Il risultato non è un fac-simile generico: è una lettera <strong class="text-white">cucita
+      su misura sulla tua polizza specifica</strong>.
+    </p>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Cosa fare dopo</h2>
+    <ol class="space-y-3 mb-10 list-decimal list-inside">
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        Rileggi attentamente la lettera generata: l'AI è precisa ma può sbagliare
+        un nome o una data. Verifica sempre i campi tra parentesi quadre.
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        Allega i documenti in PDF (polizza, denuncia sinistro, diniego compagnia,
+        carta d'identità).
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        Invia via PEC all'indirizzo
+        <code class="text-gold-400 notranslate" translate="no">tutela.consumatore@pec.ivass.it</code>.
+        IVASS apre l'istruttoria e ha 120 giorni per rispondere.
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        Spesso la sola comunicazione della Compagnia che <em>"IVASS ci ha chiesto
+        chiarimenti"</em> sblocca la pratica prima ancora della decisione formale.
+      </li>
+    </ol>
+
+    <div class="bg-gradient-to-br from-gold-400/10 to-gold-600/5 border border-gold-400/30 rounded-2xl p-6 text-center mb-8">
+      <div class="text-xs uppercase tracking-widest text-gold-400 mb-2">Tocca a te</div>
+      <h3 class="text-2xl font-bold text-white mb-3">Genera la tua lettera in pochi minuti</h3>
+      <p class="text-navy-300 mb-5">Funzione Pro · 5 analisi gratis incluse</p>
+      <a href={playStoreUrl} target="_blank" rel="noopener" class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition">
+        Scarica gratis l'app
+      </a>
+    </div>
+
+    <p class="text-xs text-navy-500 text-center">
+      Sherlock genera bozze da rivedere prima dell'invio. Non sostituisce un
+      avvocato. Per controversie di alto valore o complesse, consulta un
+      professionista qualificato.
+    </p>
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>

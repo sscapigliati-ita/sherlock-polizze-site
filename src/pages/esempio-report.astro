@@ -1,0 +1,168 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+---
+<BaseLayout
+  title="Esempio di report Sherlock — Polizza RC Auto analizzata | Sherlock"
+  description="Cosa restituisce Sherlock quando carichi una polizza? Ecco un esempio reale, con esclusioni critiche, clausole rischiose e raccomandazioni."
+>
+  <Header slot="header" />
+
+  <article class="px-5 pt-12 pb-20 max-w-3xl mx-auto text-navy-100">
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
+      Esempio di report Sherlock
+    </h1>
+    <p class="text-navy-300 text-lg mb-2">
+      Polizza RC Auto, compagnia top-10 italiana. Caricato il PDF, analisi in
+      8 secondi. Questo è il report che ricevi.
+    </p>
+    <p class="text-xs text-navy-500 mb-10">
+      Dati anonimizzati. Esempio dimostrativo, non fa riferimento a un cliente reale.
+    </p>
+
+    <div class="bg-navy-900 border border-navy-800 rounded-2xl p-6 mb-8">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div>
+          <div class="text-xs uppercase tracking-widest text-navy-500">Compagnia</div>
+          <div class="font-bold text-white">[Anonimizzata]</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-widest text-navy-500">Tipo</div>
+          <div class="font-bold text-white">RC Auto</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-widest text-navy-500">Polizza n°</div>
+          <div class="font-bold text-white notranslate" translate="no">XXX-2024-XXXXXX</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-widest text-navy-500">Rischio</div>
+          <div class="font-bold text-orange-400">ALTO</div>
+        </div>
+      </div>
+      <div class="bg-navy-950 border border-orange-400/30 rounded-lg p-4 mb-6">
+        <div class="text-xs uppercase tracking-widest text-orange-400 mb-1">Riepilogo</div>
+        <p class="text-navy-100 leading-relaxed">
+          Polizza standard con copertura RC obbligatoria e garanzie accessorie
+          (furto/incendio, kasko, eventi atmosferici). <strong class="text-white">Tre clausole critiche</strong>:
+          franchigia kasko al 25% senza minimo, decadenza per denuncia oltre 3 giorni,
+          esclusione totale per conducente sotto i 25 anni non dichiarato in polizza.
+          Margine di contestazione su due punti.
+        </p>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Coperture</h2>
+    <ul class="space-y-3 mb-10">
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        <div class="font-bold text-white mb-1">Responsabilità Civile</div>
+        <div class="text-navy-300 text-sm mb-1">Massimale unico per sinistro: 7.290.000 €</div>
+        <div class="text-xs text-navy-500">Art. 122 d.lgs. 209/2005 — obbligatoria</div>
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        <div class="font-bold text-white mb-1">Furto e Incendio</div>
+        <div class="text-navy-300 text-sm mb-1">Valore commerciale del veicolo al momento del sinistro</div>
+        <div class="text-xs text-navy-500">Scoperto: 10% con minimo 500 €</div>
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        <div class="font-bold text-white mb-1">Kasko (collisione e ribaltamento)</div>
+        <div class="text-navy-300 text-sm mb-1">Massimale: 25.000 €</div>
+        <div class="text-xs text-navy-500">Franchigia fissa: 25% del danno, senza minimo né massimo</div>
+      </li>
+    </ul>
+
+    <h2 class="text-2xl font-bold text-orange-400 mb-4">⚠️ Esclusioni critiche</h2>
+    <ul class="space-y-3 mb-10">
+      <li class="bg-orange-400/5 border border-orange-400/30 rounded-lg p-4">
+        <div class="font-bold text-white mb-1">Conducente non dichiarato sotto i 25 anni</div>
+        <div class="text-navy-200 text-sm mb-2">
+          Esclusione TOTALE della copertura se al momento del sinistro il conducente
+          ha meno di 25 anni e non è stato dichiarato in polizza al momento della
+          stipula.
+        </div>
+        <div class="text-xs text-orange-300 italic">Gravità: alta — riguarda anche un familiare convivente</div>
+      </li>
+      <li class="bg-orange-400/5 border border-orange-400/30 rounded-lg p-4">
+        <div class="font-bold text-white mb-1">Trasporto cose / persone fuori uso privato</div>
+        <div class="text-navy-200 text-sm mb-2">
+          Se il veicolo viene usato per attività lavorativa anche occasionale
+          (delivery, taxi informale, trasporto merci) la copertura decade.
+        </div>
+        <div class="text-xs text-orange-300 italic">Gravità: media — frequente in zone urbane</div>
+      </li>
+      <li class="bg-orange-400/5 border border-orange-400/30 rounded-lg p-4">
+        <div class="font-bold text-white mb-1">Stato psicofisico alterato</div>
+        <div class="text-navy-200 text-sm mb-2">
+          Tasso alcolemico ≥ 0,5 g/l o assunzione sostanze stupefacenti: rivalsa
+          totale della compagnia sul conducente.
+        </div>
+        <div class="text-xs text-orange-300 italic">Gravità: alta — anche con un solo aperitivo a stomaco vuoto</div>
+      </li>
+    </ul>
+
+    <h2 class="text-2xl font-bold text-red-400 mb-4">🚨 Clausole rischiose</h2>
+    <ul class="space-y-3 mb-10">
+      <li class="bg-red-400/5 border border-red-400/30 rounded-lg p-4">
+        <div class="font-bold text-white mb-1">Decadenza per denuncia tardiva</div>
+        <div class="text-navy-300 text-xs italic mb-2">
+          "L'assicurato decade dal diritto all'indennizzo se non denuncia il
+          sinistro entro 3 giorni dall'accadimento."
+        </div>
+        <div class="text-navy-200 text-sm">
+          <strong class="text-white">Perché rischiosa:</strong> il termine di 3
+          giorni è inferiore al termine codicistico di 8 giorni (art. 1913 c.c.).
+          La clausola è <em>potenzialmente vessatoria</em> ex art. 33 Codice del
+          Consumo e contestabile.
+        </div>
+      </li>
+      <li class="bg-red-400/5 border border-red-400/30 rounded-lg p-4">
+        <div class="font-bold text-white mb-1">Foro esclusivo Milano</div>
+        <div class="text-navy-300 text-xs italic mb-2">
+          "Per ogni controversia è competente in via esclusiva il foro di Milano."
+        </div>
+        <div class="text-navy-200 text-sm">
+          <strong class="text-white">Perché rischiosa:</strong> deroga al foro
+          del consumatore (residenza), nulla ex art. 33 c. 2 lett. u Cod. Cons.
+          se non specificamente trattata.
+        </div>
+      </li>
+    </ul>
+
+    <h2 class="text-2xl font-bold text-gold-400 mb-4">💡 Raccomandazioni Sherlock</h2>
+    <ol class="space-y-3 mb-10 list-decimal list-inside">
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        Dichiara <strong class="text-white">subito</strong> in polizza tutti i
+        familiari conviventi che potrebbero guidare il veicolo, anche occasionalmente.
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        Se hai un sinistro, denuncialo <strong class="text-white">entro 8 giorni</strong>
+        (termine codicistico) anche se la polizza dice 3 — è il termine legalmente
+        valido, salvo specifica trattativa.
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        Se la compagnia ti contesta una clausola vessatoria, contesta la <strong class="text-white">nullità</strong>
+        per mancata specifica approvazione (art. 1341 c.c. + art. 33 Cod. Cons.).
+      </li>
+    </ol>
+
+    <div class="bg-gradient-to-br from-gold-400/10 to-gold-600/5 border border-gold-400/30 rounded-2xl p-6 text-center mb-8">
+      <div class="text-xs uppercase tracking-widest text-gold-400 mb-2">Vuoi questo per la tua polizza?</div>
+      <h3 class="text-2xl font-bold text-white mb-3">Carica il tuo PDF su Sherlock</h3>
+      <p class="text-navy-300 mb-5">5 analisi gratis · Nessuna carta richiesta</p>
+      <a href={playStoreUrl} target="_blank" rel="noopener" class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition">
+        Scarica gratis l'app
+      </a>
+    </div>
+
+    <p class="text-xs text-navy-500 text-center">
+      Sherlock è uno strumento di analisi AI, non sostituisce un avvocato o consulente
+      assicurativo. Per controversie giudiziali rivolgiti sempre a un professionista
+      qualificato.
+    </p>
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>

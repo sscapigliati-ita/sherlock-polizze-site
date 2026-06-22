@@ -1,0 +1,145 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<BaseLayout
+  title="Come trattiamo i tuoi documenti — Trasparenza | Sherlock"
+  description="Cosa succede al PDF della tua polizza quando lo carichi su Sherlock: dove va, chi lo legge, quanto resta, come è cifrato. Niente trucchi, niente promesse vaghe."
+>
+  <Header slot="header" />
+
+  <article class="px-5 pt-12 pb-20 max-w-3xl mx-auto text-navy-100">
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
+      Cosa succede al tuo documento
+    </h1>
+    <p class="text-navy-300 text-lg mb-10">
+      Tu carichi una polizza. È un documento personale. Hai diritto di sapere
+      esattamente cosa ne facciamo. Sotto, in chiaro, ogni passaggio.
+    </p>
+
+    <section class="bg-navy-900 border border-navy-800 rounded-2xl p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gold-400 mb-3">In una riga</h2>
+      <p class="text-navy-100">
+        Il tuo PDF viene inviato cifrato al nostro backend, letto da un modello AI
+        per produrre il report, e <strong class="text-white">non viene salvato</strong>.
+        Non finisce in un database, non viene usato per addestrare modelli, non
+        viene condiviso con terzi.
+      </p>
+    </section>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Il percorso, passo per passo</h2>
+    <ol class="space-y-5 mb-10">
+      <li class="bg-navy-900/50 border-l-4 border-gold-400 rounded-r-lg p-5">
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">1. Sul tuo dispositivo</div>
+        <p>
+          Selezioni un PDF o una foto della polizza. Il file viene letto solo localmente
+          per essere convertito in <code class="text-gold-400">base64</code> — un'operazione
+          che avviene sul tuo telefono, non su un nostro server.
+        </p>
+      </li>
+      <li class="bg-navy-900/50 border-l-4 border-gold-400 rounded-r-lg p-5">
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">2. Trasmissione</div>
+        <p>
+          Il documento viene inviato al nostro endpoint
+          <code class="text-gold-400 notranslate" translate="no">/api/analizza</code>
+          via <strong class="text-white">HTTPS / TLS 1.3</strong>. La connessione è cifrata
+          end-to-end tra il tuo dispositivo e il server. Nessun intermediario può leggere
+          il contenuto in transito.
+        </p>
+      </li>
+      <li class="bg-navy-900/50 border-l-4 border-gold-400 rounded-r-lg p-5">
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">3. Analisi AI</div>
+        <p>
+          Il backend (serverless su Vercel, region Europa) inoltra il PDF al modello
+          <span class="notranslate" translate="no">Claude</span> di Anthropic, che lo legge
+          e genera un report strutturato. La policy di Anthropic per l'API a pagamento
+          stabilisce che <strong class="text-white">i tuoi documenti non vengono usati per
+          addestrare modelli</strong>.
+        </p>
+      </li>
+      <li class="bg-navy-900/50 border-l-4 border-gold-400 rounded-r-lg p-5">
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">4. Risposta e cancellazione</div>
+        <p>
+          Il report ti viene restituito e mostrato nell'app. A quel punto il PDF
+          esiste solo nella memoria temporanea della funzione serverless, che
+          <strong class="text-white">si distrugge al termine della richiesta</strong> (tipicamente entro
+          30 secondi). Non viene scritto su disco, non viene salvato in alcun database.
+        </p>
+      </li>
+      <li class="bg-navy-900/50 border-l-4 border-gold-400 rounded-r-lg p-5">
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">5. Sul tuo dispositivo, di nuovo</div>
+        <p>
+          Il report resta nell'app, salvato solo sul tuo telefono
+          (<span class="notranslate" translate="no">localStorage</span> del WebView).
+          Disinstallando l'app i dati spariscono. Noi non ne abbiamo copia.
+        </p>
+      </li>
+    </ol>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Cosa loghiamo</h2>
+    <p class="mb-4">
+      Per ragioni operative (debug, abuse prevention, statistiche aggregate)
+      registriamo metadati <strong class="text-white">non identificativi</strong>:
+    </p>
+    <ul class="list-disc list-inside space-y-2 mb-6 text-navy-200">
+      <li>timestamp della richiesta;</li>
+      <li>indirizzo IP (tronco — solo le prime tre ottetti);</li>
+      <li>esito (ok / errore / bloccato);</li>
+      <li>durata dell'analisi.</li>
+    </ul>
+    <p class="mb-10 text-navy-300">
+      <strong class="text-white">Non registriamo</strong> il contenuto del PDF, non
+      registriamo il report restituito, non registriamo dati personali ricavati dal
+      documento (nome assicurato, numero polizza, ecc).
+    </p>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Cosa <em>non</em> facciamo</h2>
+    <ul class="space-y-3 mb-10">
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        ❌ Non vendiamo i tuoi dati a terzi (assicuratori, comparatori, broker).
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        ❌ Non addestriamo modelli sui tuoi documenti.
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        ❌ Non profiliamo né taggiamo utenti per scopi pubblicitari.
+      </li>
+      <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
+        ❌ Non condividiamo le tue analisi con compagnie assicurative o regolatori
+        (l'invio di esposti IVASS o PEC è un atto che fai <em>tu</em>, non noi).
+      </li>
+    </ul>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Codici Pro e pagamenti</h2>
+    <p class="mb-4">
+      Quando ti abboni via PayPal, riceviamo dal circuito il tuo
+      <strong class="text-white">indirizzo email</strong> (per inviarti il codice
+      <code class="notranslate text-gold-400" translate="no">SHK-XXXX-XXXX</code>) e l'ID
+      della transazione. Memorizziamo il codice Pro e l'email in un database cifrato
+      (Upstash Redis via Vercel Marketplace) per validare i tuoi accessi futuri al
+      servizio Pro. Nessun dato di pagamento (carta, IBAN) ci viene mai trasmesso —
+      tutto resta su PayPal.
+    </p>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Cancellazione su richiesta</h2>
+    <p class="mb-10">
+      Vuoi che cancelliamo la tua email e il tuo codice Pro? Scrivi a
+      <a href="mailto:stefano.scapigliati@gmail.com" class="text-gold-400 hover:underline notranslate" translate="no">stefano.scapigliati@gmail.com</a>
+      e procediamo entro 7 giorni lavorativi. Esercizio del diritto di cancellazione
+      ex GDPR art. 17.
+    </p>
+
+    <div class="bg-gradient-to-br from-gold-400/10 to-gold-600/5 border border-gold-400/30 rounded-2xl p-6 text-center">
+      <p class="text-navy-100 mb-4">
+        Hai una domanda su trattamento dati che non ho coperto qui?
+      </p>
+      <a href="mailto:stefano.scapigliati@gmail.com" class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition notranslate" translate="no">
+        stefano.scapigliati@gmail.com
+      </a>
+    </div>
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>
