@@ -59,7 +59,7 @@ Aggiunte:
 6. **Variabile globale `currentLang`** referenziata dalle funzioni che fanno fetch verso il backend.
 7. Tutte le `fetch` verso `BE_BASE + '/api/analizza'` e `BE_BASE + '/api/lettera'` aggiungono `lingua: currentLang` nel body JSON.
 
-**Bump versione**: `app/build.gradle` → `versionCode 43→44`, `versionName "3.3"→"3.4"`. `APP_BUILD` in `index.html` allineato a `44` (così l'aggiornamento resetta `freeUsed=0` come da convenzione del progetto).
+**Bump versione**: `app/build.gradle` → `versionCode 45→46`, `versionName "3.5"→"3.6"`. `APP_BUILD` in `index.html` allineato a `46` (così l'aggiornamento resetta `freeUsed=0` come da convenzione del progetto). Nota: la memoria al momento del brainstorm indicava 43, ma il sorgente corrente in `Downloads\Sherlock app final\...\build.gradle` è già a 45/3.5.
 
 ### Backend (parte del sito) — `src/pages/api/`
 
