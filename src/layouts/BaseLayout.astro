@@ -20,6 +20,19 @@ const {
 } = Astro.props;
 
 const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+
+// Firebase Analytics — caricato solo se le env vars PUBLIC_FIREBASE_* sono presenti.
+// Quando l'utente registra l'app Web su Firebase Console (project sherlock-6f88c)
+// e copia il config in Vercel env vars, l'analytics si attiva al prossimo deploy.
+const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
+  apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
+  authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.PUBLIC_FIREBASE_APP_ID,
+  measurementId: import.meta.env.PUBLIC_FIREBASE_MEASUREMENT_ID,
+} : null;
 ---
 <!DOCTYPE html>
 <html lang="it">
@@ -96,6 +109,53 @@ const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
   {jsonLd.map((schema) => (
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   ))}
+
+  {firebaseConfig && (
+    <script is:inline type="module" define:vars={{ cfg: firebaseConfig }}>
+      // Firebase Analytics dinamico via ESM CDN — zero peso al bundle.
+      // window.sherlockTrack(event_name, params?) usabile da qualsiasi pagina.
+      (async () => {
+        try {
+          const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js');
+          const { getAnalytics, logEvent, setUserProperties } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js');
+          const app = initializeApp(cfg);
+          const analytics = getAnalytics(app);
+          // Esponi un helper globale per gli script di pagina.
+          window.sherlockTrack = (name, params) => {
+            try { logEvent(analytics, name, params || {}); } catch (e) { /* noop */ }
+          };
+          window.sherlockSetUser = (props) => {
+            try { setUserProperties(analytics, props || {}); } catch (e) { /* noop */ }
+          };
+          // Auto-track sulla lingua scelta (cookie googtrans) e su click ai link Play Store.
+          const c = document.cookie.match(/(?:^|; )googtrans=([^;]*)/);
+          if (c) {
+            const v = decodeURIComponent(c[1]);
+            const m = v.match(/^\/it\/(.+)$/);
+            const lang = m ? (m[1] === 'zh-CN' ? 'zh' : m[1]) : 'it';
+            window.sherlockSetUser({ ui_language: lang });
+          } else {
+            window.sherlockSetUser({ ui_language: 'it' });
+          }
+          document.addEventListener('click', (e) => {
+            const a = e.target.closest && e.target.closest('a[href]');
+            if (!a) return;
+            const href = a.getAttribute('href') || '';
+            if (href.includes('play.google.com/store/apps')) {
+              window.sherlockTrack('play_store_click', { from_path: location.pathname });
+            } else if (href.startsWith('/abbonamento/')) {
+              const piano = href.split('/abbonamento/')[1]?.split('?')[0] || '';
+              window.sherlockTrack('subscribe_plan_click', { piano });
+            } else if (href === '/abbonati' || href.endsWith('/abbonati')) {
+              window.sherlockTrack('paywall_view_intent', { from_path: location.pathname });
+            }
+          });
+        } catch (e) {
+          // Silent: nessun blocco se Firebase non carica
+        }
+      })();
+    </script>
+  )}
 </head>
 <body class="bg-navy-950 text-navy-100 min-h-screen flex flex-col">
   <div id="google_translate_element" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true"></div>
