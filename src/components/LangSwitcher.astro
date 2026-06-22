@@ -1,0 +1,67 @@
+---
+const lingue = [
+  { code: 'it', google: '', flag: '🇮🇹', name: 'Italiano' },
+  { code: 'en', google: 'en', flag: '🇬🇧', name: 'English' },
+  { code: 'es', google: 'es', flag: '🇪🇸', name: 'Español' },
+  { code: 'fr', google: 'fr', flag: '🇫🇷', name: 'Français' },
+  { code: 'my', google: 'my', flag: '🇲🇲', name: 'မြန်မာ' },
+  { code: 'zh', google: 'zh-CN', flag: '🇨🇳', name: '中文' },
+];
+---
+<div class="flex items-center gap-1 notranslate" translate="no" id="lang-switcher" aria-label="Selezione lingua">
+  {lingue.map(({ code, google, flag, name }) => (
+    <button
+      type="button"
+      data-lang={code}
+      data-google={google}
+      title={name}
+      aria-label={name}
+      class="text-lg leading-none px-1.5 py-1 rounded opacity-50 hover:opacity-100 transition border border-transparent"
+    >{flag}</button>
+  ))}
+</div>
+
+<script is:inline>
+(function(){
+  function getCookie(name){
+    var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+  function setGoogTrans(googleCode){
+    var host = location.hostname;
+    var value = googleCode ? '/it/' + googleCode : '/it/it';
+    // Cookie sia su host nudo sia con prefisso . per coprire subdomini Vercel
+    document.cookie = 'googtrans=' + value + ';path=/;max-age=' + (60*60*24*365);
+    if (host && host.indexOf('.') !== -1) {
+      document.cookie = 'googtrans=' + value + ';path=/;domain=.' + host + ';max-age=' + (60*60*24*365);
+    }
+  }
+  function currentLang(){
+    var c = getCookie('googtrans');
+    if (!c || c === '/it/it') return 'it';
+    var m = c.match(/^\/it\/(.+)$/);
+    if (!m) return 'it';
+    var g = m[1];
+    return g === 'zh-CN' ? 'zh' : g;
+  }
+  function highlight(){
+    var active = currentLang();
+    document.querySelectorAll('#lang-switcher button').forEach(function(btn){
+      var on = btn.getAttribute('data-lang') === active;
+      btn.style.opacity = on ? '1' : '0.5';
+      btn.style.borderColor = on ? 'rgb(250 204 21)' : 'transparent';
+    });
+  }
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('#lang-switcher button');
+    if (!btn) return;
+    setGoogTrans(btn.getAttribute('data-google'));
+    location.reload();
+  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', highlight);
+  } else {
+    highlight();
+  }
+})();
+</script>
