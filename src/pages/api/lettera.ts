@@ -7,6 +7,24 @@ export const maxDuration = 300;
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
+const LANG_NAMES = {
+  it: 'italiano',
+  en: 'English',
+  es: 'español',
+  fr: 'français',
+  my: 'Burmese',
+  zh: 'Chinese (Simplified)',
+} as const;
+type LangCode = keyof typeof LANG_NAMES;
+
+function normalizzaLingua(raw: unknown): LangCode {
+  return typeof raw === 'string' && raw in LANG_NAMES ? (raw as LangCode) : 'it';
+}
+
+function istruzioneLingua(lang: LangCode): string {
+  return `\n\nIMPORTANT: Write the entire letter in ${LANG_NAMES[lang]}, including the header ("Città", "Data"), the salutation, body, legal references (translate Italian law article names), and signature line.`;
+}
+
 const LSYS: Record<string, string> = {
   reclamo:
     'Sei avvocato specializzato in diritto assicurativo italiano. Genera lettera di reclamo formale completa citando artt. pertinenti (1892 c.c., 1905, 32 C.A.P., normativa IVASS). Includi intestazione [Citta] [Data] e spazio firma. Solo testo piano.',
@@ -50,7 +68,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'Codice Pro non valido' }, 401);
   }
 
-  let payload: { analisi?: any; tipo?: string; extra?: string };
+  let payload: { analisi?: any; tipo?: string; extra?: string; lingua?: string };
   try {
     payload = await request.json();
   } catch {
@@ -59,6 +77,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const { analisi, tipo, extra } = payload;
+  const lingua = normalizzaLingua(payload.lingua);
   if (!analisi || !tipo) {
     void traccia('bloccato', 'analisi e tipo richiesti');
     return json({ error: 'analisi e tipo richiesti' }, 400);
@@ -78,7 +97,7 @@ export const POST: APIRoute = async ({ request }) => {
     `Base legale:\n${baseLegale}` +
     (extra ? `\n\nNote: ${extra}` : '');
 
-  const system = LSYS[tipo] ?? LSYS.reclamo;
+  const system = (LSYS[tipo] ?? LSYS.reclamo) + istruzioneLingua(lingua);
 
   const upstream = await fetch(ANTHROPIC_API_URL, {
     method: 'POST',
