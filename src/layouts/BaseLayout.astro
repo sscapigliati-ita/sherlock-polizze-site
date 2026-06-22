@@ -65,11 +65,40 @@ const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
   <meta name="google-play-app" content="app-id=it.sherlock.polizze" />
   <link rel="alternate" href="android-app://it.sherlock.polizze/https/sherlock-polizze.it/" />
 
+  <!-- Google Translate widget (caricato solo se cookie googtrans presente) -->
+  <style is:global>
+    .skiptranslate { display: none !important; }
+    body { top: 0 !important; }
+    font.translated-ltr, font.translated-rtl { background: transparent !important; box-shadow: none !important; }
+  </style>
+  <script is:inline>
+    (function(){
+      // Carica il widget solo se l'utente ha scelto una lingua != it
+      var c = document.cookie.match(/(?:^|; )googtrans=([^;]*)/);
+      if (!c) return;
+      var v = decodeURIComponent(c[1]);
+      if (!v || v === '/it/it') return;
+      window.googleTranslateElementInit = function(){
+        new google.translate.TranslateElement({
+          pageLanguage: 'it',
+          includedLanguages: 'en,es,fr,my,zh-CN',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false,
+        }, 'google_translate_element');
+      };
+      var s = document.createElement('script');
+      s.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      s.async = true;
+      document.head.appendChild(s);
+    })();
+  </script>
+
   {jsonLd.map((schema) => (
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   ))}
 </head>
 <body class="bg-navy-950 text-navy-100 min-h-screen flex flex-col">
+  <div id="google_translate_element" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true"></div>
   <slot name="header" />
   <main class="flex-1">
     <slot />
