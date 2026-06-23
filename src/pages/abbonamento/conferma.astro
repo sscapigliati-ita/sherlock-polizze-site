@@ -94,10 +94,19 @@ import Footer from '../../components/Footer.astro';
       if (codiceOut) codiceOut.textContent = data.codice;
       if (!data.mailInviata) warnMail?.classList.remove('hidden');
       sessionStorage.removeItem('sherlock_pending');
+      // Firebase Analytics: purchase_success client-side (oltre al server-side da capture-order)
+      const w: any = window;
+      if (typeof w.sherlockTrack === 'function') {
+        w.sherlockTrack('purchase_success', { piano: data.piano || 'unknown', method: 'paypal' });
+      }
     } catch (e: any) {
       loading?.classList.add('hidden');
       errore?.classList.remove('hidden');
       if (errMsg) errMsg.textContent = e?.message ?? 'Errore sconosciuto';
+      const w: any = window;
+      if (typeof w.sherlockTrack === 'function') {
+        w.sherlockTrack('purchase_failed', { error: String(e?.message || e).slice(0, 100) });
+      }
     }
   }
 

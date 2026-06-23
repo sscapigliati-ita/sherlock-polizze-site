@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { creaOrdinePayPal, PIANI, type PianoId } from '../../../lib/paypal';
+import { ga4TrackServer } from '../../../lib/ga4';
 
 export const prerender = false;
 
@@ -39,8 +40,10 @@ export const POST: APIRoute = async ({ request, url }) => {
       returnUrl,
       cancelUrl,
     });
+    void ga4TrackServer('paypal_redirect', orderId, { piano, value: PIANI[piano]?.prezzo || 0, currency: 'EUR' });
     return json({ orderId, approveUrl, piano, email });
   } catch (e: any) {
+    void ga4TrackServer('paypal_create_error', email || 'unknown', { piano, reason: String(e?.message || 'unknown').slice(0, 100) });
     return json({ error: e?.message ?? 'Errore PayPal' }, 502);
   }
 };

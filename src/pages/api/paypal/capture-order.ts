@@ -3,6 +3,7 @@ import { catturaOrdinePayPal, calcolaScadenza, PIANI } from '../../../lib/paypal
 import { generaCodicePro } from '../../../lib/codici';
 import { salvaCodicePro } from '../../../lib/storage';
 import { inviaMailCodice } from '../../../lib/mail';
+import { ga4TrackServer } from '../../../lib/ga4';
 
 export const prerender = false;
 
@@ -30,10 +31,12 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     cattura = await catturaOrdinePayPal(orderId);
   } catch (e: any) {
+    void ga4TrackServer('paypal_cancel', orderId, { reason: String(e?.message || 'capture_failed').slice(0, 100) });
     return json({ error: e?.message ?? 'Errore cattura PayPal' }, 502);
   }
 
   if (cattura.status !== 'COMPLETED' && cattura.status !== 'APPROVED') {
+    void ga4TrackServer('paypal_cancel', orderId, { reason: 'status_' + cattura.status });
     return json({ error: `Pagamento non completato (status: ${cattura.status})` }, 402);
   }
 
@@ -56,6 +59,16 @@ export const POST: APIRoute = async ({ request }) => {
     piano: PIANI[cattura.piano].nome,
     dataScadenza,
   });
+
+  void ga4TrackServer('purchase', orderId, {
+    transaction_id: orderId,
+    value: PIANI[cattura.piano]?.prezzo || 0,
+    currency: 'EUR',
+    items: JSON.stringify([{ item_id: cattura.piano, item_name: PIANI[cattura.piano]?.nome || cattura.piano }]).slice(0, 100),
+    piano: cattura.piano,
+    mail_sent: mail.ok ? 1 : 0,
+  });
+  void ga4TrackServer('paypal_success', orderId, { piano: cattura.piano });
 
   return json({
     codice,
