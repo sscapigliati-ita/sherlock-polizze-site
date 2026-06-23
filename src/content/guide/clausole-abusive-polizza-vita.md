@@ -176,7 +176,7 @@ Le clausole vessatorie ex art. 1341 c.c. devono essere **specificamente sottoscr
 
 > 💡 **Vuoi che l'analisi la faccia un'AI specializzata, in 5 secondi, sulle 60 pagine della tua polizza?**
 >
-> **Sherlock — Detective Polizze** legge l'intero documento, identifica le clausole problematiche, fornisce il riferimento normativo e spiega in linguaggio chiaro perché potrebbero essere nulle. Le prime 5 analisi sono gratis.
+> **Sherlock — Detective Polizze** legge l'intero documento, identifica le clausole problematiche, fornisce il riferimento normativo e spiega in linguaggio chiaro perché potrebbero essere nulle. La prima analisi è gratuita.
 >
 > [Scarica Sherlock gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
 

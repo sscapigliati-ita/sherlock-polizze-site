@@ -79,7 +79,7 @@ per addestrare modelli, non li vendiamo, non li condividiamo.
 Documentazione completa su sherlock-polizze-site-five.vercel.app/trasparenza
 
 🆓 GRATIS PER PROVARE
-5 analisi gratuite, nessuna carta richiesta. Se ti serve la lettera
+1 analisi gratuita completa, nessuna carta richiesta. Le analisi successive in modalità anteprima (rischio + esclusioni). Se ti serve la lettera
 PEC, sblocchi Sherlock Pro da 2,99 €/mese. Pagamento sicuro via PayPal,
 nessun rinnovo automatico.
 

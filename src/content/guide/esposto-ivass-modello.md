@@ -258,7 +258,7 @@ Un modello prefabbricato è un buon punto di partenza, ma per essere realmente e
 
 > 💡 **Vuoi un esposto personalizzato sulla TUA polizza?**
 >
-> Carica polizza e documentazione su **Sherlock — Detective Polizze**: l'app analizza il tutto e genera l'esposto strutturato con le citazioni corrette per il tuo caso. In 30 secondi. Le prime 5 analisi sono gratuite.
+> Carica polizza e documentazione su **Sherlock — Detective Polizze**: l'app analizza il tutto e genera l'esposto strutturato con le citazioni corrette per il tuo caso. In 30 secondi. La prima analisi è gratuita.
 >
 > [Scarica Sherlock gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
 

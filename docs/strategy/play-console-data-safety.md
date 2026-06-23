@@ -30,7 +30,7 @@ Per ogni dato sotto, devi cliccare la categoria, attivare il toggle "Collected",
 
 - **Collected**: ✅ Yes
 - **Shared**: ✅ Yes
-- **Optional or required**: **Optional** (l'utente può usare le 5 analisi gratis senza fornire email)
+- **Optional or required**: **Optional** (l'utente può usare la prima analisi gratis senza fornire email)
 - **Purpose** (spunta tutti i pertinenti):
   - ✅ App functionality
   - ✅ Account management

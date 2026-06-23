@@ -191,7 +191,7 @@ Ti metto a disposizione un modello PDF aggiornato 2026 da personalizzare con i t
 
 > 💡 **Vuoi che il reclamo sia generato automaticamente sulla TUA polizza specifica, con i riferimenti normativi corretti per la TUA situazione?**
 >
-> Carica la polizza su **Sherlock — Detective Polizze**: l'app legge il documento, identifica le criticità e genera il reclamo personalizzato in 30 secondi. Le prime 5 analisi sono gratuite, senza carta richiesta.
+> Carica la polizza su **Sherlock — Detective Polizze**: l'app legge il documento, identifica le criticità e genera il reclamo personalizzato in 30 secondi. La prima analisi è gratuita, senza carta richiesta.
 >
 > [Scarica Sherlock gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
 
