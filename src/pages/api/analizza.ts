@@ -131,6 +131,9 @@ export const POST: APIRoute = async ({ request }) => {
   const t0 = Date.now();
   const requestId = nuovoRequestId();
   const ip = estraiIp(request);
+  // NB: awaitare traccia() prima di ritornare la response. Le promise non
+  // awaited su Vercel serverless possono essere sospese a metà, lasciando
+  // l'evento nel log ma il counter non incrementato.
   const traccia = (esito: EventoAPI['esito'], errore?: string) =>
     loggaEvento({
       ts: new Date().toISOString(),
@@ -144,7 +147,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const apiKey = getAnthropicKey();
   if (!apiKey) {
-    void traccia('errore', 'ANTHROPIC_API_KEY mancante');
+    await traccia('errore', 'ANTHROPIC_API_KEY mancante');
     return json({ error: 'Backend non configurato (ANTHROPIC_API_KEY mancante)' }, 500);
   }
 
@@ -152,7 +155,7 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     payload = await request.json();
   } catch {
-    void traccia('bloccato', 'Body JSON non valido');
+    await traccia('bloccato', 'Body JSON non valido');
     return json({ error: 'Body JSON non valido' }, 400);
   }
 
@@ -160,7 +163,7 @@ export const POST: APIRoute = async ({ request }) => {
   const sinistroTesto = (payload.sinistro_testo ?? '').trim().slice(0, 3000);
   const lingua = normalizzaLingua(payload.lingua);
   if (!documento_base64 || !mime) {
-    void traccia('bloccato', 'documento_base64 e mime richiesti');
+    await traccia('bloccato', 'documento_base64 e mime richiesti');
     return json({ error: 'documento_base64 e mime richiesti' }, 400);
   }
 
@@ -208,7 +211,7 @@ export const POST: APIRoute = async ({ request }) => {
   const data = await upstream.json();
   if (data?.error) {
     const msgRaw = String(data.error.message ?? '');
-    void traccia('errore', msgRaw);
+    await traccia('errore', msgRaw);
     // Traduco gli errori più frequenti di Anthropic in italiano user-friendly
     let msg = msgRaw;
     if (/prompt is too long|too many tokens|context length/i.test(msgRaw)) {
@@ -229,12 +232,12 @@ export const POST: APIRoute = async ({ request }) => {
   const toolUse = blocchi.find((b) => b.type === 'tool_use');
 
   if (toolUse?.input && typeof toolUse.input === 'object') {
-    void traccia('ok');
+    await traccia('ok');
     return json(toolUse.input);
   }
 
   // Fallback estremo: a volte il modello restituisce solo testo (es. rifiuto, errore di lettura).
   const testo = blocchi.find((b) => b.type === 'text')?.text ?? '';
-  void traccia('errore', `Tool non chiamato. Risposta testuale: ${testo.slice(0, 160)}`);
+  await traccia('errore', `Tool non chiamato. Risposta testuale: ${testo.slice(0, 160)}`);
   return json({ error: 'Risposta AI non valida (tool non chiamato)' }, 502);
 };

@@ -58,13 +58,13 @@ export const POST: APIRoute = async ({ request }) => {
 
   const apiKey = getAnthropicKey();
   if (!apiKey) {
-    void traccia('errore', 'ANTHROPIC_API_KEY mancante');
+    await traccia('errore', 'ANTHROPIC_API_KEY mancante');
     return json({ error: 'Backend non configurato (ANTHROPIC_API_KEY mancante)' }, 500);
   }
 
   const codicePro = request.headers.get('x-pro-code') ?? '';
   if (!(await validaCodicePro(codicePro))) {
-    void traccia('bloccato', 'Codice Pro non valido');
+    await traccia('bloccato', 'Codice Pro non valido');
     return json({ error: 'Codice Pro non valido' }, 401);
   }
 
@@ -72,14 +72,14 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     payload = await request.json();
   } catch {
-    void traccia('bloccato', 'Body JSON non valido');
+    await traccia('bloccato', 'Body JSON non valido');
     return json({ error: 'Body JSON non valido' }, 400);
   }
 
   const { analisi, tipo, extra } = payload;
   const lingua = normalizzaLingua(payload.lingua);
   if (!analisi || !tipo) {
-    void traccia('bloccato', 'analisi e tipo richiesti');
+    await traccia('bloccato', 'analisi e tipo richiesti');
     return json({ error: 'analisi e tipo richiesti' }, 400);
   }
 
@@ -116,11 +116,11 @@ export const POST: APIRoute = async ({ request }) => {
 
   const data = await upstream.json();
   if (data?.error) {
-    void traccia('errore', data.error.message ?? 'Errore Anthropic');
+    await traccia('errore', data.error.message ?? 'Errore Anthropic');
     return json({ error: data.error.message ?? 'Errore Anthropic' }, 502);
   }
 
   const testo: string = data?.content?.[0]?.text ?? '';
-  void traccia('ok');
+  await traccia('ok');
   return json({ lettera: testo });
 };

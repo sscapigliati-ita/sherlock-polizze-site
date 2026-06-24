@@ -15,8 +15,15 @@ function kv(): Redis {
   return new Redis({ url, token });
 }
 
-// GET /api/admin/diagnosi — endpoint disposable per riconciliare stato KV vs UI
-export const GET: APIRoute = async () => {
+function ymdRome(iso: string): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(new Date(iso));
+}
+
+// GET /api/admin/diagnosi[?fix=1] — endpoint disposable per riconciliare stato KV vs UI
+export const GET: APIRoute = async ({ url }) => {
+  const fix = url.searchParams.get('fix') === '1';
   const r = kv();
   const oraIso = new Date().toISOString();
 
@@ -59,14 +66,65 @@ export const GET: APIRoute = async () => {
     try { return typeof e === 'string' ? JSON.parse(e) : e; } catch { return null; }
   }).filter(Boolean) as any[];
 
-  const ymdRome = (iso: string) => new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Rome', year: 'numeric', month: '2-digit', day: '2-digit',
-  }).format(new Date(iso));
   const ymdUtc = (iso: string) => new Date(iso).toISOString().slice(0, 10);
 
   const analisi = eventi.filter((e) => e.tipo === 'analizza');
   const oggiRomeFromLog = analisi.filter((e) => ymdRome(e.ts) === oggiRome).length;
   const oggiUtcFromLog = analisi.filter((e) => ymdUtc(e.ts) === oggiUtc).length;
+
+  // ---- Riconciliazione counter dal log eventi (?fix=1) ----
+  // ATTENZIONE: ricostruisce SOLO dagli ultimi 500 eventi nel log (LOG_MAX).
+  // Quindi: per-giorno è preciso solo per i giorni interamente contenuti nel
+  // log; il :total ricostruito sarà solo la somma di quei 500 eventi e
+  // sovrascriverà il totale "vero" se ce ne sono di più fuori finestra.
+  let riconciliazione: any = null;
+  if (fix) {
+    // 1) Aggrega dal log eventi
+    type Bucket = { perGiorno: Record<string, number>; totali: number };
+    const bk: Record<string, Bucket> = {};
+    const incr = (chiave: string, g: string) => {
+      if (!bk[chiave]) bk[chiave] = { perGiorno: {}, totali: 0 };
+      bk[chiave].perGiorno[g] = (bk[chiave].perGiorno[g] ?? 0) + 1;
+      bk[chiave].totali += 1;
+    };
+    for (const e of eventi) {
+      const g = ymdRome(e.ts);
+      incr(e.tipo, g);
+      if (e.esito === 'errore') incr('errore', g);
+      if (e.esito === 'bloccato') incr('bloccato', g);
+    }
+
+    // 2) Cancella i counter esistenti (analizza/lettera/errore/bloccato — per giorno e totali)
+    const keysDaPulire: string[] = [];
+    for (const chiave of ['analizza', 'lettera', 'errore', 'bloccato']) {
+      let cursor: number | string = 0;
+      do {
+        const [next, batch] = (await r.scan(cursor, { match: `count:${chiave}:*`, count: 200 })) as [string, string[]];
+        cursor = next;
+        for (const k of batch) keysDaPulire.push(k);
+      } while (Number(cursor) !== 0);
+    }
+    if (keysDaPulire.length) await r.del(...keysDaPulire);
+
+    // 3) Riscrivi dal bucket aggregato
+    const p = r.pipeline();
+    for (const [chiave, b] of Object.entries(bk)) {
+      p.set(`count:${chiave}:total`, b.totali);
+      for (const [g, n] of Object.entries(b.perGiorno)) {
+        p.set(`count:${chiave}:${g}`, n);
+      }
+    }
+    await p.exec();
+
+    riconciliazione = {
+      keys_eliminate: keysDaPulire.length,
+      counter_riscritti: Object.entries(bk).reduce(
+        (s, [, b]) => s + 1 + Object.keys(b.perGiorno).length,
+        0,
+      ),
+      bucket: bk,
+    };
+  }
 
   return new Response(JSON.stringify({
     abbonamenti: {
@@ -93,6 +151,7 @@ export const GET: APIRoute = async () => {
       log_eventi_analisi_oggi_utc: oggiUtcFromLog,
       log_eventi_totali: eventi.length,
     },
+    riconciliazione,
   }, null, 2), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },

@@ -44,9 +44,16 @@ const fallbackLog: EventoAPI[] = [];
 const LOG_KEY = 'log:api';
 const LOG_MAX = 500;
 
+// YYYY-MM-DD nel fuso Europe/Rome — allineato con la dashboard, che usa
+// timeZone: 'Europe/Rome' per stampare i timestamp degli eventi. Usare UTC
+// qui creerebbe disallineamenti per eventi tra mezzanotte e le 02:00 italiane.
 function dateKey(d: Date): string {
-  // YYYY-MM-DD UTC
-  return d.toISOString().slice(0, 10);
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Rome',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(d);
 }
 
 export async function loggaEvento(ev: EventoAPI): Promise<void> {
@@ -56,23 +63,26 @@ export async function loggaEvento(ev: EventoAPI): Promise<void> {
     return;
   }
 
+  // Tutto in una sola pipeline atomica (1 round-trip HTTP a Upstash). Importante
+  // per evitare scritture parziali quando l'invocazione serverless viene sospesa
+  // dopo la response — pattern già osservato come 'eventi nel log ma counter
+  // non incrementato'.
   const r = kv();
-  // Lista circolare con LPUSH + LTRIM
-  await r.lpush(LOG_KEY, JSON.stringify(ev));
-  await r.ltrim(LOG_KEY, 0, LOG_MAX - 1);
-
-  // Counter aggregati
   const g = dateKey(new Date(ev.ts));
-  await r.incr(`count:${ev.tipo}:${g}`);
-  await r.incr(`count:${ev.tipo}:total`);
+  const p = r.pipeline();
+  p.lpush(LOG_KEY, JSON.stringify(ev));
+  p.ltrim(LOG_KEY, 0, LOG_MAX - 1);
+  p.incr(`count:${ev.tipo}:${g}`);
+  p.incr(`count:${ev.tipo}:total`);
   if (ev.esito === 'errore') {
-    await r.incr(`count:errore:${g}`);
-    await r.incr(`count:errore:total`);
+    p.incr(`count:errore:${g}`);
+    p.incr(`count:errore:total`);
   }
   if (ev.esito === 'bloccato') {
-    await r.incr(`count:bloccato:${g}`);
-    await r.incr(`count:bloccato:total`);
+    p.incr(`count:bloccato:${g}`);
+    p.incr(`count:bloccato:total`);
   }
+  await p.exec();
 }
 
 export async function leggiUltimiEventi(limit = 50): Promise<EventoAPI[]> {
@@ -130,8 +140,11 @@ export async function leggiStats(): Promise<StatsAPI> {
   ]);
 
   const giorni: string[] = [];
+  // Ancoro a mezzogiorno UTC per evitare scivolamenti di giorno dovuti al DST
+  // o all'offset Europe/Rome quando l'invocazione cade vicino a mezzanotte.
+  const ancoraRome = new Date(`${oggi}T12:00:00Z`);
   for (let i = 6; i >= 0; i--) {
-    const d = new Date();
+    const d = new Date(ancoraRome);
     d.setUTCDate(d.getUTCDate() - i);
     giorni.push(dateKey(d));
   }
@@ -158,8 +171,9 @@ export async function leggiStats(): Promise<StatsAPI> {
 
 function serie7giorni(eventi: EventoAPI[]): Array<{ giorno: string; analisi: number; errori: number }> {
   const out: Array<{ giorno: string; analisi: number; errori: number }> = [];
+  const ancoraRome = new Date(`${dateKey(new Date())}T12:00:00Z`);
   for (let i = 6; i >= 0; i--) {
-    const d = new Date();
+    const d = new Date(ancoraRome);
     d.setUTCDate(d.getUTCDate() - i);
     const g = dateKey(d);
     const giorno = eventi.filter((e) => dateKey(new Date(e.ts)) === g);
