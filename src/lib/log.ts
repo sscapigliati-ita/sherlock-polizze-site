@@ -49,28 +49,6 @@ function dateKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-// Storico Manus (non migrabile da API): valori frozen dal screenshot della
-// vecchia dashboard al momento della migrazione. Override possibile via env vars.
-const BASELINE_DEFAULTS: Record<string, number> = {
-  BASELINE_ANALISI_TOTALI: 2360,
-  BASELINE_LETTERE_TOTALI: 3,
-  BASELINE_ERRORI_TOTALI: 22,
-  BASELINE_BLOCCATI_TOTALI: 125,
-};
-
-// Grafico "Analisi per giorno — ultimi 7 giorni" del Manus al 19/06/2026.
-// Indice 0 = giorno più vecchio dei 7, indice 6 = giorno più recente.
-const BASELINE_PER_GIORNO = [250, 230, 130, 100, 90, 120, 80];
-
-function baseline(name: string): number {
-  const v = envVar(name);
-  if (v) {
-    const n = Number(v);
-    if (Number.isFinite(n)) return n;
-  }
-  return BASELINE_DEFAULTS[name] ?? 0;
-}
-
 export async function loggaEvento(ev: EventoAPI): Promise<void> {
   if (!kvOn()) {
     fallbackLog.unshift(ev);
@@ -158,26 +136,22 @@ export async function leggiStats(): Promise<StatsAPI> {
     giorni.push(dateKey(d));
   }
   const perGiornoRaw = await Promise.all(
-    giorni.map(async (g, idx) => {
+    giorni.map(async (g) => {
       const [a, e] = await Promise.all([
         r.get<number>(`count:analizza:${g}`),
         r.get<number>(`count:errore:${g}`),
       ]);
-      // Sommo la baseline Manus a ogni giorno (sono valori "storici cosmetici")
-      const aBase = BASELINE_PER_GIORNO[idx] ?? 0;
-      return { giorno: g, analisi: (a ?? 0) + aBase, errori: e ?? 0 };
+      return { giorno: g, analisi: a ?? 0, errori: e ?? 0 };
     }),
   );
 
   return {
-    // Baseline: somma cumulativa storica importata da una piattaforma precedente
-    // (es. dashboard Manus pre-migrazione). Configurabile via env BASELINE_*.
-    analisiTotali: (analisiT ?? 0) + baseline('BASELINE_ANALISI_TOTALI'),
+    analisiTotali: analisiT ?? 0,
     analisiOggi: analisiO ?? 0,
-    lettereTotali: (lettereT ?? 0) + baseline('BASELINE_LETTERE_TOTALI'),
+    lettereTotali: lettereT ?? 0,
     lettereOggi: lettereO ?? 0,
-    erroriTotali: (erroriT ?? 0) + baseline('BASELINE_ERRORI_TOTALI'),
-    bloccatiTotali: (bloccatiT ?? 0) + baseline('BASELINE_BLOCCATI_TOTALI'),
+    erroriTotali: erroriT ?? 0,
+    bloccatiTotali: bloccatiT ?? 0,
     perGiorno: perGiornoRaw,
   };
 }

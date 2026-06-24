@@ -125,26 +125,10 @@ export async function leggiAbbonati(): Promise<SintesiAbbonati> {
   const attivi = records.filter((r) => r.dataScadenza > oraIso).length;
   const ricavoEuroCent = records.reduce((s, r) => s + (PREZZI_CENT[r.piano] ?? 0), 0);
 
-  // Storico Manus: gli abbonati erano test (l'utente stesso + parenti), zeriamo
-  const baselineDefaults: Record<string, number> = {
-    BASELINE_ABBONAMENTI_TOTALI: 0,
-    BASELINE_ABBONATI_ATTIVI: 0,
-    BASELINE_RICAVO_CENT: 0,
-  };
-  function baseline(name: string): number {
-    const v = envVar(name);
-    if (v) {
-      const n = Number(v);
-      if (Number.isFinite(n)) return n;
-    }
-    return baselineDefaults[name] ?? 0;
-  }
-
   return {
     records,
-    // Baseline: somma storica importata dalla piattaforma precedente (Manus)
-    totali: records.length + baseline('BASELINE_ABBONAMENTI_TOTALI'),
-    attivi: attivi + baseline('BASELINE_ABBONATI_ATTIVI'),
-    ricavoEuroCent: ricavoEuroCent + baseline('BASELINE_RICAVO_CENT'),
+    totali: records.length,
+    attivi,
+    ricavoEuroCent,
   };
 }
