@@ -39,6 +39,7 @@ export default defineConfig({
       workbox: {
         // Precache di tutti gli asset statici buildati
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}'],
+        globIgnores: ['**/abbonati*.html', '**/abbonati/**/*.html', '**/admin*.html', '**/admin/**/*.html'],
         // Esclude le pagine dinamiche dal precache HTML (sono server-rendered)
         navigateFallback: '/offline',
         navigateFallbackDenylist: [
