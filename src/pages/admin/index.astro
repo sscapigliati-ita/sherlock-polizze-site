@@ -118,7 +118,7 @@ const fmtSoloData = (iso: string) =>
           <div class={`text-3xl font-extrabold mt-1 ${stab && stab.anrRate28gg !== null && stab.anrRate28gg > 0.47 ? 'text-red-400' : 'text-emerald-400'}`}>
             {stab ? fmtPct(stab.anrRate28gg) : '—'}
           </div>
-          <div class="text-[10px] text-navy-500 mt-1">oggi: {stab ? fmtPct(stab.anrRateOggi) : '—'}</div>
+          <div class="text-[10px] text-navy-500 mt-1">ultimo: {stab ? fmtPct(stab.anrRateOggi) : '—'}</div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">Installazioni nette (28gg)</div>
