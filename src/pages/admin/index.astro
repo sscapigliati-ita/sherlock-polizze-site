@@ -4,7 +4,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { leggiStats } from '../../lib/log';
 import { leggiAbbonati } from '../../lib/storage';
 import { leggiUltimiEventi } from '../../lib/log';
-import { leggiStabilitaApp, leggiUsoApp } from '../../lib/play';
+import { leggiStabilitaApp, leggiUsoApp, invalidaCachePlay } from '../../lib/play';
+
+// /admin?refresh=play forza il refresh della cache Play (bypass 6h TTL).
+if (Astro.url.searchParams.get('refresh') === 'play') {
+  await invalidaCachePlay();
+}
 
 // Le chiamate Play possono fallire (SA non configurato, bucket non
 // accessibile): le gestisco con allSettled per non rompere la dashboard.
@@ -91,7 +96,7 @@ const fmtSoloData = (iso: string) =>
     <section class="mb-6">
       <div class="flex items-baseline justify-between mb-3">
         <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">App Sherlock — Play Console</div>
-        <div class="text-[10px] text-navy-500">Cache 6h · medie su 28 giorni</div>
+        <div class="text-[10px] text-navy-500">Cache 6h · medie su 28 giorni · <a href="/admin?refresh=play" class="underline hover:text-gold-300">forza refresh</a></div>
       </div>
 
       {stabError && (
@@ -106,7 +111,7 @@ const fmtSoloData = (iso: string) =>
           <div class={`text-3xl font-extrabold mt-1 ${stab && stab.crashRate28gg !== null && stab.crashRate28gg > 1 ? 'text-red-400' : 'text-emerald-400'}`}>
             {stab ? fmtPct(stab.crashRate28gg) : '—'}
           </div>
-          <div class="text-[10px] text-navy-500 mt-1">oggi: {stab ? fmtPct(stab.crashRateOggi) : '—'}</div>
+          <div class="text-[10px] text-navy-500 mt-1">ultimo: {stab ? fmtPct(stab.crashRateOggi) : '—'}</div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">ANR rate (28gg)</div>

@@ -108,6 +108,14 @@ async function cached<T>(chiave: string, ttlSec: number, calcola: () => Promise<
   return valore;
 }
 
+// Invalida la cache delle stats Play — utile per forzare il refresh dopo
+// che la freshness Reporting API è avanzata o che il bucket è stato sbloccato.
+export async function invalidaCachePlay(): Promise<void> {
+  const r = kv();
+  if (!r) return;
+  await r.del('play:stabilita', 'play:uso');
+}
+
 // ===== Play Developer Reporting API =====
 
 type ReportingRow = {
@@ -115,16 +123,41 @@ type ReportingRow = {
   metrics?: Array<{ metric: string; decimalValue?: { value: string }; integerValue?: { value: string } }>;
 };
 
+type Freshness = { year: number; month: number; day: number };
+
+async function getFreshnessDaily(metricSet: string, token: string): Promise<Freshness | null> {
+  const r = await fetch(`https://playdeveloperreporting.googleapis.com/v1beta1/apps/${pkg()}/${metricSet}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!r.ok) return null;
+  const j = (await r.json()) as { freshnessInfo?: { freshnesses?: Array<{ aggregationPeriod?: string; latestEndTime?: Freshness }> } };
+  const daily = j.freshnessInfo?.freshnesses?.find((f) => f.aggregationPeriod === 'DAILY');
+  return daily?.latestEndTime ?? null;
+}
+
+function shiftDays(f: Freshness, deltaDays: number): Freshness {
+  const d = new Date(Date.UTC(f.year, f.month - 1, f.day));
+  d.setUTCDate(d.getUTCDate() + deltaDays);
+  return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
+}
+
 async function queryMetricSet(metricSet: 'crashRateMetricSet' | 'anrRateMetricSet' | 'errorCountMetricSet', metrics: string[], days = 28): Promise<ReportingRow[]> {
   const token = await accessToken('https://www.googleapis.com/auth/playdeveloperreporting');
+  // La Reporting API ha un ritardo (anche 2-3 giorni): leggo la massima
+  // data disponibile dalla MetricSet stessa invece di assumere 'ieri'.
+  const fresh = await getFreshnessDaily(metricSet, token);
   const today = new Date();
-  const ydy = new Date(today); ydy.setUTCDate(today.getUTCDate() - 1);
-  const start = new Date(today); start.setUTCDate(today.getUTCDate() - days);
+  const fallbackEnd: Freshness = (() => {
+    const d = new Date(today); d.setUTCDate(today.getUTCDate() - 3);
+    return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
+  })();
+  const end = fresh ?? fallbackEnd;
+  const start = shiftDays(end, -(days - 1));
   const body = {
     timelineSpec: {
       aggregationPeriod: 'DAILY',
-      startTime: { year: start.getUTCFullYear(), month: start.getUTCMonth() + 1, day: start.getUTCDate(), timeZone: { id: 'America/Los_Angeles' } },
-      endTime: { year: ydy.getUTCFullYear(), month: ydy.getUTCMonth() + 1, day: ydy.getUTCDate(), timeZone: { id: 'America/Los_Angeles' } },
+      startTime: { ...start, timeZone: { id: 'America/Los_Angeles' } },
+      endTime: { ...end, timeZone: { id: 'America/Los_Angeles' } },
     },
     metrics,
     pageSize: days + 5,
