@@ -44,6 +44,13 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
   <meta name="description" content={description} />
   <link rel="canonical" href={canonicalURL} />
   <meta name="robots" content="index,follow,max-image-preview:large" />
+  <!-- PWA: installabilità iOS + Android -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Sherlock" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180.png" />
   <meta name="theme-color" content="#0f172a" />
   <meta http-equiv="content-language" content="it-IT" />
 
