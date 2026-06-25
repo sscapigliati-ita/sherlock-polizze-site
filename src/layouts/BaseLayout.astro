@@ -182,5 +182,25 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
   </main>
   <slot name="footer" />
   <PwaUpdateToast />
+  <script is:inline>
+    // Su iOS l'app Android non è installabile: riscrivo i link Play Store
+    // per puntare a /app/ (la stessa app WebView servita come PWA).
+    (function () {
+      var ua = navigator.userAgent || '';
+      var isIos = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
+      if (!isIos) return;
+      var links = document.querySelectorAll('a[href*="play.google.com"]');
+      for (var i = 0; i < links.length; i++) {
+        var a = links[i];
+        a.href = '/app/';
+        a.removeAttribute('target');
+        a.removeAttribute('rel');
+        var txt = (a.textContent || '').toLowerCase();
+        if (txt.indexOf('scarica') !== -1 || txt.indexOf('prova') !== -1 || txt.indexOf('app') !== -1) {
+          a.textContent = 'Apri Sherlock';
+        }
+      }
+    })();
+  </script>
 </body>
 </html>

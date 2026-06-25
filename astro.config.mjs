@@ -24,7 +24,7 @@ export default defineConfig({
         short_name: 'Sherlock',
         description: 'Analisi AI delle polizze assicurative italiane',
         lang: 'it-IT',
-        start_url: '/',
+        start_url: '/app/',
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',

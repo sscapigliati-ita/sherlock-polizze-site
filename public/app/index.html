@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#070b18">
+<title>Sherlock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b18;--bg2:#0e1426;--bg3:#0a1020;
+  --surf:#131a30;--surf2:#1a2238;--surf3:#1e2745;
+  --border:#1e293b;--border2:#334155;
+  --amber:#fbbf24;--amber2:#f59e0b;--amber3:#fde68a;--amber-d:#b45309;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --danger:#ef4444;--danger2:#fca5a5;
+  --warn:#f59e0b;
+  --ok:#22c55e;--ok2:#86efac;
+  --r:14px;--r2:10px;--r3:18px;
+  --glow:0 0 32px rgba(251,191,36,.2);
+  /* aliases per stili inline esistenti */
+  --gold:var(--amber);--gold2:var(--amber3);--gold3:var(--amber2);
+  --card:var(--surf);--card2:var(--surf2);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;font-weight:400;}
+input,textarea,button{font-family:inherit;}
+::-webkit-scrollbar{width:0;height:0;}
+p{line-height:1.7;color:var(--text2);font-size:.92rem;}
+
+#app{position:fixed;inset:0;display:flex;flex-direction:column;background:
+  radial-gradient(ellipse 90% 60% at 50% -10%, rgba(251,191,36,.09) 0%, transparent 60%),
+  radial-gradient(ellipse 80% 50% at 50% 110%, rgba(99,102,241,.06) 0%, transparent 60%),
+  var(--bg);}
+
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.screen.active{display:flex;animation:fadein .38s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.scr-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 18px 100px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.scr-hdr{display:flex;align-items:center;gap:14px;padding:18px 20px 16px;background:linear-gradient(180deg,rgba(14,20,38,.95),rgba(14,20,38,.5));border-bottom:1px solid var(--border);flex-shrink:0;position:relative;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+.scr-hdr::after{content:'';position:absolute;bottom:-1px;left:24px;right:24px;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.6),transparent);}
+.scr-hdr h2{flex:1;font-size:1.1rem;letter-spacing:-.005em;color:var(--text);font-weight:700;}
+
+.btn-back{width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:var(--surf);border:1px solid var(--border2);border-radius:12px;color:var(--amber);cursor:pointer;font-size:1.35rem;flex-shrink:0;transition:all .2s;font-weight:600;}
+.btn-back:active{transform:scale(.92);background:var(--surf2);}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;font-size:.94rem;font-weight:700;letter-spacing:.005em;transition:all .18s;position:relative;overflow:hidden;}
+.btn:active{transform:scale(.97);}
+.btn-gold{background:linear-gradient(135deg,#f59e0b 0%,#fbbf24 60%,#fcd34d 100%);color:#1a1100;box-shadow:0 6px 22px rgba(251,191,36,.38),inset 0 1px 0 rgba(255,255,255,.4);}
+.btn-gold:active{box-shadow:0 2px 10px rgba(251,191,36,.42);}
+.btn-outline{background:rgba(251,191,36,.06);border:1.5px solid rgba(251,191,36,.4);color:var(--amber);}
+.btn-outline:active{background:rgba(251,191,36,.13);}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);font-size:.8rem;}
+.btn-full{width:100%;}
+.btn-sm{padding:10px 16px;font-size:.84rem;}
+
+.card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.2),transparent);}
+.card2{background:var(--surf2);border:1px solid var(--border2);border-radius:var(--r);padding:18px;margin-bottom:14px;}
+
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.7rem;letter-spacing:.06em;font-weight:700;text-transform:uppercase;}
+.badge-critico{background:rgba(239,68,68,.14);color:#fca5a5;border:1px solid rgba(239,68,68,.5);}
+.badge-alto{background:rgba(245,158,11,.14);color:#fcd34d;border:1px solid rgba(245,158,11,.5);}
+.badge-medio{background:rgba(234,179,8,.12);color:#fde047;border:1px solid rgba(234,179,8,.5);}
+.badge-basso{background:rgba(34,197,94,.12);color:#86efac;border:1px solid rgba(34,197,94,.5);}
+
+.input{width:100%;padding:14px 16px;border-radius:12px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:.94rem;outline:none;transition:all .22s;font-family:inherit;}
+.input:focus{border-color:var(--amber);background:var(--surf);box-shadow:0 0 0 3px rgba(251,191,36,.14);}
+.lbl{font-size:.78rem;color:var(--text2);margin-bottom:7px;display:block;font-weight:500;letter-spacing:.01em;}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+
+/* BOTTOM NAV - glass */
+#bnav{display:flex;background:rgba(7,11,24,.86);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-top:1px solid var(--border2);flex-shrink:0;padding:10px 0 8px;position:relative;}
+#bnav::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:55%;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);opacity:.55;}
+#bnav .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;cursor:pointer;gap:4px;transition:transform .15s;}
+#bnav .tab:active{transform:scale(.92);}
+#bnav .tab .ti{font-size:1.4rem;opacity:.55;transition:all .25s;}
+#bnav .tab .tl{font-size:.6rem;letter-spacing:.12em;color:var(--text3);font-weight:700;}
+#bnav .tab.active .ti{opacity:1;transform:translateY(-2px);filter:drop-shadow(0 4px 14px rgba(251,191,36,.55));}
+#bnav .tab.active .tl{color:var(--amber);}
+#bnav .tab-mid{margin:-24px 8px 0;background:linear-gradient(135deg,#f59e0b 0%,#fbbf24 100%);border-radius:50%;width:64px;height:64px;box-shadow:0 10px 32px rgba(251,191,36,.55),inset 0 1px 0 rgba(255,255,255,.45);border:4px solid var(--bg);position:relative;}
+#bnav .tab-mid::before{content:'';position:absolute;inset:-8px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.32),transparent 70%);z-index:-1;animation:pulse 2.6s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.55;}50%{transform:scale(1.18);opacity:.28;}}
+#bnav .tab-mid .ti{font-size:1.7rem;color:#1a1100;opacity:1;filter:none;}
+#bnav .tab-mid .tl{display:none;}
+
+/* SPLASH — cinematografica */
+#screen-splash{
+  align-items:center;justify-content:center;position:relative;overflow:hidden;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 25%, rgba(251,191,36,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 40% at 50% 85%, rgba(99,102,241,.10) 0%, transparent 70%),
+    linear-gradient(180deg, #050813 0%, #0c1326 50%, #050813 100%);
+}
+#screen-splash::before{
+  content:'';position:absolute;inset:-30%;pointer-events:none;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(251,191,36,.08) 0%, transparent 25%),
+    radial-gradient(circle at 70% 75%, rgba(251,191,36,.06) 0%, transparent 30%);
+  animation:splashPulse 5s ease-in-out infinite;
+}
+@keyframes splashPulse{0%,100%{transform:scale(1) rotate(0deg);opacity:.6;}50%{transform:scale(1.12) rotate(2deg);opacity:1;}}
+#screen-splash::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at center, transparent 45%, rgba(5,8,19,.5) 100%);
+}
+.sp-stage{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 24px;width:100%;}
+.sp-lens{position:relative;width:140px;height:140px;margin-bottom:24px;}
+.sp-lens::before{
+  content:'';position:absolute;inset:-15%;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle, rgba(251,191,36,.4) 0%, transparent 60%);
+  filter:blur(22px);animation:lensGlow 2.6s ease-in-out infinite alternate;
+}
+@keyframes lensGlow{0%{opacity:.5;}100%{opacity:1;}}
+.sp-lens svg{width:100%;height:100%;filter:drop-shadow(0 18px 40px rgba(251,191,36,.55));animation:lensFloat 3.8s ease-in-out infinite;}
+@keyframes lensFloat{0%,100%{transform:translateY(0) rotate(-8deg);}50%{transform:translateY(-10px) rotate(8deg);}}
+.sp-title{
+  font-family:'Playfair Display',Georgia,serif;font-size:3.1rem;letter-spacing:.18em;font-weight:900;
+  background:linear-gradient(180deg,#fef3c7 0%,#fbbf24 45%,#b45309 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 0 80px rgba(251,191,36,.35);position:relative;line-height:1;margin-bottom:6px;
+}
+.sp-title::after{
+  content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+  width:64%;height:2px;background:linear-gradient(90deg,transparent,#fbbf24,transparent);
+  animation:scanLine 2.2s ease-in-out infinite;
+}
+@keyframes scanLine{0%,100%{opacity:.4;transform:translateX(-50%) scaleX(.7);}50%{opacity:1;transform:translateX(-50%) scaleX(1.15);}}
+.sp-sub{font-size:.74rem;letter-spacing:.34em;color:var(--text2);font-weight:700;margin-top:18px;text-transform:uppercase;}
+.sp-tagline{
+  font-size:1.05rem;color:var(--text);font-weight:500;margin-top:28px;line-height:1.5;max-width:300px;
+  opacity:0;animation:fadeUpSp .8s ease-out .6s forwards;
+}
+.sp-tagline strong{color:var(--gold);font-weight:700;}
+@keyframes fadeUpSp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.sp-badges{display:flex;gap:8px;margin-top:30px;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeUpSp .8s ease-out 1.1s forwards;}
+.sp-badge{font-size:.66rem;color:var(--text2);background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);padding:7px 13px;border-radius:99px;font-weight:600;letter-spacing:.04em;display:inline-flex;align-items:center;gap:6px;}
+.sp-badge .ic{color:var(--gold);font-size:.78rem;}
+.sp-progress{margin-top:40px;width:200px;height:3px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;position:relative;}
+.sp-progress::before{content:'';position:absolute;top:0;left:-40%;width:40%;height:100%;background:linear-gradient(90deg,transparent,#fbbf24,transparent);animation:scanProgress 1.6s ease-in-out infinite;border-radius:99px;}
+@keyframes scanProgress{0%{left:-40%;}100%{left:100%;}}
+
+/* ONBOARDING */
+#screen-onboard{flex-direction:column;}
+.ob-vp{flex:1;overflow:hidden;}
+#ob-inner{display:flex;height:100%;width:300%;transition:transform .42s cubic-bezier(.4,0,.2,1);}
+.ob-slide{width:calc(100%/3);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 32px;text-align:center;}
+.ob-icon{font-size:5rem;margin-bottom:24px;filter:drop-shadow(0 10px 28px rgba(251,191,36,.4));}
+.ob-dog{width:130px;height:130px;border-radius:50%;object-fit:cover;margin-bottom:22px;border:3px solid var(--amber);box-shadow:0 14px 40px rgba(251,191,36,.35);}
+.ob-title{font-size:1.5rem;color:var(--text);letter-spacing:-.015em;margin-bottom:14px;font-weight:800;line-height:1.22;}
+.ob-desc{font-size:.93rem;color:var(--text2);line-height:1.75;max-width:330px;}
+.ob-dots{display:flex;gap:9px;justify-content:center;padding:14px 0;flex-shrink:0;}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);transition:all .25s;}
+.ob-dot.active{width:30px;border-radius:4px;background:var(--amber);box-shadow:0 0 12px rgba(251,191,36,.6);}
+.ob-footer{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg2);}
+
+/* HOME */
+.home-hdr{padding:18px 20px;background:linear-gradient(180deg,var(--bg2),transparent);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.logo-row{display:flex;align-items:center;gap:11px;}
+.logo{font-size:1.4rem;letter-spacing:.09em;color:var(--amber);font-weight:900;}
+.dog-mini{width:40px;height:40px;border-radius:12px;object-fit:cover;border:1.5px solid var(--amber);box-shadow:0 6px 16px rgba(251,191,36,.32);}
+.btn-gear{width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:var(--surf);border:1px solid var(--border2);border-radius:12px;color:var(--text2);cursor:pointer;font-size:1.15rem;transition:all .2s;}
+.btn-gear:active{transform:scale(.92);color:var(--amber);}
+.tag-free{background:rgba(251,191,36,.12);border:1px solid var(--amber);color:var(--amber);font-size:.6rem;padding:3px 8px;border-radius:8px;font-weight:800;letter-spacing:.05em;}
+.tag-pro{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1100;font-size:.6rem;padding:3px 8px;border-radius:8px;font-weight:800;letter-spacing:.05em;box-shadow:0 2px 8px rgba(251,191,36,.42);}
+
+.free-banner{background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(245,158,11,.03));border-top:1px solid rgba(251,191,36,.22);border-bottom:1px solid rgba(251,191,36,.22);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.free-dots{display:flex;gap:6px;}
+.free-dot{width:11px;height:11px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px rgba(251,191,36,.55);}
+.free-dot.used{background:var(--surf2);box-shadow:none;border:1px solid var(--border2);}
+.free-label{font-size:.75rem;color:var(--text2);font-weight:500;}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 18px;flex-shrink:0;}
+.stat{background:linear-gradient(160deg,var(--surf),var(--surf2));border:1px solid var(--border2);border-radius:14px;padding:14px 12px;text-align:center;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent);opacity:.7;}
+.stat-n{font-size:1.85rem;color:var(--amber);font-weight:900;line-height:1;letter-spacing:-.02em;}
+.stat-l{font-size:.62rem;color:var(--text3);letter-spacing:.12em;margin-top:7px;font-weight:700;}
+
+.ac{background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:11px;cursor:pointer;transition:all .2s;position:relative;}
+.ac:active{transform:scale(.99);border-color:var(--amber);box-shadow:0 6px 22px rgba(251,191,36,.14);}
+.ac-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.ac-co{font-size:1rem;color:var(--text);font-weight:700;letter-spacing:-.005em;}
+.ac-ty{font-size:.74rem;color:var(--text2);margin-top:3px;}
+.ac-dt{font-size:.68rem;color:var(--text3);font-weight:500;}
+.ac-su{font-size:.84rem;color:var(--text2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;}
+.empty-dog{width:130px;height:130px;border-radius:50%;object-fit:cover;border:3px solid var(--amber);margin-bottom:20px;box-shadow:0 14px 42px rgba(251,191,36,.35);}
+.empty-bubble{background:var(--surf);border:1px solid var(--border2);border-radius:16px;padding:16px 20px;font-size:.92rem;color:var(--text);line-height:1.6;max-width:280px;margin-bottom:24px;font-weight:500;}
+
+/* SCANNER */
+#upload-zone{border:2px dashed rgba(251,191,36,.35);border-radius:18px;padding:42px 24px;text-align:center;margin:20px 0;cursor:pointer;background:linear-gradient(180deg,rgba(251,191,36,.04),transparent);transition:all .25s;}
+#upload-zone:active{border-color:var(--amber);background:rgba(251,191,36,.09);}
+
+/* ANALYZING */
+#screen-analyzing{align-items:center;justify-content:center;padding:24px;}
+.an-glass{font-size:5.5rem;animation:gs 2.2s ease-in-out infinite;filter:drop-shadow(0 0 32px rgba(251,191,36,.6));}
+@keyframes gs{0%{transform:translate(-22px,-10px) rotate(-18deg);}50%{transform:translate(22px,10px) rotate(16deg);}100%{transform:translate(-22px,-10px) rotate(-18deg);}}
+.an-dog{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid var(--amber);margin-top:22px;box-shadow:0 8px 26px rgba(251,191,36,.35);}
+.an-title{font-size:1.4rem;color:var(--text);margin:14px 0 8px;letter-spacing:.04em;font-weight:800;}
+.an-step{font-size:.88rem;color:var(--amber);text-align:center;min-height:22px;font-weight:500;letter-spacing:.01em;}
+.an-bar{width:240px;height:5px;background:var(--surf);border-radius:5px;margin:18px 0;overflow:hidden;}
+.an-fill{height:100%;background:linear-gradient(90deg,#f59e0b,#fbbf24,#fcd34d);border-radius:5px;width:0%;transition:width .6s ease;box-shadow:0 0 14px rgba(251,191,36,.65);}
+.an-quote{font-style:italic;font-size:.84rem;color:var(--text3);text-align:center;max-width:300px;margin-top:22px;line-height:1.78;font-family:'Playfair Display',Georgia,serif;}
+
+.res-partial-bar{background:linear-gradient(135deg,rgba(251,191,36,.13),rgba(245,158,11,.05));border-bottom:1px solid rgba(251,191,36,.32);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+
+.risk-banner{margin:16px 0;padding:22px 18px;border-radius:16px;text-align:center;border:2px solid;position:relative;overflow:hidden;}
+.risk-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 60%);pointer-events:none;}
+.risk-banner.critico{border-color:var(--danger);background:linear-gradient(160deg,rgba(239,68,68,.18),rgba(239,68,68,.05));animation:crit-pulse 2.4s ease-in-out infinite;}
+@keyframes crit-pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3);}50%{box-shadow:0 0 26px 5px rgba(239,68,68,.42);}}
+.risk-banner.alto{border-color:var(--warn);background:linear-gradient(160deg,rgba(245,158,11,.14),rgba(245,158,11,.04));}
+.risk-banner.medio{border-color:#eab308;background:linear-gradient(160deg,rgba(234,179,8,.11),rgba(234,179,8,.03));}
+.risk-banner.basso{border-color:var(--ok);background:linear-gradient(160deg,rgba(34,197,94,.11),rgba(34,197,94,.03));}
+.risk-lv{font-size:2.2rem;font-weight:900;letter-spacing:.1em;line-height:1;}
+.risk-sub{font-size:.76rem;letter-spacing:.1em;color:var(--text2);margin-top:7px;font-weight:600;}
+.risk-banner.critico .risk-lv{color:#fca5a5;}
+.risk-banner.alto .risk-lv{color:#fcd34d;}
+.risk-banner.medio .risk-lv{color:#fde047;}
+.risk-banner.basso .risk-lv{color:#86efac;}
+
+.accordion{margin-bottom:10px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surf);}
+.acc-hdr{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;-webkit-user-select:none;transition:background .15s;}
+.acc-hdr:active{background:var(--surf2);}
+.acc-tt{flex:1;font-size:.92rem;color:var(--text);font-weight:600;letter-spacing:-.005em;}
+.acc-ct{font-size:.7rem;padding:3px 10px;border-radius:10px;background:var(--bg2);color:var(--amber);border:1px solid var(--border2);font-weight:700;}
+.acc-ar{color:var(--text3);transition:transform .25s;font-size:1rem;}
+.acc-bd{max-height:0;overflow:hidden;transition:max-height .4s ease;background:var(--bg2);padding:0 16px;}
+.acc-bd.open{max-height:2800px;padding:14px 16px;}
+.ci{padding:11px 0;border-bottom:1px solid var(--border);}.ci:last-child{border:none;}
+.ci-t{font-size:.92rem;color:var(--text);margin-bottom:4px;font-weight:600;}
+.ci-d{font-size:.83rem;color:var(--text2);line-height:1.65;}
+.ci-q{font-size:.79rem;font-style:italic;color:var(--text3);border-left:3px solid var(--amber);padding:8px 10px;margin:7px 0;font-family:'Playfair Display',Georgia,serif;background:rgba(251,191,36,.04);border-radius:0 8px 8px 0;}
+
+.act-btns{display:flex;flex-direction:column;gap:11px;padding:8px 0 12px;}
+.locked-box{background:linear-gradient(160deg,var(--surf),var(--surf2));border:1px solid var(--border2);border-radius:16px;padding:24px;margin-bottom:8px;text-align:center;}
+
+.upgrade-bar{background:linear-gradient(135deg,rgba(251,191,36,.16),rgba(245,158,11,.06));border:1px solid rgba(251,191,36,.42);border-radius:16px;padding:16px;margin:10px 0 14px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 26px rgba(251,191,36,.12);}
+.upgrade-text{flex:1;}
+.upgrade-title{font-size:.92rem;color:var(--amber);font-weight:800;margin-bottom:3px;}
+.upgrade-sub{font-size:.76rem;color:var(--text2);font-weight:500;line-height:1.5;}
+
+.lt-type{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px;}
+.lt-btn{padding:12px 6px;border:1px solid var(--border2);border-radius:12px;background:var(--surf);color:var(--text2);font-size:.75rem;text-align:center;cursor:pointer;transition:all .18s;font-weight:600;}
+.lt-btn.active{border-color:var(--amber);color:var(--amber);background:rgba(251,191,36,.08);box-shadow:0 4px 18px rgba(251,191,36,.15);}
+.lt-out{background:#070b18;border:1px solid var(--border2);border-radius:14px;padding:18px;font-size:.86rem;line-height:1.85;color:var(--text2);white-space:pre-wrap;min-height:300px;font-family:'Inter',sans-serif;}
+
+.pw-hero{text-align:center;padding:34px 20px 22px;background:radial-gradient(ellipse 80% 100% at center,rgba(251,191,36,.12),transparent 70%);position:relative;}
+.pw-icon{font-size:3.6rem;margin-bottom:14px;filter:drop-shadow(0 10px 28px rgba(251,191,36,.55));}
+.pw-title{font-size:1.65rem;color:var(--amber);letter-spacing:.12em;font-weight:900;text-shadow:0 0 42px rgba(251,191,36,.45);}
+.pw-sub{font-size:.88rem;color:var(--text2);margin-top:8px;font-weight:500;}
+
+.cmp-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
+.cmp-row:last-child{border:none;}
+.cmp-f{flex:1;font-size:.84rem;color:var(--text2);}
+.cmp-a,.cmp-b{width:48px;text-align:center;font-size:.86rem;font-weight:600;}
+
+.price-box{background:linear-gradient(160deg,var(--surf),var(--surf2));border:2px solid var(--amber);border-radius:18px;padding:24px;text-align:center;margin:16px 0;box-shadow:0 14px 42px rgba(251,191,36,.2);position:relative;overflow:hidden;}
+.price-box::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(251,191,36,.08),transparent 50%);pointer-events:none;}
+.price-n{font-size:3.2rem;color:var(--amber);font-weight:900;line-height:1;letter-spacing:-.025em;position:relative;}
+.price-p{font-size:.92rem;color:var(--text2);margin-top:8px;position:relative;font-weight:500;}
+.price-s{font-size:.8rem;color:var(--ok2);margin-top:6px;position:relative;font-weight:600;}
+.pp-logo{font-size:.74rem;letter-spacing:.24em;color:#5ba8e8;font-weight:800;margin-top:8px;position:relative;}
+
+.code-div{display:flex;align-items:center;gap:12px;margin:18px 0 14px;}
+.code-div::before,.code-div::after{content:"";flex:1;height:1px;background:var(--border);}
+.code-div span{font-size:.68rem;color:var(--text3);letter-spacing:.12em;font-weight:700;text-transform:uppercase;}
+
+.set-sec{margin-bottom:22px;}
+.set-sec-t{font-size:.66rem;letter-spacing:.18em;color:var(--amber);text-transform:uppercase;margin-bottom:10px;font-weight:800;padding-left:4px;}
+.set-row{display:flex;align-items:center;gap:14px;padding:15px 16px;background:var(--surf);border:1px solid var(--border);border-radius:12px;margin-bottom:7px;cursor:pointer;transition:all .18s;}
+.set-row:active{transform:scale(.99);background:var(--surf2);border-color:var(--border2);}
+.set-row-ic{font-size:1.1rem;width:30px;text-align:center;flex-shrink:0;}
+.set-row-ic img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border2);}
+.set-row-c{flex:1;}
+.set-row-t{font-size:.93rem;color:var(--text);font-weight:600;}
+.set-row-s{font-size:.74rem;color:var(--text3);margin-top:2px;}
+
+.dev-warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:11px;margin-bottom:12px;font-size:.76rem;color:#fcd34d;line-height:1.55;font-weight:500;}
+
+.text-gold{color:var(--amber);}
+.text-ok{color:var(--ok2);}
+.text-warn{color:#fcd34d;}
+.text-danger{color:var(--danger2);}
+.tc{text-align:center;}
+.mt8{margin-top:8px;}.mt12{margin-top:12px;}.mt16{margin-top:16px;}
+.mb8{margin-bottom:8px;}.mb12{margin-bottom:12px;}.mb16{margin-bottom:16px;}
+.row{display:flex;align-items:center;gap:8px;}
+.hide{display:none!important;}
+
+/* EXAMPLE LETTER - fac-simile lettera Pro */
+.ex-intro{padding:16px 18px 8px;}
+.ex-tag{font-size:.62rem;letter-spacing:.18em;color:var(--amber);font-weight:800;text-transform:uppercase;margin-bottom:6px;}
+.ex-title{font-size:1.2rem;color:var(--text);font-weight:800;margin-bottom:6px;letter-spacing:-.005em;}
+.ex-sub{font-size:.82rem;color:var(--text2);line-height:1.6;}
+.ex-paper{background:#f8f1de;color:#1a1408;border-radius:14px;padding:22px 22px 26px;margin:14px 0 18px;box-shadow:0 22px 60px rgba(0,0,0,.45),0 2px 0 rgba(0,0,0,.06);border:1px solid #d8c799;position:relative;overflow:hidden;}
+.ex-paper::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#b6913a 0%,#e9c25a 50%,#b6913a 100%);}
+.ex-letterhead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:1px solid #c8b27a;padding-bottom:14px;margin-bottom:14px;}
+.ex-from{font-size:.78rem;line-height:1.55;color:#3a2c10;font-family:'Inter',sans-serif;font-weight:500;}
+.ex-from b{color:#1a1408;}
+.ex-meta{text-align:right;font-size:.72rem;color:#5a4520;line-height:1.55;font-family:'Inter',sans-serif;}
+.ex-meta b{color:#1a1408;}
+.ex-to{font-size:.83rem;color:#1a1408;font-weight:600;margin-bottom:14px;font-family:'Inter',sans-serif;line-height:1.5;}
+.ex-to small{display:block;font-weight:400;color:#5a4520;font-size:.72rem;margin-top:2px;}
+.ex-object{font-size:.86rem;color:#1a1408;font-weight:800;margin-bottom:16px;font-family:'Inter',sans-serif;background:rgba(182,145,58,.16);padding:10px 12px;border-left:3px solid #b6913a;border-radius:0 6px 6px 0;}
+.ex-body{font-family:'Playfair Display',Georgia,serif;font-size:.92rem;color:#1a1408;line-height:1.85;}
+.ex-body p{color:#1a1408;font-size:.92rem;line-height:1.85;margin-bottom:12px;font-family:'Playfair Display',Georgia,serif;}
+.ex-body strong{color:#3a2c10;font-weight:700;}
+.ex-body em{color:#5a4520;font-style:italic;}
+.ex-body ul{margin:8px 0 14px 22px;}
+.ex-body li{font-size:.88rem;line-height:1.75;margin-bottom:6px;color:#1a1408;font-family:'Playfair Display',Georgia,serif;}
+.ex-sig{border-top:1px solid #c8b27a;padding-top:14px;margin-top:14px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;font-family:'Inter',sans-serif;}
+.ex-sig-left{font-size:.78rem;color:#3a2c10;line-height:1.55;}
+.ex-sig-name{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:1.2rem;color:#1a1408;margin-top:4px;font-weight:700;}
+.ex-stamp{font-size:.68rem;letter-spacing:.18em;color:#b6913a;font-weight:800;text-transform:uppercase;border:1.5px solid #b6913a;border-radius:50%;padding:14px 16px;text-align:center;line-height:1.1;transform:rotate(-9deg);opacity:.7;}
+/* SCANNER STEPS */
+.step-block{margin:14px 0 22px;}
+.step-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--amber);color:#1a1100;font-size:.78rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(251,191,36,.32);}
+.step-tt{flex:1;font-size:.96rem;color:var(--text);font-weight:700;}
+.step-opt{font-size:.62rem;letter-spacing:.14em;color:var(--text3);text-transform:uppercase;font-weight:700;background:var(--bg2);border:1px solid var(--border);padding:3px 7px;border-radius:7px;}
+.step-hint{font-size:.72rem;color:var(--text3);line-height:1.55;margin-top:7px;font-style:italic;padding:6px 10px;border-left:2px solid var(--amber-d);background:rgba(180,83,9,.08);border-radius:0 6px 6px 0;}
+#sinistro-input{min-height:90px;resize:vertical;}
+
+/* VALUTAZIONE SINISTRO — banner risultato */
+.vs-banner{margin:0 0 18px;padding:18px;border-radius:14px;border:2px solid;position:relative;overflow:hidden;}
+.vs-banner.coperto{border-color:var(--ok);background:linear-gradient(160deg,rgba(34,197,94,.18),rgba(34,197,94,.04));}
+.vs-banner.non_coperto{border-color:var(--danger);background:linear-gradient(160deg,rgba(239,68,68,.18),rgba(239,68,68,.04));}
+.vs-banner.dubbio{border-color:var(--warn);background:linear-gradient(160deg,rgba(245,158,11,.18),rgba(245,158,11,.04));}
+.vs-banner.da_approfondire{border-color:#eab308;background:linear-gradient(160deg,rgba(234,179,8,.14),rgba(234,179,8,.04));}
+.vs-tag{font-size:.7rem;letter-spacing:.18em;font-weight:800;text-transform:uppercase;margin-bottom:6px;}
+.vs-banner.coperto .vs-tag{color:var(--ok2);}
+.vs-banner.non_coperto .vs-tag{color:var(--danger2);}
+.vs-banner.dubbio .vs-tag{color:#fcd34d;}
+.vs-banner.da_approfondire .vs-tag{color:#fde047;}
+.vs-title{font-size:1.15rem;font-weight:900;color:var(--text);margin-bottom:8px;line-height:1.3;}
+.vs-mot{font-size:.86rem;color:var(--text2);line-height:1.65;margin-bottom:10px;}
+.vs-clausole{margin:10px 0;}
+.vs-clausole-t{font-size:.7rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:5px;}
+.vs-clausola{font-size:.78rem;color:var(--text2);padding:5px 0;border-top:1px dashed var(--border2);font-family:'Playfair Display',Georgia,serif;font-style:italic;}
+.vs-clausola:first-child{border-top:none;}
+.vs-action{background:rgba(0,0,0,.18);border-radius:10px;padding:11px 13px;margin-top:11px;}
+.vs-action-t{font-size:.7rem;letter-spacing:.1em;color:var(--amber);font-weight:800;text-transform:uppercase;margin-bottom:5px;}
+.vs-action-d{font-size:.84rem;color:var(--text);line-height:1.65;}
+
+.ex-cta{background:linear-gradient(135deg,rgba(251,191,36,.16),rgba(245,158,11,.06));border:1px solid rgba(251,191,36,.42);border-radius:14px;padding:16px;margin-top:8px;text-align:center;}
+.ex-cta-title{color:var(--amber);font-weight:800;font-size:.92rem;margin-bottom:5px;}
+.ex-cta-sub{color:var(--text2);font-size:.76rem;line-height:1.55;margin-bottom:12px;}
+
+.lang-bar{display:flex;justify-content:center;gap:6px;padding:8px 10px 6px;background:rgba(7,11,24,.7);border-bottom:1px solid var(--border);flex-shrink:0;}
+.lang-btn{background:transparent;border:1px solid transparent;border-radius:8px;padding:4px 8px;font-size:1.15rem;line-height:1;opacity:.5;cursor:pointer;transition:all .15s;}
+.lang-btn.active{opacity:1;border-color:var(--amber);box-shadow:0 0 8px rgba(251,191,36,.4);}
+.lang-btn:active{transform:scale(.92);}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="lang-bar" id="lang-bar" role="toolbar" aria-label="Lingua">
+  <button class="lang-btn" data-lang="it" aria-label="Italiano">🇮🇹</button>
+  <button class="lang-btn" data-lang="en" aria-label="English">🇬🇧</button>
+  <button class="lang-btn" data-lang="es" aria-label="Español">🇪🇸</button>
+  <button class="lang-btn" data-lang="fr" aria-label="Français">🇫🇷</button>
+  <button class="lang-btn" data-lang="my" aria-label="Burmese">🇲🇲</button>
+  <button class="lang-btn" data-lang="zh" aria-label="中文">🇨🇳</button>
+</div>
+
+<div id="screen-splash" class="screen active">
+  <div class="sp-stage">
+    <div class="sp-lens" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="spLensFill" cx="50%" cy="40%" r="55%">
+            <stop offset="0%" stop-color="#fef3c7" stop-opacity="0.5"/>
+            <stop offset="60%" stop-color="#fbbf24" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0.02"/>
+          </radialGradient>
+          <linearGradient id="spLensRim" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fef3c7"/>
+            <stop offset="50%" stop-color="#fbbf24"/>
+            <stop offset="100%" stop-color="#b45309"/>
+          </linearGradient>
+        </defs>
+        <circle cx="40" cy="40" r="26" stroke="url(#spLensRim)" stroke-width="4.5" fill="url(#spLensFill)"/>
+        <circle cx="40" cy="40" r="22" stroke="#fde68a" stroke-width="0.5" fill="none" opacity="0.5"/>
+        <line x1="60" y1="60" x2="86" y2="86" stroke="#fbbf24" stroke-width="6.5" stroke-linecap="round"/>
+        <line x1="62" y1="62" x2="84" y2="84" stroke="#b45309" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+        <circle cx="40" cy="40" r="6" stroke="#fbbf24" stroke-width="0.9" fill="none" opacity="0.8">
+          <animate attributeName="r" values="3;20;3" dur="2.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1;0;1" dur="2.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="32" cy="32" r="3" fill="#fef3c7" opacity="0.6">
+          <animate attributeName="opacity" values="0.6;1;0.6" dur="2.6s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+    <div class="sp-title">SHERLOCK</div>
+    <div class="sp-sub" data-i18n="splash_sub">IL DETECTIVE ASSICURATIVO</div>
+    <div class="sp-tagline" data-i18n="splash_tagline">La polizza che non capisci, decifrata in 8 secondi.</div>
+    <div class="sp-badges">
+      <div class="sp-badge"><span class="ic">&#9889;</span><span data-i18n="splash_badge_ai">AI 8 sec</span></div>
+      <div class="sp-badge"><span class="ic">&#128274;</span><span data-i18n="splash_badge_safe">Cifrato</span></div>
+      <div class="sp-badge"><span class="ic">&#127760;</span><span data-i18n="splash_badge_lang">6 lingue</span></div>
+    </div>
+    <div class="sp-progress" aria-hidden="true"></div>
+  </div>
+</div>
+
+<div id="screen-onboard" class="screen">
+  <div class="ob-vp">
+    <div id="ob-inner">
+      <div class="ob-slide">
+        <div class="ob-icon">&#128196;</div>
+        <div class="ob-title">Scopri cosa nasconde la tua polizza</div>
+        <div class="ob-desc">Le polizze sono piene di clausole che annullano la copertura quando ne hai piu bisogno. Sherlock le trova e ti spiega cosa rischi.</div>
+      </div>
+      <div class="ob-slide">
+        <div class="ob-icon">&#128269;</div>
+        <div class="ob-title">Analisi AI in 30 secondi</div>
+        <div class="ob-desc">Carica il PDF o scatta una foto. Sherlock identifica esclusioni critiche, clausole rischiose e termini di decadenza con precisione legale.</div>
+      </div>
+      <div class="ob-slide">
+        <img class="ob-dog" src="img/dog_medium.png" alt="Sherlock">
+        <div class="ob-title">1 analisi gratis completa, Pro per il resto</div>
+        <div class="ob-desc">Con il piano gratuito analizzi 5 polizze con report completo. Sherlock Pro trasforma le criticita trovate in reclami, ricorsi IVASS e diffide pronte da inviare.</div>
+      </div>
+    </div>
+  </div>
+  <div class="ob-dots">
+    <div class="ob-dot active" id="dot0"></div>
+    <div class="ob-dot" id="dot1"></div>
+    <div class="ob-dot" id="dot2"></div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn btn-outline btn-sm" id="btn-skip">Salta</button>
+    <button class="btn btn-gold btn-sm" id="btn-ob-next">Avanti</button>
+  </div>
+</div>
+
+<div id="screen-home" class="screen">
+  <div class="home-hdr">
+    <div class="logo-row">
+      <img class="dog-mini" src="img/dog_icon.png" alt="">
+      <span class="logo">SHERLOCK</span>
+      <span id="home-badge"></span>
+    </div>
+    <button class="btn-gear" id="btn-home-gear">&#9881;</button>
+  </div>
+  <div id="home-free-banner" class="free-banner hide">
+    <div class="free-label" id="free-label-text">Analisi gratuite rimaste</div>
+    <div class="free-dots" id="free-dots"></div>
+  </div>
+  <div class="stats" id="home-stats"></div>
+  <div class="scr-scroll" id="home-list"></div>
+</div>
+
+<div id="screen-scanner" class="screen">
+  <div class="scr-hdr">
+    <div class="btn-back" id="btn-scanner-back">&#8249;</div>
+    <h2 data-i18n="nav_scan">Analizza Polizza</h2>
+    <span id="scan-count-badge" style="font-size:.72rem;color:var(--text3)"></span>
+  </div>
+  <div class="scr-scroll">
+    <div class="step-block">
+      <div class="step-head"><span class="step-num">1</span><span class="step-tt">Hai un sinistro da verificare?</span><span class="step-opt">facoltativo</span></div>
+      <textarea class="input" id="sinistro-input" rows="4" maxlength="3000" placeholder="Descrivi cosa è successo: data, fatti, danni, eventuali risposte della compagnia. Sherlock dirà se è coperto e cosa fare." data-i18n-attr="placeholder:placeholder_sinistro"></textarea>
+      <div class="step-hint">Esempio: "Furto auto 12/06 davanti casa, denuncia ai Carabinieri il giorno stesso. La compagnia rifiuta perché non avevo l'antifurto attivo."</div>
+    </div>
+    <div class="step-block">
+      <div class="step-head"><span class="step-num">2</span><span class="step-tt">Carica la polizza</span></div>
+      <div id="upload-zone">
+        <div style="font-size:2.6rem;margin-bottom:10px;color:var(--gold3)">&#128194;</div>
+        <div style="font-size:.98rem;color:var(--text);margin-bottom:5px">Tocca per selezionare il documento</div>
+        <div style="font-size:.76rem;color:var(--text3)">PDF o foto della polizza - max 3 MB (le foto vengono ottimizzate)</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+        <button class="btn btn-outline btn-full" id="btn-pdf" data-i18n="btn_upload">&#128196; Carica PDF</button>
+        <button class="btn btn-outline btn-full" id="btn-photo" data-i18n="btn_camera">&#128247; Scatta foto</button>
+      </div>
+    </div>
+    <div id="scan-free-info" class="card2 hide">
+      <div style="font-size:.82rem;color:var(--text2);margin-bottom:5px">&#128273; Piano gratuito</div>
+      <div style="font-size:.76rem;color:var(--text3);line-height:1.6">Stai usando una delle tue <strong style="color:var(--gold)" id="scans-left-text">5</strong> analisi gratuite. Report completo sempre incluso. Per trasformare questa analisi in una lettera pronta serve Sherlock Pro.</div>
+    </div>
+    <div style="font-size:.74rem;color:var(--text3);text-align:center;padding:10px 0;border-top:1px solid var(--border)">Includi frontespizio e condizioni generali per massima accuratezza</div>
+  </div>
+  <input type="file" id="file-input" accept="application/pdf,image/jpeg,image/png,image/jpg" style="display:none">
+</div>
+
+<div id="screen-analyzing" class="screen">
+  <div class="an-glass">&#128269;</div>
+  <div class="an-title">Sherlock sta indagando</div>
+  <div class="an-step" id="an-step">Lettura documento in corso</div>
+  <div class="an-bar"><div class="an-fill" id="an-fill"></div></div>
+  <img class="an-dog" src="img/dog_icon.png" alt="">
+  <div class="an-quote">"Quando hai eliminato l'impossibile,<br>cio che rimane deve essere la verita."<br><small style="letter-spacing:.1em;font-size:.68rem">-- Sherlock Holmes</small></div>
+</div>
+
+<div id="screen-result" class="screen">
+  <div class="scr-hdr">
+    <div class="btn-back" id="btn-result-back">&#8249;</div>
+    <h2 id="res-title" data-i18n="title_analysis">Analisi Polizza</h2>
+    <img src="img/dog_icon.png" alt="" style="width:26px;height:26px;border-radius:50%;opacity:.55">
+  </div>
+  <div id="res-partial-bar" class="res-partial-bar hide">
+    <span style="font-size:.73rem;color:var(--warn)">&#128273; FUNZIONI AVANZATE</span>
+    <button class="btn btn-gold btn-sm" id="btn-partial-upgrade" style="padding:5px 12px;font-size:.7rem">Pro</button>
+  </div>
+  <div class="scr-scroll" id="res-content"></div>
+</div>
+
+<div id="screen-letter" class="screen">
+  <div class="scr-hdr">
+    <div class="btn-back" id="btn-letter-back">&#8249;</div>
+    <h2>Genera Documento</h2>
+  </div>
+  <div class="scr-scroll">
+    <div class="lt-type">
+      <div class="lt-btn active" data-t="reclamo">&#128233; Reclamo</div>
+      <div class="lt-btn" data-t="ivass">&#127963; IVASS</div>
+      <div class="lt-btn" data-t="diffida">&#9878; Diffida</div>
+    </div>
+    <label class="lbl">Dettagli aggiuntivi (facoltativo)</label>
+    <textarea class="input mb12" id="lt-extra" rows="3" placeholder="Data sinistro, importo contestato, numero pratica..."></textarea>
+    <button class="btn btn-gold btn-full" id="btn-gen-lt">&#128269; Genera documento</button>
+    <div id="lt-out-wrap" class="mt16 hide">
+      <div style="text-align:center;color:var(--gold3);font-size:.78rem;letter-spacing:.3em;margin:8px 0">documento generato</div>
+      <div class="lt-out" id="lt-out"></div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn btn-outline" id="btn-copy-lt" style="flex:1">&#128203; Copia</button>
+        <button class="btn btn-outline" id="btn-share-lt" style="flex:1">&#8599; Condividi</button>
+      </div>
+      <div class="mt12" style="background:rgba(200,122,32,.08);border:1px solid rgba(200,122,32,.2);border-radius:var(--r2);padding:10px">
+        <div style="font-size:.73rem;color:var(--text3);line-height:1.6">Sostituisci i campi [tra parentesi] prima dell'invio. Per pratiche complesse consulta un avvocato specializzato.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-paywall" class="screen">
+  <div class="scr-hdr">
+    <div class="btn-back" id="btn-pw-back">&#8249;</div>
+    <h2 data-i18n="title_pro">Sherlock Pro</h2>
+  </div>
+  <div class="scr-scroll">
+    <div class="pw-hero">
+      <div class="pw-icon">&#128274;</div>
+      <div class="pw-title">SHERLOCK PRO</div>
+      <div class="pw-sub">Tutto incluso per 12 mesi</div>
+    </div>
+    <div class="card">
+      <div class="cmp-row" style="font-size:.67rem;color:var(--text3);letter-spacing:.08em;font-weight:bold">
+        <span class="cmp-f"></span><span class="cmp-a">GRATIS</span><span class="cmp-b" style="color:var(--gold)">PRO</span>
+      </div>
+      <div class="cmp-row"><span class="cmp-f">Analisi polizza - report completo</span><span class="cmp-a" style="font-size:.75rem">5 totali</span><span class="cmp-b text-gold">&#8734;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Livello di rischio (ALTO / CRITICO)</span><span class="cmp-a">&#10003;</span><span class="cmp-b">&#10003;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Esclusioni e clausole rischiose</span><span class="cmp-a">&#10003;</span><span class="cmp-b">&#10003;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Base legale contestabile</span><span class="cmp-a">&#10003;</span><span class="cmp-b">&#10003;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Raccomandazioni personalizzate</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Lettera di reclamo (pronta PEC)</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Ricorso IVASS</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Diffida formale stragiudiziale</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
+    </div>
+    <div class="price-box">
+      <div class="price-n">Pro</div>
+      <div class="price-p">analisi illimitate + lettere pronte</div>
+      <div class="price-s">Da 2,99 euro/mese. Nessun rinnovo automatico.</div>
+      <div style="font-size:.7rem;color:var(--text3);margin-top:10px">Pagamento sicuro via</div>
+      <div class="pp-logo">PAYPAL</div>
+    </div>
+    <button class="btn btn-outline btn-full mb12" id="btn-view-example">&#128196; Vedi un esempio reale di lettera Pro</button>
+    <button class="btn btn-gold btn-full" id="btn-subscribe" data-i18n="activate_pro">&#128274; Sblocca Sherlock Pro</button>
+    <div class="mt12 tc"><small style="color:var(--text3);line-height:1.8">Il pagamento si apre nel flusso sicuro Sherlock/PayPal.<br>Usa la stessa email anche nell'app.</small></div>
+    <div class="code-div"><span>ho gia pagato</span></div>
+    <label class="lbl">La tua email del pagamento</label>
+    <input type="email" class="input mb12" id="pw-email" placeholder="nome@esempio.it" autocomplete="email" data-i18n-attr="placeholder:placeholder_email">
+    <button class="btn btn-gold btn-full" id="btn-activate-email" data-i18n="activate_email_btn">Attiva con email</button>
+    <div id="pw-err" class="mt8 hide"><small class="text-danger" id="pw-err-msg">Errore</small></div>
+    <div id="pw-ok" class="mt8 hide"><small class="text-ok">&#10003; Licenza attivata! Sherlock Pro per 12 mesi.</small></div>
+    <details class="mt12" style="cursor:pointer">
+      <summary style="font-size:.78rem;color:var(--text3);text-align:center">Ho un codice manuale (avanzato)</summary>
+      <div class="mt8">
+        <label class="lbl">Codice attivazione (12 mesi)</label>
+        <input type="text" class="input mb12" id="pw-code" placeholder="SHK-XXXX-XXXX" maxlength="12" style="text-transform:uppercase;letter-spacing:.1em;" data-i18n-attr="placeholder:placeholder_code">
+        <button class="btn btn-outline btn-full" id="btn-activate">Attiva con codice</button>
+      </div>
+    </details>
+    <div class="mt16 mb16 tc"><small style="color:var(--text3)">Assistenza: <span style="color:var(--gold2)">stefano.scapigliati@gmail.com</span></small></div>
+  </div>
+</div>
+
+<div id="screen-example" class="screen">
+  <div class="scr-hdr">
+    <div class="btn-back" id="btn-ex-back">&#8249;</div>
+    <h2>Esempio lettera Pro</h2>
+  </div>
+  <div class="scr-scroll">
+    <div class="ex-intro">
+      <div class="ex-tag">Fac-simile · Reclamo polizza</div>
+      <div class="ex-title">Cosa riceverai con Sherlock Pro</div>
+      <div class="ex-sub">Un documento completo, con intestazione, riferimenti normativi e firma — pronto da personalizzare e inviare via PEC. Ecco un esempio reale.</div>
+    </div>
+
+    <div class="ex-paper">
+      <div class="ex-letterhead">
+        <div class="ex-from">
+          <b>Mario Rossi</b><br>
+          Via Garibaldi 42<br>
+          20121 Milano (MI)<br>
+          C.F. RSSMRA72H15F205Z<br>
+          PEC: mario.rossi@pec.it
+        </div>
+        <div class="ex-meta">
+          Raccomandata A/R<br>
+          anche via PEC<br><br>
+          <b>Milano, 14 giugno 2026</b>
+        </div>
+      </div>
+
+      <div class="ex-to">
+        Spett.le Allianz S.p.A.<br>
+        Ufficio Reclami<br>
+        Piazza Tre Torri, 3 — 20145 Milano (MI)
+        <small>PEC: reclami@pec.allianz.it</small>
+      </div>
+
+      <div class="ex-object">
+        Oggetto: reclamo formale — polizza n. 0078451-K (Allianz Ultra Casa Furto) — diniego sinistro del 02/05/2026
+      </div>
+
+      <div class="ex-body">
+        <p>Il sottoscritto Mario Rossi, contraente della polizza in oggetto, intende formalmente <strong>contestare il diniego</strong> del sinistro denunciato in data 02/05/2026 (rif. pratica n. SX-2026-44128), comunicato con nota del 27/05/2026 a firma del Sig. L. Bianchi.</p>
+
+        <p><strong>Fatti</strong>. Nella notte del 1° maggio 2026 ignoti si introducevano nell'abitazione assicurata sita in Via Garibaldi 42, asportando beni per un valore complessivo di euro 8.420,00 (denuncia ai Carabinieri di Milano-Centro, prot. n. 11425/2026 del 02/05/2026).</p>
+
+        <p><strong>Motivo del diniego</strong>. Codesta Spett.le compagnia rigetta il sinistro invocando l'art. 7, comma 3, delle Condizioni Generali, secondo cui "in caso di assenza dell'assicurato dall'abitazione superiore a 48 ore, la garanzia furto opera solo se tutte le aperture, comprese quelle al piano terra, sono protette da sistema antintrusione attivo, con segnale GSM redondante".</p>
+
+        <p><strong>Contestazione</strong>. La clausola invocata è da ritenersi <strong>vessatoria</strong> ai sensi degli artt. 1341 e 1342 c.c. e <em>nulla</em> nei confronti del contraente per le seguenti ragioni:</p>
+
+        <ul>
+          <li>non risulta specificamente approvata per iscritto, contrariamente a quanto richiesto dall'art. 1341, secondo comma, c.c.;</li>
+          <li>introduce una limitazione di garanzia non chiaramente e separatamente segnalata nel frontespizio contrattuale, in violazione del Regolamento IVASS n. 41/2018, art. 13;</li>
+          <li>impone un obbligo tecnico (sistema GSM redondante) sproporzionato e privo di reale nesso causale con l'evento, contrario al principio di buona fede contrattuale ex art. 1375 c.c.</li>
+        </ul>
+
+        <p>Si rileva inoltre che, ai sensi dell'<strong>art. 1892 c.c.</strong>, eventuali contestazioni sulla copertura debbano essere sollevate dall'assicuratore entro tre mesi dal sinistro: termine già abbondantemente decorso al momento della Vostra comunicazione di diniego.</p>
+
+        <p><strong>Richiesta</strong>. Tutto ciò premesso, si invita codesta Spett.le compagnia a <strong>riesaminare la pratica</strong> e a procedere alla liquidazione dell'indennizzo entro il termine di <strong>45 giorni</strong> dal ricevimento del presente reclamo, come previsto dal Regolamento IVASS n. 24/2008 e successive modifiche.</p>
+
+        <p>In difetto, sarò costretto a presentare formale esposto all'IVASS, ad attivare le procedure di conciliazione presso il Comitato Paritetico per la Conciliazione, e a tutelare i miei diritti nelle competenti sedi giudiziarie, con ulteriore richiesta di risarcimento per danni e interessi di mora ex art. 1224 c.c.</p>
+
+        <p>Resto in attesa di Vostro cortese riscontro scritto al recapito PEC indicato.</p>
+      </div>
+
+      <div class="ex-sig">
+        <div class="ex-sig-left">
+          Distinti saluti,
+          <div class="ex-sig-name">Mario Rossi</div>
+        </div>
+        <div class="ex-stamp">Sherlock<br>Pro</div>
+      </div>
+    </div>
+
+    <div class="ex-cta">
+      <div class="ex-cta-title">Lettere così, su misura della tua polizza</div>
+      <div class="ex-cta-sub">Sherlock Pro genera reclami, esposti IVASS e diffide compilati con i tuoi dati e i riferimenti corretti della tua polizza.</div>
+      <button class="btn btn-gold btn-full" id="btn-ex-subscribe" data-i18n="activate_pro">&#128274; Sblocca Sherlock Pro</button>
+    </div>
+
+    <div class="mb16 tc">
+      <small style="color:var(--text3);line-height:1.7;font-size:.7rem">Fac-simile a scopo illustrativo. Dati di esempio. Per pratiche complesse si consiglia comunque la consulenza di un avvocato.</small>
+    </div>
+  </div>
+</div>
+
+<div id="screen-settings" class="screen">
+  <div class="scr-hdr">
+    <div class="btn-back" id="btn-set-back">&#8249;</div>
+    <h2 data-i18n="title_settings">Impostazioni</h2>
+  </div>
+  <div class="scr-scroll">
+    <div class="set-sec">
+      <div class="set-sec-t">Piano</div>
+      <div class="card2 mb12" id="lic-card"></div>
+    </div>
+    <div class="set-sec">
+      <div class="set-sec-t">Sito web e risorse</div>
+      <div class="set-row" id="btn-website">
+        <span class="set-row-ic">&#127760;</span>
+        <div class="set-row-c"><div class="set-row-t">Sito Sherlock</div><div class="set-row-s">sherlock-polizze-site-five.vercel.app</div></div>
+        <span>&#8250;</span>
+      </div>
+      <div class="set-row" id="btn-guides">
+        <span class="set-row-ic">&#128218;</span>
+        <div class="set-row-c"><div class="set-row-t">Guide gratis</div><div class="set-row-s">Reclamo IVASS, diffide, clausole abusive</div></div>
+        <span>&#8250;</span>
+      </div>
+      <div class="set-row" id="btn-example">
+        <span class="set-row-ic">&#128221;</span>
+        <div class="set-row-c"><div class="set-row-t">Esempi pubblici</div><div class="set-row-s">Report e lettera PEC dimostrativi</div></div>
+        <span>&#8250;</span>
+      </div>
+    </div>
+    <div class="set-sec">
+      <div class="set-sec-t">Assistenza e legale</div>
+      <div class="set-row" id="btn-support">
+        <span class="set-row-ic"><img src="img/dog_icon.png" alt=""></span>
+        <div class="set-row-c"><div class="set-row-t">Supporto</div><div class="set-row-s">stefano.scapigliati@gmail.com</div></div>
+        <span>&#8250;</span>
+      </div>
+      <div class="set-row" id="btn-privacy">
+        <span class="set-row-ic">&#128274;</span>
+        <div class="set-row-c"><div class="set-row-t">Privacy Policy</div><div class="set-row-s">GDPR - trattamento dei dati</div></div>
+        <span>&#8250;</span>
+      </div>
+      <div class="set-row" id="btn-terms">
+        <span class="set-row-ic">&#128196;</span>
+        <div class="set-row-c"><div class="set-row-t">Termini di servizio</div><div class="set-row-s">Condizioni di utilizzo</div></div>
+        <span>&#8250;</span>
+      </div>
+    </div>
+    <div class="set-sec">
+      <div class="set-sec-t">Dati locali</div>
+      <div class="set-row mt8" id="btn-clr">
+        <span class="set-row-ic">&#128465;</span>
+        <div class="set-row-c"><div class="set-row-t" style="color:var(--danger)">Reset completo</div><div class="set-row-s">Cancella analisi, impostazioni e licenza</div></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin:20px 0 24px">
+      <img src="img/dog_medium.png" alt="" style="width:72px;height:72px;border-radius:50%;opacity:.7;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;border:2px solid var(--border2);">
+      <div style="color:var(--amber);font-size:.74rem;letter-spacing:.3em;font-weight:800">SHERLOCK v4.0</div>
+      <div style="font-size:.72rem;color:var(--text3);margin-top:8px;line-height:1.7">AI per la tutela assicurativa<br>Non costituisce consulenza legale professionale<br><span style="color:var(--border2);letter-spacing:.05em">it.sherlock.polizze</span></div>
+    </div>
+  </div>
+</div>
+
+<nav id="bnav">
+  <div class="tab active" id="tab-home"><span class="ti">&#127968;</span><span class="tl" data-i18n="nav_home">HOME</span></div>
+  <div class="tab tab-mid" id="tab-scan"><span class="ti">&#128269;</span></div>
+  <div class="tab" id="tab-set"><span class="ti">&#9881;</span><span class="tl" data-i18n="nav_settings">INFO</span></div>
+</nav>
+</div>
+
+<script>
+"use strict";
+var MAX_FREE=1;       // 1 analisi gratis completa
+var MAX_TOTAL=10;     // tetto upload totali per non-Pro (preview o full); oltre = blocco anti-abuso
+var PP="https://sherlock-polizze-site-five.vercel.app/";
+var MAIL="stefano.scapigliati@gmail.com";
+var PRIVACY_URL="https://sherlock-polizze-site-five.vercel.app/privacy";
+var TERMS_URL="https://sherlock-polizze-site-five.vercel.app/privacy";
+var SITE_URL="https://sherlock-polizze-site-five.vercel.app/";
+var GUIDES_URL="https://sherlock-polizze-site-five.vercel.app/guide";
+var EXAMPLE_REPORT_URL="https://sherlock-polizze-site-five.vercel.app/esempio-report";
+var BE_BASE="https://sherlock-polizze-site-five.vercel.app";
+var ENDP_ANALIZZA=BE_BASE+"/api/analizza";
+var ENDP_LETTERA=BE_BASE+"/api/lettera";
+var ENDP_ATTIVA=BE_BASE+"/api/attiva-pro";
+// Firebase Analytics helper: no-op finché MainActivity.java non espone Android.track.
+// Vedi docs/strategy/firebase-analytics-setup.md per la patch Java.
+function track(name, params){
+  try {
+    if (window.Android && typeof Android.track === 'function') {
+      Android.track(name, params ? JSON.stringify(params) : "");
+    }
+  } catch (e) { /* noop */ }
+}
+var I18N = {
+  it: {
+    splash_sub: 'DETECTIVE POLIZZE',
+    splash_tagline: 'La polizza che non capisci, decifrata in 8 secondi.',
+    splash_badge_ai: 'AI 8 sec',
+    splash_badge_safe: 'Cifrato',
+    splash_badge_lang: '6 lingue',
+    nav_home: 'Home',
+    nav_scan: 'Analizza',
+    nav_settings: 'Impostazioni',
+    btn_upload: 'Carica polizza',
+    btn_camera: 'Scatta foto',
+    btn_analyze: 'Avvia analisi',
+    btn_generate_letter: 'Genera lettera di reclamo',
+    placeholder_sinistro: 'Descrivi il sinistro (opzionale)...',
+    placeholder_email: 'tua@email.it',
+    placeholder_code: 'SHK-XXXX-XXXX',
+    title_analysis: 'Analisi della polizza',
+    title_settings: 'Impostazioni',
+    title_pro: 'Sherlock Pro',
+    label_compagnia: 'Compagnia',
+    label_tipo: 'Tipo polizza',
+    label_rischio: 'Rischio',
+    label_riepilogo: 'Riepilogo',
+    label_esclusioni: 'Esclusioni critiche',
+    label_clausole: 'Clausole rischiose',
+    label_termini: 'Termini di decadenza',
+    label_raccomandazioni: 'Raccomandazioni',
+    err_generic: 'Errore. Riprova.',
+    err_no_doc: 'Carica prima un documento.',
+    free_used: 'analisi gratuite usate',
+    activate_pro: 'Attiva Pro',
+    activate_email_btn: 'Attiva con email',
+    activating: 'Attivazione in corso...',
+  },
+  en: {
+    splash_sub: 'INSURANCE DETECTIVE',
+    splash_tagline: 'The policy you don’t understand, decoded in 8 seconds.',
+    splash_badge_ai: 'AI 8 sec',
+    splash_badge_safe: 'Encrypted',
+    splash_badge_lang: '6 languages',
+    nav_home: 'Home', nav_scan: 'Analyze', nav_settings: 'Settings',
+    btn_upload: 'Upload policy', btn_camera: 'Take photo',
+    btn_analyze: 'Start analysis', btn_generate_letter: 'Generate complaint letter',
+    placeholder_sinistro: 'Describe the incident (optional)...',
+    placeholder_email: 'your@email.com', placeholder_code: 'SHK-XXXX-XXXX',
+    title_analysis: 'Policy analysis', title_settings: 'Settings', title_pro: 'Sherlock Pro',
+    label_compagnia: 'Company', label_tipo: 'Policy type', label_rischio: 'Risk',
+    label_riepilogo: 'Summary', label_esclusioni: 'Critical exclusions',
+    label_clausole: 'Risky clauses', label_termini: 'Deadlines',
+    label_raccomandazioni: 'Recommendations',
+    err_generic: 'Error. Please retry.', err_no_doc: 'Upload a document first.',
+    free_used: 'free analyses used', activate_pro: 'Activate Pro',
+    activate_email_btn: 'Activate with email', activating: 'Activating...',
+  },
+  es: {
+    splash_sub: 'DETECTIVE DE PÓLIZAS',
+    splash_tagline: 'La póliza que no entiendes, descifrada en 8 segundos.',
+    splash_badge_ai: 'IA 8 seg',
+    splash_badge_safe: 'Cifrado',
+    splash_badge_lang: '6 idiomas',
+    nav_home: 'Inicio', nav_scan: 'Analizar', nav_settings: 'Ajustes',
+    btn_upload: 'Subir póliza', btn_camera: 'Tomar foto',
+    btn_analyze: 'Iniciar análisis', btn_generate_letter: 'Generar carta de reclamación',
+    placeholder_sinistro: 'Describe el siniestro (opcional)...',
+    placeholder_email: 'tu@email.es', placeholder_code: 'SHK-XXXX-XXXX',
+    title_analysis: 'Análisis de la póliza', title_settings: 'Ajustes', title_pro: 'Sherlock Pro',
+    label_compagnia: 'Compañía', label_tipo: 'Tipo de póliza', label_rischio: 'Riesgo',
+    label_riepilogo: 'Resumen', label_esclusioni: 'Exclusiones críticas',
+    label_clausole: 'Cláusulas arriesgadas', label_termini: 'Plazos',
+    label_raccomandazioni: 'Recomendaciones',
+    err_generic: 'Error. Inténtalo de nuevo.', err_no_doc: 'Sube un documento primero.',
+    free_used: 'análisis gratuitos usados', activate_pro: 'Activar Pro',
+    activate_email_btn: 'Activar con email', activating: 'Activando...',
+  },
+  fr: {
+    splash_sub: 'DÉTECTIVE DES POLICES',
+    splash_tagline: 'La police que vous ne comprenez pas, décryptée en 8 secondes.',
+    splash_badge_ai: 'IA 8 sec',
+    splash_badge_safe: 'Chiffré',
+    splash_badge_lang: '6 langues',
+    nav_home: 'Accueil', nav_scan: 'Analyser', nav_settings: 'Paramètres',
+    btn_upload: 'Téléverser la police', btn_camera: 'Prendre une photo',
+    btn_analyze: "Lancer l'analyse", btn_generate_letter: 'Générer la lettre de réclamation',
+    placeholder_sinistro: 'Décrivez le sinistre (facultatif)...',
+    placeholder_email: 'votre@email.fr', placeholder_code: 'SHK-XXXX-XXXX',
+    title_analysis: 'Analyse de la police', title_settings: 'Paramètres', title_pro: 'Sherlock Pro',
+    label_compagnia: 'Compagnie', label_tipo: 'Type de police', label_rischio: 'Risque',
+    label_riepilogo: 'Résumé', label_esclusioni: 'Exclusions critiques',
+    label_clausole: 'Clauses risquées', label_termini: 'Délais',
+    label_raccomandazioni: 'Recommandations',
+    err_generic: 'Erreur. Réessayez.', err_no_doc: "Téléversez d'abord un document.",
+    free_used: 'analyses gratuites utilisées', activate_pro: 'Activer Pro',
+    activate_email_btn: 'Activer par email', activating: 'Activation en cours...',
+  },
+  my: {
+    splash_sub: 'အာမခံ စုံစမ်းသူ',
+    splash_tagline: 'နားမလည်သော မူဝါဒကို ၈ စက္ကန့်အတွင်း ဖော်ထုတ်ပါ။',
+    splash_badge_ai: 'AI ၈ စက္ကန့်',
+    splash_badge_safe: 'လုံခြုံ',
+    splash_badge_lang: 'ဘာသာ ၆ ခု',
+    nav_home: 'ပင်မ', nav_scan: 'စိစစ်ရန်', nav_settings: 'ဆက်တင်များ',
+    btn_upload: 'မူဝါဒ တင်ရန်', btn_camera: 'ဓာတ်ပုံ ရိုက်ရန်',
+    btn_analyze: 'စိစစ်မှု စတင်ရန်', btn_generate_letter: 'တိုင်တန်းစာ ထုတ်ပေးရန်',
+    placeholder_sinistro: 'ဖြစ်ရပ်ကို ဖော်ပြပါ (ရွေးချယ်ခွင့်)...',
+    placeholder_email: 'oh@email.com', placeholder_code: 'SHK-XXXX-XXXX',
+    title_analysis: 'မူဝါဒ ခွဲခြမ်းစိတ်ဖြာမှု', title_settings: 'ဆက်တင်များ', title_pro: 'Sherlock Pro',
+    label_compagnia: 'ကုမ္ပဏီ', label_tipo: 'မူဝါဒ အမျိုးအစား', label_rischio: 'အန္တရာယ်',
+    label_riepilogo: 'အကျဉ်းချုပ်', label_esclusioni: 'အရေးကြီး ဖယ်ထုတ်ချက်များ',
+    label_clausole: 'အန္တရာယ်ရှိ စည်းကမ်းချက်များ', label_termini: 'အချိန်ကာလများ',
+    label_raccomandazioni: 'အကြံပြုချက်များ',
+    err_generic: 'အမှား ဖြစ်ပေါ်နေသည်။ ပြန်လည် စမ်းကြည့်ပါ။',
+    err_no_doc: 'ဦးစွာ စာရွက်စာတမ်း တင်ပါ။',
+    free_used: 'အခမဲ့ စိစစ်မှု အသုံးပြုပြီး',
+    activate_pro: 'Pro ဖွင့်ရန်',
+    activate_email_btn: 'အီးမေးလ်ဖြင့် ဖွင့်ရန်',
+    activating: 'ဖွင့်နေသည်...',
+  },
+  zh: {
+    splash_sub: '保单侦探',
+    splash_tagline: '听不懂的保单，8秒内为您解读。',
+    splash_badge_ai: 'AI 8秒',
+    splash_badge_safe: '加密',
+    splash_badge_lang: '6种语言',
+    nav_home: '首页', nav_scan: '分析', nav_settings: '设置',
+    btn_upload: '上传保单', btn_camera: '拍照',
+    btn_analyze: '开始分析', btn_generate_letter: '生成投诉信',
+    placeholder_sinistro: '描述事故（可选）...',
+    placeholder_email: 'your@email.com', placeholder_code: 'SHK-XXXX-XXXX',
+    title_analysis: '保单分析', title_settings: '设置', title_pro: 'Sherlock Pro',
+    label_compagnia: '公司', label_tipo: '保单类型', label_rischio: '风险',
+    label_riepilogo: '摘要', label_esclusioni: '关键除外条款',
+    label_clausole: '风险条款', label_termini: '期限',
+    label_raccomandazioni: '建议',
+    err_generic: '出错了，请重试。', err_no_doc: '请先上传文档。',
+    free_used: '次免费分析已用', activate_pro: '激活 Pro',
+    activate_email_btn: '通过邮箱激活', activating: '激活中...',
+  },
+};
+var currentLang = 'it';
+function applyLang(code){
+  if (!I18N[code]) code = 'it';
+  var prev = currentLang;
+  currentLang = code;
+  try { localStorage.setItem('sherlockLang', code); } catch(e){}
+  if (prev && prev !== code) track('language_changed', { lang: code, from: prev });
+  var dict = I18N[code];
+  // textContent
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+  // attributi: data-i18n-attr="placeholder:placeholder_email"
+  document.querySelectorAll('[data-i18n-attr]').forEach(function(el){
+    el.getAttribute('data-i18n-attr').split(',').forEach(function(pair){
+      var p = pair.split(':');
+      if (p.length === 2 && dict[p[1]]) el.setAttribute(p[0], dict[p[1]]);
+    });
+  });
+  // stato barra
+  document.querySelectorAll('#lang-bar .lang-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === code);
+  });
+  document.documentElement.setAttribute('lang', code);
+}
+
+document.addEventListener('click', function(e){
+  var btn = e.target.closest && e.target.closest('#lang-bar .lang-btn');
+  if (!btn) return;
+  applyLang(btn.getAttribute('data-lang'));
+});
+
+(function initLang(){
+  var saved = 'it';
+  try { saved = localStorage.getItem('sherlockLang') || 'it'; } catch(e){}
+  applyLang(saved);
+})();
+var APP_BUILD=50; // versionCode — bumpare quando si vuole resettare freeUsed
+var S={analyses:[],isPro:false,proCode:null,onboardingDone:false,freeUsed:0,curA:null,curLetter:"",curLType:"reclamo",devOpen:false,build:0};
+function load(){try{var r=localStorage.getItem("shk2");if(r)Object.assign(S,JSON.parse(r));}catch(e){}
+  // Migration: alla nuova versione resetta le analisi gratuite consumate per dare 5/5 a tutti
+  if(S.build!==APP_BUILD){S.freeUsed=0;S.build=APP_BUILD;save();}
+}
+function save(){try{localStorage.setItem("shk2",JSON.stringify(S));}catch(e){}}
+function canScan(){return S.isPro||S.freeUsed<MAX_TOTAL;}
+function isPreviewMode(){return !S.isPro && S.freeUsed>=MAX_FREE;}
+function freeLeft(){return Math.max(0,MAX_FREE-S.freeUsed);}
+function totalLeft(){return Math.max(0,MAX_TOTAL-S.freeUsed);}
+var Br={a:(typeof Android!=="undefined"),url:function(u){this.a?Android.openURL(u):window.open(u,"_blank");},toast:function(m){this.a?Android.showToast(m):console.log(m);},share:function(t){this.a?Android.shareText(t,"Sherlock"):(navigator.clipboard&&navigator.clipboard.writeText(t));},vibe:function(){this.a?Android.vibrate():(navigator.vibrate&&navigator.vibrate(50));}};
+var _cn=0,_cb={};
+window._apiReady=function(k){var r=Br.a?Android.getResult(k):"";var id=k.replace("cb_","");if(!_cb[id])return;var c=_cb[id];delete _cb[id];if(!r||r.indexOf("__ERR__")===0){c.rej(new Error(r?r.slice(7):"Errore"));return;}try{c.res(JSON.parse(atob(r)));}catch(e){c.res(r);}};
+function apicall(url,method,headers,body){return new Promise(function(res,rej){var id=String(++_cn);_cb[id]={res:res,rej:rej};if(Br.a){Android.callAPI(url,method,JSON.stringify(headers),body||"",id);}else{fetch(url,{method:method,headers:headers,body:body}).then(function(r){return r.json();}).then(function(d){var c=_cb[id];delete _cb[id];c.res(d);}).catch(function(e){var c=_cb[id];delete _cb[id];c.rej(e);});}});}
+var MAIN=["home","scanner","settings"];
+function show(id,noNav){[].forEach.call(document.querySelectorAll(".screen"),function(s){s.classList.remove("active");});var el=document.getElementById("screen-"+id);if(el)el.classList.add("active");document.getElementById("bnav").style.display=(noNav||MAIN.indexOf(id)<0)?"none":"flex";[].forEach.call(document.querySelectorAll("#bnav .tab"),function(t){t.classList.remove("active");});var m={home:"tab-home",scanner:"tab-scan",settings:"tab-set"};if(m[id]){var t=document.getElementById(m[id]);if(t)t.classList.add("active");}}
+function goHome(){show("home");renderHome();}
+function goSettings(){show("settings",true);renderSettings();}
+function goPaywall(from){
+  track('paywall_viewed', { analyses_used: S.freeUsed||0, from_screen: from||'unknown' });
+  if (from === 'result') track('letter_preview_opened', { from_screen: from });
+  show("paywall",true);
+}
+function goExample(){show("example",true);}
+function goScanner(){
+  if(!canScan()){goPaywall();return;}
+  var badge=document.getElementById("scan-count-badge");
+  var info=document.getElementById("scan-free-info");
+  var left=document.getElementById("scans-left-text");
+  if(!S.isPro){var rem=freeLeft();if(badge)badge.textContent=rem+" rimaste";if(info)info.classList.remove("hide");if(left)left.textContent=rem;}
+  else{if(badge)badge.textContent="";if(info)info.classList.add("hide");}
+  show("scanner",true);
+}
+function renderHome(){
+  var b=document.getElementById("home-badge");
+  b.innerHTML=S.isPro?'<span class="tag-pro">PRO</span>':'<span class="tag-free">GRATIS</span>';
+  var fb=document.getElementById("home-free-banner");
+  var fd=document.getElementById("free-dots");
+  var fl=document.getElementById("free-label-text");
+  if(!S.isPro){
+    fb.classList.remove("hide");
+    var rem=freeLeft();var html="";
+    for(var i=0;i<MAX_FREE;i++){html+='<div class="free-dot'+(i<(MAX_FREE-rem)?" used":"")+'"></div>';}
+    if(fd)fd.innerHTML=html;
+    if(fl)fl.textContent=rem>0?rem+" analisi gratuite rimaste":"Analisi gratuite esaurite - passa a Pro";
+  }else{fb.classList.add("hide");}
+  document.getElementById("home-stats").innerHTML=
+    '<div class="stat"><div class="stat-n">'+(S.isPro?"&#8734;":freeLeft())+'</div><div class="stat-l">'+(S.isPro?"DISPONIBILI":"ANALISI RIMASTE")+'</div></div>'+
+    '<div class="stat"><div class="stat-n">'+S.analyses.length+'</div><div class="stat-l">ANALISI SALVATE</div></div>';
+  var list=document.getElementById("home-list");
+  var h="";
+  if(!S.analyses.length){
+    h='<div class="empty-state"><img class="empty-dog" src="img/dog_icon.png" alt=""><div class="empty-bubble">Pronto a investigare.<br>Carica la tua prima polizza!</div><button class="btn btn-gold" id="btn-es">Analizza ora</button></div>';
+  }else{
+    h+='<div style="padding:8px 0 4px;font-size:.7rem;color:var(--text3);letter-spacing:.1em;margin-bottom:6px">ANALISI RECENTI</div>';
+    S.analyses.forEach(function(a){h+=cardHtml(a);});
+    if(!S.isPro&&freeLeft()===0){h+='<div class="upgrade-bar mt8"><div class="upgrade-text"><div class="upgrade-title">Analisi gratuite esaurite</div><div class="upgrade-sub">Passa a Pro per analisi illimitate e documenti legali</div></div><button class="btn btn-gold btn-sm" id="btn-upgrade-home">Pro &#8250;</button></div>';}
+  }
+  list.innerHTML=h;
+  var es=document.getElementById("btn-es");if(es)es.addEventListener("click",goScanner);
+  var uh=document.getElementById("btn-upgrade-home");if(uh)uh.addEventListener("click",goPaywall);
+}
+function cardHtml(a){
+  var BG={CRITICO:"badge-critico",ALTO:"badge-alto",MEDIO:"badge-medio",BASSO:"badge-basso"};
+  return '<div class="ac" data-id="'+a.id+'"><div class="ac-top"><div><div class="ac-co">'+xe(a.compagnia||"Polizza")+'</div><div class="ac-ty">'+xe(a.tipo_polizza||"")+'</div></div><div style="text-align:right"><span class="badge '+(BG[a.rischio]||"badge-medio")+'">'+xe(a.rischio||"?")+'</span><div class="ac-dt" style="margin-top:3px">'+fd(a.date)+'</div></div></div><div class="ac-su">'+xe(a.riepilogo||"")+'</div></div>';
+}
+function viewA(a){
+  S.curA=a;
+  document.getElementById("res-title").textContent=a.compagnia||"Polizza";
+  document.getElementById("res-partial-bar").classList.toggle("hide",S.isPro);
+  var isPreview = !S.isPro && a.preview === true;
+  if (isPreview) track('preview_report_viewed', { rischio: a.rischio||'?' });
+  var rc=(a.rischio||"").toLowerCase();
+  var rl={basso:"Rischio basso",medio:"Rischio medio",alto:"Rischio elevato",critico:"Rischio critico - azione urgente"};
+  var h="";
+  if (isPreview) {
+    h+='<div class="card2 mb12" style="border-color:var(--gold3);text-align:center;padding:14px"><div style="font-size:.66rem;letter-spacing:.18em;color:var(--gold3);font-weight:800;text-transform:uppercase;margin-bottom:4px">Modalità anteprima</div><div style="font-size:.84rem;color:var(--text2);line-height:1.5">Hai già usato la tua analisi gratuita completa. Questa è un\'anteprima: rischio, riepilogo e prime 3 esclusioni.</div></div>';
+  }
+  // Valutazione sinistro: banner in cima quando l'utente ha descritto il sinistro
+  var vs=a.valutazione_sinistro;
+  if(vs && vs.esito){
+    var ec=String(vs.esito).toLowerCase();
+    var labels={coperto:"Sinistro probabilmente coperto",non_coperto:"Sinistro escluso dalla polizza",dubbio:"Esito dubbio: probabile contestazione",da_approfondire:"Servono ulteriori elementi"};
+    var icone={coperto:"✓",non_coperto:"✗",dubbio:"⚠",da_approfondire:"?"};
+    h+='<div class="vs-banner '+ec+'">';
+    h+='<div class="vs-tag">'+icone[ec]+' '+xe(vs.esito.replace("_"," "))+'</div>';
+    h+='<div class="vs-title">'+xe(labels[ec]||"Valutazione sinistro")+'</div>';
+    h+='<div class="vs-mot">'+xe(vs.motivazione||"")+'</div>';
+    if(vs.clausole_rilevanti && vs.clausole_rilevanti.length){
+      h+='<div class="vs-clausole"><div class="vs-clausole-t">Clausole rilevanti</div>';
+      vs.clausole_rilevanti.forEach(function(c){h+='<div class="vs-clausola">'+xe(c)+'</div>';});
+      h+='</div>';
+    }
+    if(vs.cosa_fare){h+='<div class="vs-action"><div class="vs-action-t">Cosa fare</div><div class="vs-action-d">'+xe(vs.cosa_fare)+'</div></div>';}
+    h+='</div>';
+  }
+  h+='<div class="risk-banner '+rc+'"><div class="risk-lv">'+xe(a.rischio||"?")+'</div><div class="risk-sub">'+xe(rl[rc]||"")+'</div></div>';
+  h+='<div class="card mb12"><div style="font-size:1rem;color:var(--gold2)">'+xe(a.compagnia||"")+'</div><div style="font-size:.76rem;color:var(--text2)">'+xe(a.tipo_polizza||"")+(a.numero_polizza?" n. "+xe(a.numero_polizza):"")+'</div><div class="divider"></div><p style="font-size:.82rem">'+xe(a.riepilogo||"")+'</p></div>';
+  if (isPreview) {
+    var allEscl = a.esclusioni_critiche || [];
+    var shownEscl = allEscl.slice(0, 3);
+    var nMoreEscl = Math.max(0, allEscl.length - 3);
+    h+=mkAcc("Esclusioni critiche"+(allEscl.length>3?" (anteprima 3 di "+allEscl.length+")":""),shownEscl,function(it){return'<div class="ci"><div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:5px"><div class="ci-t" style="flex:1">'+xe(it.titolo)+'</div><span class="badge badge-'+(it.gravita==="alta"?"critico":it.gravita==="media"?"alto":"medio")+'">'+xe(it.gravita)+'</span></div><div class="ci-d">'+xe(it.descrizione)+'</div>'+(it.articolo?'<div style="margin-top:4px"><small style="color:var(--text3)">Rif: '+xe(it.articolo)+'</small></div>':"")+' </div>';});
+    var nCla=(a.clausole_rischiose||[]).length;
+    var nCov=(a.coperture||[]).length;
+    var nTer=(a.termini_decadenza||[]).length;
+    var nBl=(a.base_legale_contestabile||[]).length;
+    h+='<div class="locked-box" style="margin-top:14px"><div style="font-size:2rem;margin-bottom:8px">&#128274;</div><div style="font-size:.95rem;color:var(--gold);font-weight:700;margin-bottom:6px">Anteprima limitata</div><div style="font-size:.82rem;color:var(--text2);line-height:1.55;margin-bottom:12px">Vedi solo rischio, riepilogo e prime 3 esclusioni. Sherlock ha trovato in più:<br>'+(nMoreEscl?'&bull; '+nMoreEscl+' altre esclusioni critiche<br>':'')+(nCla?'&bull; '+nCla+' clausole rischiose<br>':'')+(nCov?'&bull; '+nCov+' coperture analizzate<br>':'')+(nTer?'&bull; '+nTer+' termini di decadenza<br>':'')+(nBl?'&bull; '+nBl+' basi legali contestabili<br>':'')+(a.onere_prova?'&bull; onere della prova<br>':'')+'</div><button class="btn btn-gold btn-full" id="btn-locked-preview">Sblocca analisi completa + lettere &#8250;</button></div>';
+  } else {
+    h+=mkAcc("Coperture principali",a.coperture||[],function(it){return'<div class="ci"><div class="ci-t">'+xe(it.titolo)+'</div><div class="ci-d">'+xe(it.descrizione)+'</div>'+(it.massimale?'<div style="margin-top:5px"><span class="badge badge-basso">Massimale: '+xe(it.massimale)+'</span></div>':"")+' </div>';});
+    h+=mkAcc("Clausole rischiose",a.clausole_rischiose||[],function(it){return'<div class="ci"><div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:5px"><div class="ci-t" style="flex:1">'+xe(it.titolo)+'</div><span class="badge badge-'+(it.gravita==="alta"?"alto":it.gravita==="media"?"medio":"basso")+'">'+xe(it.gravita)+'</span></div>'+(it.testo_originale?'<div class="ci-q">'+xe(it.testo_originale)+'</div>':"")+' <div class="ci-d">'+xe(it.perche_rischiosa)+'</div></div>';});
+    h+=mkAcc("Esclusioni critiche",a.esclusioni_critiche||[],function(it){return'<div class="ci"><div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:5px"><div class="ci-t" style="flex:1">'+xe(it.titolo)+'</div><span class="badge badge-'+(it.gravita==="alta"?"critico":it.gravita==="media"?"alto":"medio")+'">'+xe(it.gravita)+'</span></div><div class="ci-d">'+xe(it.descrizione)+'</div>'+(it.articolo?'<div style="margin-top:4px"><small style="color:var(--text3)">Rif: '+xe(it.articolo)+'</small></div>':"")+' </div>';});
+    h+=mkAcc("Termini di decadenza",a.termini_decadenza||[],function(it){return'<div class="ci"><div class="ci-t">'+xe(it.evento)+'</div><div class="ci-d"><strong style="color:var(--warn)">Termine: </strong>'+xe(it.termine)+'</div><div class="ci-d"><strong>Conseguenza: </strong>'+xe(it.conseguenza)+'</div></div>';});
+    if(a.onere_prova){h+='<div class="accordion"><div class="acc-hdr"><span class="acc-tt" style="flex:1">Onere della prova</span><span class="acc-ar">&#8250;</span></div><div class="acc-bd"><p style="font-size:.82rem">'+xe(a.onere_prova)+'</p></div></div>';}
+    h+=mkAcc("Base legale contestabile",a.base_legale_contestabile||[],function(it){return'<div class="ci"><div class="ci-d">&#9679; '+xe(it)+'</div></div>';});
+  }
+  if(S.isPro){
+    h+=mkAcc("Raccomandazioni",a.raccomandazioni||[],function(it){return'<div class="ci"><div class="ci-d">&#10003; '+xe(it)+'</div></div>';});
+    h+=mkAcc("Domande da fare alla compagnia",a.domande_da_fare||[],function(it){return'<div class="ci"><div class="ci-d">? '+xe(it)+'</div></div>';});
+  }else{
+    var nr=(a.raccomandazioni||[]).length;var nd=(a.domande_da_fare||[]).length;
+    if(nr||nd){h+='<div class="locked-box"><div style="font-size:2rem;margin-bottom:8px">&#128274;</div><div style="font-size:.9rem;color:var(--text2);margin-bottom:4px">'+nr+' raccomandazioni e '+nd+' domande</div><div style="font-size:.76rem;color:var(--text3);margin-bottom:14px;line-height:1.5">Cosa fare concretamente e cosa chiedere alla compagnia. Solo con Sherlock Pro.</div><button class="btn btn-gold btn-full" id="btn-locked-rec">Sblocca con Pro &#8250;</button></div>';}
+  }
+  h+='<div class="act-btns">';
+  if(S.isPro){
+    h+='<button class="btn btn-gold btn-full" id="rb1">&#128221; Genera lettera di reclamo</button>';
+    h+='<button class="btn btn-outline btn-full" id="rb2">&#127963; Genera ricorso IVASS</button>';
+    h+='<button class="btn btn-outline btn-full" id="rb3">&#9878; Genera diffida formale</button>';
+  }else{
+    h+='<div class="card2" style="border-color:var(--gold3)"><div style="font-size:.72rem;color:var(--gold3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Sherlock Pro</div><div style="font-size:1rem;color:var(--gold);font-weight:bold;margin-bottom:6px">Vuoi trasformare questa analisi in una lettera pronta da inviare?</div><div style="font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:12px">Sherlock puo generare un reclamo, una diffida o una segnalazione IVASS basata su questa polizza.</div><div style="background:#f7f1df;color:#20160a;border-radius:10px;padding:13px;margin-bottom:10px;position:relative;overflow:hidden"><div style="font-size:.66rem;letter-spacing:.12em;color:#7b642c;font-weight:bold;margin-bottom:8px">ANTEPRIMA LETTERA</div><div style="font-weight:bold;font-size:.82rem;margin-bottom:7px">Oggetto: reclamo formale relativo alla polizza</div><div style="font-size:.76rem;line-height:1.55;color:#4a3820">Spett.le Compagnia,<br>con la presente intendo contestare la gestione della copertura assicurativa relativa a...</div><div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(13,10,7,.08);text-align:center;color:#20160a;font-size:.72rem;font-weight:bold">Sblocca la lettera completa con Pro</div></div><button class="btn btn-gold btn-full" id="btn-upgrade-res">Genera lettera con Sherlock Pro</button><div style="font-size:.68rem;color:var(--text3);text-align:center;margin-top:8px">Da 2,99 euro/mese. Pagamento sicuro via PayPal.</div></div>';
+  }
+  h+='</div>';
+  document.getElementById("res-content").innerHTML=h;
+  var r1=document.getElementById("rb1");if(r1)r1.addEventListener("click",function(){goLetter("reclamo");});
+  var r2=document.getElementById("rb2");if(r2)r2.addEventListener("click",function(){goLetter("ivass");});
+  var r3=document.getElementById("rb3");if(r3)r3.addEventListener("click",function(){goLetter("diffida");});
+  var lr=document.getElementById("btn-locked-rec");if(lr)lr.addEventListener("click",function(){goPaywall('result');});
+  var ur=document.getElementById("btn-upgrade-res");if(ur)ur.addEventListener("click",function(){goPaywall('result');});
+  var lp=document.getElementById("btn-locked-preview");if(lp)lp.addEventListener("click",function(){track('preview_cta_click',{});goPaywall('preview');});
+  show("result",true);
+}
+function mkAcc(title,items,fn){
+  if(!items.length)return"";
+  return'<div class="accordion"><div class="acc-hdr"><span class="acc-tt" style="flex:1">'+xe(title)+'</span><span class="acc-ct">'+items.length+'</span><span class="acc-ar">&#8250;</span></div><div class="acc-bd">'+items.map(fn).join("")+'</div></div>';
+}
+function toggleAcc(h){var b=h.nextElementSibling,ar=h.querySelector(".acc-ar"),o=b.classList.toggle("open");if(ar)ar.style.transform=o?"rotate(90deg)":"";}
+function renderSettings(){
+  var c=document.getElementById("lic-card");
+  if(S.isPro){c.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><img src="img/dog_icon.png" style="width:22px;height:22px;border-radius:50%"><span style="color:var(--gold);font-weight:bold">Sherlock Pro attivo</span></div><small style="color:var(--text3)">Licenza 12 mesi &middot; analisi illimitate &middot; Codice: '+(S.proCode||"&mdash;")+'</small>';}
+  else{
+    var rem=freeLeft();
+    c.innerHTML='<div style="color:var(--text2);margin-bottom:6px;font-size:.9rem">Piano gratuito</div>'+
+      '<div style="display:flex;gap:5px;margin-bottom:8px">'+(function(){var d="";for(var i=0;i<MAX_FREE;i++){d+='<div class="free-dot'+(i<(MAX_FREE-rem)?" used":"")+'"></div>';}return d;})()+'</div>'+
+      '<small style="color:var(--text3)">'+rem+' analisi rimaste &middot; <a href="#" id="lnk-pw" style="color:var(--gold)">Passa a Pro &#8250;</a></small>';
+    var lp=document.getElementById("lnk-pw");if(lp)lp.addEventListener("click",function(e){e.preventDefault();goPaywall();});
+  }
+}
+var slide=0;
+function setSlide(n){slide=n;document.getElementById("ob-inner").style.transform="translateX(-"+(n/3*100)+"%)";[].forEach.call(document.querySelectorAll(".ob-dot"),function(d,i){d.classList.toggle("active",i===n);});document.getElementById("btn-ob-next").textContent=n===2?"Inizia":"Avanti";}
+function goLetter(type){if(!S.isPro){goPaywall();return;}S.curLType=type||"reclamo";[].forEach.call(document.querySelectorAll(".lt-btn"),function(b){b.classList.toggle("active",b.dataset.t===S.curLType);});document.getElementById("lt-out-wrap").classList.add("hide");document.getElementById("lt-extra").value="";show("letter",true);}
+function doAnalysis(b64,mime,sinistroTxt){
+  var hdrs={"Content-Type":"application/json"};
+  var body={documento_base64:b64,mime:mime,lingua:currentLang};
+  if(sinistroTxt && sinistroTxt.trim())body.sinistro_testo=sinistroTxt.trim();
+  return apicall(ENDP_ANALIZZA,"POST",hdrs,JSON.stringify(body)).then(function(r){if(r&&r.error)throw new Error(r.error||"Errore analisi");return r;});
+}
+function doLetter(a,type,extra){
+  if(!S.isPro||!S.proCode)return Promise.reject(new Error("Funzione Pro. Inserisci il codice Pro in Impostazioni."));
+  var hdrs={"Content-Type":"application/json","x-pro-code":S.proCode};
+  return apicall(ENDP_LETTERA,"POST",hdrs,JSON.stringify({analisi:a,tipo:type,extra:extra||"",lingua:currentLang})).then(function(r){if(r&&r.error)throw new Error(r.error);track('letter_generated',{tipo:type||'reclamo',lang:currentLang});return(r&&r.lettera)||"";});
+}
+// Limiti body Vercel serverless = 4.5 MB. In base64 perdiamo ~33%, quindi
+// max ~3 MB binari prima della codifica base64.
+var MAX_BIN=3*1024*1024;
+var MAX_PDF=3*1024*1024;
+var IMG_MAX_LATO=1800; // px lato lungo dopo resize
+var IMG_Q=0.85;        // JPEG quality
+
+function resizeImage(file){
+  return new Promise(function(res,rej){
+    var fr=new FileReader();
+    fr.onload=function(ev){
+      var img=new Image();
+      img.onload=function(){
+        var w=img.width,h=img.height,m=Math.max(w,h);
+        if(m>IMG_MAX_LATO){var k=IMG_MAX_LATO/m;w=Math.round(w*k);h=Math.round(h*k);}
+        var c=document.createElement("canvas");c.width=w;c.height=h;
+        var ctx=c.getContext("2d");ctx.drawImage(img,0,0,w,h);
+        var data=c.toDataURL("image/jpeg",IMG_Q);
+        res({mime:"image/jpeg",b64:data.split(",")[1]});
+      };
+      img.onerror=function(){rej(new Error("Immagine non leggibile"));};
+      img.src=ev.target.result;
+    };
+    fr.onerror=function(){rej(new Error("Lettura file fallita"));};
+    fr.readAsDataURL(file);
+  });
+}
+function readPdfBase64(file){
+  return new Promise(function(res,rej){
+    var fr=new FileReader();
+    fr.onload=function(e){res({mime:"application/pdf",b64:e.target.result.split(",")[1]});};
+    fr.onerror=function(){rej(new Error("Lettura PDF fallita"));};
+    fr.readAsDataURL(file);
+  });
+}
+
+function handleFile(file){
+  if(!canScan()){goPaywall('upload-block');return;}
+  var isPdf=(file.type==="application/pdf")||/\.pdf$/i.test(file.name||"");
+  if(isPdf && file.size>MAX_PDF){Br.toast("PDF troppo grande (max 3 MB). Riduci o foto pagina per pagina.");return;}
+  track('document_upload_started', { mime: isPdf?'pdf':'image', size_kb: Math.round((file.size||0)/1024), lang: currentLang });
+  show("analyzing",true);
+  var steps=["Lettura documento...","Ottimizzazione documento...","Identificazione tipo polizza...","Analisi clausole...","Ricerca esclusioni critiche...","Verifica termini di decadenza...","Generazione report..."];
+  var si=0;var sEl=document.getElementById("an-step");var fill=document.getElementById("an-fill");fill.style.width="0%";
+  var iv=setInterval(function(){if(si<steps.length-1){si++;sEl.textContent=steps[si];fill.style.width=(si/(steps.length-1)*90)+"%";}},1800);
+  var sinistroEl=document.getElementById("sinistro-input");
+  var sinistroTxt=sinistroEl?sinistroEl.value:"";
+  var prep=isPdf?readPdfBase64(file):resizeImage(file);
+  prep.then(function(r){
+    // Safety net: se anche dopo resize/jpeg siamo oltre il limite, abortisci con messaggio chiaro
+    var sizeB64=(r.b64||"").length*0.75;
+    if(sizeB64>MAX_BIN){throw new Error("Documento troppo grande dopo ottimizzazione. Usa una foto a risoluzione più bassa.");}
+    return doAnalysis(r.b64,r.mime,sinistroTxt);
+  }).then(function(a){
+    clearInterval(iv);fill.style.width="100%";
+    var rec=JSON.parse(JSON.stringify(a));rec.id=Date.now().toString(36)+Math.random().toString(36).slice(2,5);rec.date=new Date().toISOString();
+    rec.preview = !S.isPro && S.freeUsed >= MAX_FREE; // marca subito: prima gratis = full, dalla 2ª in poi preview
+    S.analyses.unshift(rec);S.freeUsed++;save();Br.vibe();
+    var nEsc=(a&&a.esclusioni_critiche)?a.esclusioni_critiche.length:0;
+    var nCla=(a&&a.clausole_rischiose)?a.clausole_rischiose.length:0;
+    track('analysis_completed', { rischio: a&&a.rischio||'UNKNOWN', n_esclusioni: nEsc, n_clausole: nCla, lang: currentLang });
+    if (a && (a.rischio === 'ALTO' || a.rischio === 'CRITICO')) track('risk_high_detected', { rischio: a.rischio });
+    setTimeout(function(){viewA(rec);},350);
+  }).catch(function(err){clearInterval(iv);goHome();setTimeout(function(){alert("Errore analisi:\n"+(err.message||String(err)));},200);track('analysis_failed', { error: String(err&&err.message||err).slice(0,140) });});
+}
+function validCode(c){var cl=c.trim().toUpperCase();if(!/^SHK-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(cl))return false;var p=cl.replace("SHK-","").replace("-",""),s=0;for(var i=0;i<p.length;i++)s+=p.charCodeAt(i);return s%7===0;}
+function xe(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function fd(d){try{return new Date(d).toLocaleDateString("it-IT",{day:"2-digit",month:"short",year:"numeric"});}catch(e){return(d||"").slice(0,10);}}
+function on(id,ev,fn){var el=document.getElementById(id);if(el)el.addEventListener(ev,fn);}
+function init(){
+  try{
+    load();
+    track('app_open', { is_pro: S.isPro?1:0, free_used: S.freeUsed||0, build: APP_BUILD, lang: currentLang });
+    setTimeout(function(){try{if(!S.onboardingDone){show("onboard",true);}else{goHome();show("home");}}catch(e){goHome();show("home");}},6000);
+    on("btn-skip","click",function(){S.onboardingDone=true;save();track('onboarding_completed',{});goHome();show("home");});
+    on("btn-ob-next","click",function(){if(slide<2)setSlide(slide+1);else{S.onboardingDone=true;save();track('onboarding_completed',{});goHome();show("home");}});
+    on("tab-home","click",function(){goHome();show("home");});
+    on("tab-scan","click",goScanner);
+    on("tab-set","click",goSettings);
+    on("btn-home-gear","click",goSettings);
+    on("btn-scanner-back","click",function(){goHome();show("home");});
+    on("btn-result-back","click",function(){goHome();show("home");});
+    on("btn-letter-back","click",function(){if(S.curA)viewA(S.curA);else goHome();});
+    on("btn-pw-back","click",function(){if(S.curA)viewA(S.curA);else{goHome();show("home");}});
+    on("btn-view-example","click",goExample);
+    on("btn-ex-back","click",goPaywall);
+    on("btn-ex-subscribe","click",function(){track('subscribe_external_click',{from:'example'});Br.url(PP);});
+    on("btn-set-back","click",function(){goHome();show("home");});
+    on("btn-partial-upgrade","click",goPaywall);
+    var fi=document.getElementById("file-input");
+    on("upload-zone","click",function(){if(!canScan()){goPaywall();return;}fi.click();});
+    on("btn-pdf","click",function(){if(!canScan()){goPaywall();return;}fi.click();});
+    on("btn-photo","click",function(){if(!canScan()){goPaywall();return;}fi.click();});
+    fi.addEventListener("change",function(e){if(e.target.files[0]){handleFile(e.target.files[0]);e.target.value="";}});
+    [].forEach.call(document.querySelectorAll(".lt-btn"),function(b){b.addEventListener("click",function(){if(!S.isPro){goPaywall();return;}[].forEach.call(document.querySelectorAll(".lt-btn"),function(x){x.classList.remove("active");});b.classList.add("active");S.curLType=b.dataset.t;document.getElementById("lt-out-wrap").classList.add("hide");});});
+    on("btn-gen-lt","click",function(){
+      if(!S.isPro){goPaywall();return;}if(!S.curA){Br.toast("Nessuna analisi");return;}
+      var btn=document.getElementById("btn-gen-lt");btn.disabled=true;btn.textContent="Generazione in corso...";
+      var done=function(l){S.curLetter=l;document.getElementById("lt-out").textContent=l;document.getElementById("lt-out-wrap").classList.remove("hide");btn.disabled=false;btn.textContent="&#128269; Genera documento";};
+      var fail=function(e){alert("Errore: "+(e.message||e));btn.disabled=false;btn.textContent="&#128269; Genera documento";};
+      doLetter(S.curA,S.curLType,document.getElementById("lt-extra").value).then(done).catch(fail);
+    });
+    on("btn-copy-lt","click",function(){if(navigator.clipboard)navigator.clipboard.writeText(S.curLetter).then(function(){Br.toast("Copiato!");});else Br.toast("Seleziona e copia manualmente.");});
+    on("btn-share-lt","click",function(){Br.share(S.curLetter);});
+    on("btn-subscribe","click",function(){track('subscribe_external_click',{from:'paywall'});Br.url(PP);});
+    on("btn-activate","click",function(){
+      var c=document.getElementById("pw-code").value;
+      var err=document.getElementById("pw-err"),ok=document.getElementById("pw-ok"),em=document.getElementById("pw-err-msg");
+      err.classList.add("hide");ok.classList.add("hide");
+      if(validCode(c)){S.isPro=true;S.proCode=c.trim().toUpperCase();save();track('pro_activated',{method:'code'});ok.classList.remove("hide");Br.vibe();Br.toast("Sherlock Pro attivato!");setTimeout(function(){goHome();show("home");},1500);}
+      else{if(em)em.textContent="Codice non valido. Verificare il formato SHK-XXXX-XXXX.";err.classList.remove("hide");}
+    });
+    on("btn-activate-email","click",function(){
+      var emInput=document.getElementById("pw-email");
+      var email=(emInput?emInput.value:"").trim().toLowerCase();
+      var err=document.getElementById("pw-err"),ok=document.getElementById("pw-ok"),em=document.getElementById("pw-err-msg");
+      err.classList.add("hide");ok.classList.add("hide");
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){if(em)em.textContent="Email non valida.";err.classList.remove("hide");return;}
+      var btn=document.getElementById("btn-activate-email");btn.disabled=true;btn.textContent="Attivazione in corso...";
+      apicall(ENDP_ATTIVA,"POST",{"Content-Type":"application/json"},JSON.stringify({email:email})).then(function(r){
+        btn.disabled=false;btn.textContent="Attiva con email";
+        if(r&&r.error){if(em)em.textContent=r.error;err.classList.remove("hide");return;}
+        if(r&&r.codice){S.isPro=true;S.proCode=r.codice;save();track('pro_activated',{method:'email'});ok.classList.remove("hide");Br.vibe();Br.toast("Sherlock Pro attivato!");setTimeout(function(){goHome();show("home");},1500);}
+      }).catch(function(e){btn.disabled=false;btn.textContent="Attiva con email";if(em)em.textContent=(e&&e.message)||"Errore di rete";err.classList.remove("hide");});
+    });
+    on("btn-support","click",function(){Br.url("mailto:"+MAIL+"?subject=Sherlock+v3.0+Supporto");});
+    on("btn-privacy","click",function(){Br.url(PRIVACY_URL);});
+    on("btn-terms","click",function(){Br.url(TERMS_URL);});
+    on("btn-website","click",function(){track('external_link_click',{target:'site'});Br.url(SITE_URL);});
+    on("btn-guides","click",function(){track('external_link_click',{target:'guides'});Br.url(GUIDES_URL);});
+    on("btn-example","click",function(){track('external_link_click',{target:'example_report'});Br.url(EXAMPLE_REPORT_URL);});
+    on("btn-clr","click",function(){if(confirm("Cancellare tutti i dati?")){localStorage.removeItem("shk2");S={analyses:[],isPro:false,proCode:null,onboardingDone:false,freeUsed:0,curA:null,curLetter:"",curLType:"reclamo",devOpen:false};goHome();show("home");Br.toast("Dati cancellati.");}});
+    document.addEventListener("click",function(e){
+      var h=e.target.closest(".acc-hdr");if(h)toggleAcc(h);
+      var ac=e.target.closest(".ac");if(ac){var aid=ac.dataset.id;var a=S.analyses.filter(function(x){return x.id===aid;})[0];if(a)viewA(a);}
+    });
+  }catch(e){console.error("Init:",e);try{show("home");}catch(e2){}}
+}
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
+</script>
+</body>
+</html>
