@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Sembri offline — Sherlock"
+  description="Connessione assente. Le pagine già visitate restano accessibili."
+>
+  <main class="min-h-[70vh] flex items-center justify-center px-5 py-10">
+    <div class="max-w-md text-center">
+      <div class="text-6xl mb-4">📡</div>
+      <h1 class="text-3xl font-extrabold text-white mb-3">Sembri offline</h1>
+      <p class="text-navy-300 mb-6">
+        Non c'è connessione. Le pagine che hai già aperto restano disponibili nella cache locale.
+        Riprova quando torni online.
+      </p>
+      <button
+        type="button"
+        onclick="location.reload()"
+        class="inline-block rounded-lg bg-gold-400 px-6 py-3 font-bold text-navy-900 hover:bg-gold-300 transition"
+      >
+        Riprova
+      </button>
+    </div>
+  </main>
+</BaseLayout>
