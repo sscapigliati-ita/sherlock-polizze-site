@@ -1,0 +1,55 @@
+---
+// Componente client-only che registra il service worker e mostra un toast
+// quando arriva una nuova versione del SW (event 'waiting').
+// Il modulo virtual:pwa-register è esposto dal plugin @vite-pwa/astro.
+---
+<div
+  id="pwa-update-toast"
+  hidden
+  class="fixed bottom-4 inset-x-4 z-50 mx-auto max-w-md rounded-xl border border-gold-400/40 bg-navy-900/95 shadow-2xl backdrop-blur p-4 flex items-center justify-between gap-3"
+>
+  <div class="text-sm text-white">
+    <div class="font-bold">Nuova versione disponibile</div>
+    <div class="text-xs text-navy-300">Aggiorna per le ultime novità di Sherlock.</div>
+  </div>
+  <div class="flex gap-2">
+    <button
+      type="button"
+      id="pwa-update-dismiss"
+      class="text-xs text-navy-400 hover:text-navy-200 px-2 py-1"
+    >
+      Dopo
+    </button>
+    <button
+      type="button"
+      id="pwa-update-apply"
+      class="text-xs font-bold bg-gold-400 hover:bg-gold-300 text-navy-900 rounded px-3 py-1.5"
+    >
+      Aggiorna
+    </button>
+  </div>
+</div>
+
+<script>
+  import { registerSW } from 'virtual:pwa-register';
+
+  const toast = document.getElementById('pwa-update-toast');
+  const btnApply = document.getElementById('pwa-update-apply');
+  const btnDismiss = document.getElementById('pwa-update-dismiss');
+
+  const updateSW = registerSW({
+    onNeedRefresh() {
+      if (toast) toast.hidden = false;
+    },
+    onOfflineReady() {
+      // primo install riuscito: niente UI per ora
+    },
+  });
+
+  btnApply?.addEventListener('click', () => {
+    updateSW(true); // skipWaiting + reload
+  });
+  btnDismiss?.addEventListener('click', () => {
+    if (toast) toast.hidden = true;
+  });
+</script>

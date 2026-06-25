@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import PwaUpdateToast from '../components/PwaUpdateToast.astro';
 
 export interface Props {
   title: string;
@@ -181,5 +182,6 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
     <slot />
   </main>
   <slot name="footer" />
+  <PwaUpdateToast />
 </body>
 </html>
