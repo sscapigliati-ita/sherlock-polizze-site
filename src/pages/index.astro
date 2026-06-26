@@ -58,12 +58,14 @@ const jsonLd = [
         <div class="flex flex-col sm:flex-row gap-3 mb-4">
           <a
             href="/app/"
+            data-track="hero_cta_analizza_click"
             class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
           >
             Analizza gratis la tua polizza
           </a>
           <a
             href="/esempio-report"
+            data-track="hero_cta_esempio_click"
             class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition text-center"
           >
             Vedi un esempio di report
@@ -72,6 +74,7 @@ const jsonLd = [
         <div class="flex flex-col sm:flex-row gap-3 mb-6">
           <a
             href="/abbonati"
+            data-track="hero_cta_pro_click"
             class="text-sm text-navy-400 hover:text-gold-300 underline underline-offset-4 transition"
           >
             Sblocca Pro da 1,25€/mese →
@@ -123,7 +126,7 @@ const jsonLd = [
       <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">Cosa vuoi fare oggi?</h2>
       <p class="text-center text-navy-400 mb-12">Scegli il caso più vicino al tuo. Sherlock parte da lì.</p>
       <div class="grid md:grid-cols-3 gap-5">
-        <a href="/sinistro-respinto" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
+        <a href="/sinistro-respinto" data-track="path_card_sinistro_click" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
           <div class="text-3xl mb-3">📄</div>
           <h3 class="text-lg font-bold text-white mb-2 group-hover:text-gold-300 transition">Mi hanno respinto un sinistro</h3>
           <p class="text-navy-300 text-sm leading-relaxed mb-4">
@@ -131,7 +134,7 @@ const jsonLd = [
           </p>
           <span class="inline-block text-sm font-bold text-gold-400 group-hover:text-gold-300">Inizia gratis →</span>
         </a>
-        <a href="/app/" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
+        <a href="/app/" data-track="path_card_capisci_click" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
           <div class="text-3xl mb-3">🔍</div>
           <h3 class="text-lg font-bold text-white mb-2 group-hover:text-gold-300 transition">Voglio capire una polizza prima di firmare</h3>
           <p class="text-navy-300 text-sm leading-relaxed mb-4">
@@ -139,7 +142,7 @@ const jsonLd = [
           </p>
           <span class="inline-block text-sm font-bold text-gold-400 group-hover:text-gold-300">Inizia gratis →</span>
         </a>
-        <a href="/reclamo-ivass" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
+        <a href="/reclamo-ivass" data-track="path_card_ivass_click" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
           <div class="text-3xl mb-3">⚖️</div>
           <h3 class="text-lg font-bold text-white mb-2 group-hover:text-gold-300 transition">Devo scrivere a compagnia o IVASS</h3>
           <p class="text-navy-300 text-sm leading-relaxed mb-4">
@@ -213,7 +216,7 @@ const jsonLd = [
         ))}
       </div>
       <div class="text-center mt-10">
-        <a href="/app/" class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20">
+        <a href="/app/" data-track="frasi_polizza_cta_click" class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20">
           Controlla queste frasi nella tua polizza →
         </a>
       </div>
@@ -338,12 +341,14 @@ const jsonLd = [
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a
           href="/app/"
+          data-track="bottom_cta_analizza_click"
           class="inline-block bg-gold-400 text-navy-900 font-bold px-7 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20"
         >
           Analizza gratis ora
         </a>
         <a
           href="/abbonati"
+          data-track="bottom_cta_pro_click"
           class="inline-block border border-navy-600 text-navy-100 font-semibold px-7 py-4 rounded-lg hover:bg-navy-800 transition"
         >
           Sblocca Pro da 1,25€/mese

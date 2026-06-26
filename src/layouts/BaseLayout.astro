@@ -154,19 +154,81 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
           } else {
             window.sherlockSetUser({ ui_language: 'it' });
           }
+          // Auto-page-view events per le pagine chiave (un solo evento per
+          // pageview iniziale).
+          const path = location.pathname;
+          if (path === '/abbonati' || path.endsWith('/abbonati')) {
+            window.sherlockTrack('pricing_view', { from_path: document.referrer || '' });
+          } else if (path.startsWith('/abbonamento/')) {
+            const piano = path.split('/abbonamento/')[1]?.split('/')[0] || '';
+            window.sherlockTrack('pricing_plan_view', { piano });
+          } else if (path === '/app' || path === '/app/' || path.startsWith('/app/')) {
+            window.sherlockTrack('app_view', { from_path: document.referrer || '' });
+          } else if (path.startsWith('/guide/')) {
+            const slug = path.replace('/guide/', '').replace(/\/$/, '');
+            window.sherlockTrack('guide_view', { slug });
+          } else if (path === '/sinistro-respinto') {
+            window.sherlockTrack('landing_view', { landing: 'sinistro-respinto' });
+          } else if (path === '/reclamo-ivass') {
+            window.sherlockTrack('landing_view', { landing: 'reclamo-ivass' });
+          } else if (path === '/esempio-report') {
+            window.sherlockTrack('example_report_view', {});
+          } else if (path === '/esempio-lettera') {
+            window.sherlockTrack('example_letter_view', {});
+          } else if (path === '/trasparenza') {
+            window.sherlockTrack('transparency_view', {});
+          }
+
+          // Delegated link click tracking. Categorizzo per destinazione.
           document.addEventListener('click', (e) => {
             const a = e.target.closest && e.target.closest('a[href]');
             if (!a) return;
             const href = a.getAttribute('href') || '';
+            const label = (a.textContent || '').trim().slice(0, 60);
+            const from = location.pathname;
+
+            // Override esplicito via data-track="event_name" sull'<a>.
+            const explicit = a.getAttribute('data-track');
+            if (explicit) {
+              window.sherlockTrack(explicit, { from_path: from, label });
+              return;
+            }
+
             if (href.includes('play.google.com/store/apps')) {
-              window.sherlockTrack('play_store_click', { from_path: location.pathname });
+              window.sherlockTrack('play_store_click', { from_path: from, label });
+            } else if (href === '/app/' || href === '/app' || href.startsWith('/app/') || href.startsWith('/app?')) {
+              window.sherlockTrack('app_open_click', { from_path: from, label });
             } else if (href.startsWith('/abbonamento/')) {
-              const piano = href.split('/abbonamento/')[1]?.split('?')[0] || '';
-              window.sherlockTrack('subscribe_plan_click', { piano });
+              const piano = href.split('/abbonamento/')[1]?.split('?')[0]?.split('/')[0] || '';
+              window.sherlockTrack('subscribe_plan_click', { piano, from_path: from });
             } else if (href === '/abbonati' || href.endsWith('/abbonati')) {
-              window.sherlockTrack('paywall_view_intent', { from_path: location.pathname });
+              window.sherlockTrack('paywall_view_intent', { from_path: from, label });
+            } else if (href === '/esempio-report' || href.endsWith('/esempio-report')) {
+              window.sherlockTrack('example_report_click', { from_path: from, label });
+            } else if (href === '/esempio-lettera' || href.endsWith('/esempio-lettera')) {
+              window.sherlockTrack('example_letter_click', { from_path: from, label });
+            } else if (href === '/trasparenza' || href.endsWith('/trasparenza')) {
+              window.sherlockTrack('transparency_click', { from_path: from, label });
+            } else if (href === '/sinistro-respinto' || href.endsWith('/sinistro-respinto')) {
+              window.sherlockTrack('landing_click', { landing: 'sinistro-respinto', from_path: from });
+            } else if (href === '/reclamo-ivass' || href.endsWith('/reclamo-ivass')) {
+              window.sherlockTrack('landing_click', { landing: 'reclamo-ivass', from_path: from });
+            } else if (href.startsWith('/guide/')) {
+              const slug = href.replace('/guide/', '').replace(/\/$/, '').split('?')[0];
+              window.sherlockTrack('guide_click', { slug, from_path: from });
+            } else if (href === '/guide' || href.endsWith('/guide')) {
+              window.sherlockTrack('guide_index_click', { from_path: from });
             }
           });
+
+          // Track del PayPal click (il bottone PayPal è di solito un div
+          // interattivo, non un <a>). Catturo qualsiasi click su elementi
+          // con id/class che contenga 'paypal'.
+          document.addEventListener('click', (e) => {
+            const el = e.target.closest && e.target.closest('[id*="paypal" i], [class*="paypal" i], [data-payment="paypal"]');
+            if (!el) return;
+            window.sherlockTrack('paypal_click', { from_path: location.pathname });
+          }, true);
         } catch (e) {
           // Silent: nessun blocco se Firebase non carica
         }
