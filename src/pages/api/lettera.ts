@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
-import { getAnthropicKey, getModel, validaCodicePro } from '../../lib/auth';
+import { getAnthropicKey, getModel, valutaCodice } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
+import { marcaCodiceUsato } from '../../lib/storage';
 
 export const prerender = false;
 export const maxDuration = 300;
@@ -63,9 +64,16 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const codicePro = request.headers.get('x-pro-code') ?? '';
-  if (!(await validaCodicePro(codicePro))) {
-    await traccia('bloccato', 'Codice Pro non valido');
-    return json({ error: 'Codice Pro non valido' }, 401);
+  const esito = await valutaCodice(codicePro);
+  if (!esito.valido) {
+    const msg =
+      esito.motivo === 'gia_usato'
+        ? 'Questo codice di acquisto singolo è già stato usato per generare una lettera. Acquistane uno nuovo o passa a Pro per illimitate.'
+        : esito.motivo === 'scaduto'
+          ? 'Codice scaduto.'
+          : 'Codice non valido.';
+    await traccia('bloccato', `Codice rifiutato (${esito.motivo})`);
+    return json({ error: msg }, 401);
   }
 
   let payload: { analisi?: any; tipo?: string; extra?: string; lingua?: string };
@@ -121,6 +129,12 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const testo: string = data?.content?.[0]?.text ?? '';
+
+  // Codice singolo: una volta generata la lettera, lo marco come consumato.
+  if (esito.tipo === 'singolo' && esito.record) {
+    await marcaCodiceUsato(esito.record.codice);
+  }
+
   await traccia('ok');
   return json({ lettera: testo });
 };

@@ -1,15 +1,37 @@
 ---
-export const prerender = true;
+export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { contaFounderVenduti } from '../lib/storage';
+import { FOUNDER_MAX } from '../lib/paypal';
 
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
 
+// Recupera il counter Founder live (KV). Se KV non risponde, fallback a 0
+// (offerta visibile). Non bloccare mai il rendering della pagina per questo.
+let founderVenduti = 0;
+try {
+  founderVenduti = await contaFounderVenduti();
+} catch {}
+const founderRimanenti = Math.max(0, FOUNDER_MAX - founderVenduti);
+const founderAttivo = founderRimanenti > 0;
+
+// Costruisco la lista piani dinamicamente. Founder appare SOLO se ci sono posti.
 const piani = [
-  { id: 'mensile', nome: 'Mensile', prezzo: '2,99 €', alMese: '2,99 €/mese', badge: null, recommended: false },
+  ...(founderAttivo
+    ? [{
+        id: 'founder',
+        nome: 'Founder (lifetime)',
+        prezzo: '19,90 €',
+        alMese: 'una tantum, accesso per sempre',
+        badge: `Solo ${founderRimanenti}/${FOUNDER_MAX}`,
+        recommended: true,
+      }]
+    : []),
+  { id: 'mensile', nome: 'Mensile', prezzo: '2,99 €', alMese: '2,99 €/mese', badge: null, recommended: !founderAttivo && false },
   { id: 'semestrale', nome: 'Semestrale', prezzo: '7,99 €', alMese: '1,33 €/mese', badge: 'Risparmi 55%', recommended: false },
-  { id: 'annuale', nome: 'Annuale', prezzo: '14,99 €', alMese: '1,25 €/mese', badge: 'Più conveniente', recommended: true },
+  { id: 'annuale', nome: 'Annuale', prezzo: '14,99 €', alMese: '1,25 €/mese', badge: founderAttivo ? 'Più conveniente (no Founder)' : 'Più conveniente', recommended: !founderAttivo },
 ];
 
 const faqItems = [
@@ -81,6 +103,16 @@ const jsonLd = [
       Sherlock Pro trasforma le criticità trovate nella polizza in
       reclami, diffide e segnalazioni IVASS strutturate.
     </p>
+
+    {founderAttivo && (
+      <div class="mt-7 inline-flex flex-col sm:flex-row items-center gap-3 px-5 py-3 rounded-xl border border-gold-400/40 bg-gradient-to-br from-amber-500/10 to-gold-400/10">
+        <div class="text-xs uppercase tracking-widest text-gold-400 font-extrabold">🏆 Founder lifetime</div>
+        <div class="text-sm text-white">
+          <strong>19,90€ una sola volta — accesso Pro per sempre.</strong>
+          Solo per i primi {FOUNDER_MAX} utenti (<span class="text-gold-400 font-bold">{founderRimanenti} ancora disponibili</span>).
+        </div>
+      </div>
+    )}
   </section>
 
   <section class="px-5 pb-16 max-w-5xl mx-auto" id="checkout">
@@ -223,6 +255,18 @@ const jsonLd = [
             <span class="text-sm leading-relaxed">{item}</span>
           </div>
         ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="px-5 pb-8 max-w-3xl mx-auto">
+    <div class="rounded-xl border border-navy-700 bg-navy-900 p-6 text-center">
+      <div class="text-sm text-navy-300 mb-2">Ti serve solo <strong class="text-white">una lettera per una pratica singola</strong>?</div>
+      <a href="/reclamo-singolo" class="inline-block text-gold-400 hover:text-gold-300 font-bold">
+        Acquisto singolo a 3,99€ →
+      </a>
+      <div class="text-xs text-navy-500 mt-2">
+        Codice usa-e-getta per generare 1 reclamo/IVASS/diffida. Nessun abbonamento.
       </div>
     </div>
   </section>

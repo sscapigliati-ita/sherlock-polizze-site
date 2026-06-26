@@ -28,11 +28,41 @@ function kv(): Redis {
 export type RecordPro = {
   codice: string;
   email: string;
-  piano: 'mensile' | 'semestrale' | 'annuale';
+  piano: 'mensile' | 'semestrale' | 'annuale' | 'singolo';
   dataEmissione: string; // ISO
   dataScadenza: string; // ISO
   paypalOrderId: string;
+  // Solo per piano='singolo': true dopo la 1ª generazione lettera (codice usa-e-getta)
+  usato?: boolean;
+  dataUso?: string;
 };
+
+export async function marcaCodiceUsato(codice: string): Promise<void> {
+  const key = `pro:${codice.trim().toUpperCase()}`;
+  const patch = { usato: true, dataUso: new Date().toISOString() };
+  if (kvConfigurato()) {
+    const rec = await kv().get<RecordPro>(key);
+    if (rec) await kv().set(key, { ...rec, ...patch });
+    return;
+  }
+  const rec = fallback.get(key);
+  if (rec) fallback.set(key, { ...rec, ...patch });
+}
+
+const FOUNDER_KEY = 'count:founder:venduti';
+let _founderFallback = 0;
+
+export async function contaFounderVenduti(): Promise<number> {
+  if (!kvConfigurato()) return _founderFallback;
+  const n = await kv().get<number>(FOUNDER_KEY);
+  return n ?? 0;
+}
+
+// Incrementa atomicamente il counter dei Founder venduti e ritorna il nuovo valore.
+export async function incrementaFounderVenduti(): Promise<number> {
+  if (!kvConfigurato()) return ++_founderFallback;
+  return await kv().incr(FOUNDER_KEY);
+}
 
 function kvConfigurato(): boolean {
   return Boolean(urlRedis() && tokenRedis());

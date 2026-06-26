@@ -1,0 +1,131 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+<BaseLayout
+  title="Sherlock — Acquisto singolo: conferma"
+  description="Conferma del pagamento e codice della tua lettera Sherlock."
+>
+  <Header slot="header" />
+
+  <section class="px-5 py-16 max-w-xl mx-auto text-center">
+    <div id="stato-loading">
+      <div class="text-gold-400 text-5xl mb-4 animate-pulse">⌛</div>
+      <h1 class="text-2xl font-extrabold text-white mb-2">Conferma pagamento in corso</h1>
+      <p class="text-navy-400">Sto verificando la transazione con PayPal...</p>
+    </div>
+
+    <div id="stato-success" class="hidden">
+      <div class="text-emerald-400 text-5xl mb-4">✓</div>
+      <h1 class="text-2xl font-extrabold text-white mb-2">Codice lettera attivato</h1>
+      <p class="text-navy-400 mb-6">
+        Conservalo: è valido per <strong class="text-white">1 generazione di lettera</strong>.
+        Te l'abbiamo anche inviato via email.
+      </p>
+
+      <div class="bg-navy-900 border border-gold-400/40 rounded-xl p-6 mb-6">
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-2">Il tuo codice 1-lettera</div>
+        <div id="codice-out" class="text-3xl font-mono text-gold-400 tracking-widest"></div>
+        <button
+          id="btn-copia"
+          class="mt-4 text-sm bg-gold-400/20 hover:bg-gold-400/30 text-gold-400 px-4 py-2 rounded transition"
+        >
+          Copia codice
+        </button>
+      </div>
+
+      <div id="warn-mail" class="hidden bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-lg px-4 py-3 mb-6 text-sm">
+        ⚠️ L'invio della mail è fallito ma il tuo codice è valido. Salvalo subito.
+      </div>
+
+      <div class="text-left bg-navy-900/50 border border-navy-800 rounded-xl p-5 text-sm text-navy-200 space-y-2">
+        <div class="font-bold text-white">Come usarlo</div>
+        <ol class="list-decimal list-inside space-y-1">
+          <li>Apri <a href="/app/" class="text-gold-400 hover:underline">Sherlock dal browser</a> o l'app Android</li>
+          <li>Vai su Impostazioni → Inserisci codice</li>
+          <li>Incolla il codice qui sopra</li>
+          <li>Apri la polizza, genera la lettera (PEC, IVASS o diffida)</li>
+        </ol>
+        <p class="text-xs text-navy-500 pt-2 border-t border-navy-800 mt-3">
+          ⚠️ Il codice si esaurisce alla 1ª generazione. Se vuoi rivedere o cambiare
+          tipo di lettera, devi acquistarne un altro o passare a Pro.
+        </p>
+      </div>
+
+      <a
+        href="/app/"
+        class="inline-block mt-6 bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20"
+      >
+        Apri Sherlock ora →
+      </a>
+    </div>
+
+    <div id="stato-errore" class="hidden">
+      <div class="text-red-400 text-5xl mb-4">✗</div>
+      <h1 class="text-2xl font-extrabold text-white mb-2">Errore durante la conferma</h1>
+      <p id="err-msg" class="text-red-300 mb-6"></p>
+      <a href="/reclamo-singolo" class="inline-block text-gold-400 hover:underline">Torna all'acquisto</a>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('token') ?? params.get('orderId') ?? '';
+
+  const loading = document.getElementById('stato-loading');
+  const success = document.getElementById('stato-success');
+  const errore = document.getElementById('stato-errore');
+  const errMsg = document.getElementById('err-msg');
+  const codiceOut = document.getElementById('codice-out');
+  const warnMail = document.getElementById('warn-mail');
+
+  async function conferma() {
+    if (!orderId) {
+      loading?.classList.add('hidden');
+      errore?.classList.remove('hidden');
+      if (errMsg) errMsg.textContent = 'Manca il riferimento ordine PayPal nell\'URL.';
+      return;
+    }
+    try {
+      const r = await fetch('/api/paypal/capture-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId }),
+      });
+      const data = await r.json();
+      if (!r.ok || !data.codice) throw new Error(data.error ?? 'Errore cattura pagamento');
+      loading?.classList.add('hidden');
+      success?.classList.remove('hidden');
+      if (codiceOut) codiceOut.textContent = data.codice;
+      if (!data.mailInviata) warnMail?.classList.remove('hidden');
+      const w: any = window;
+      if (typeof w.sherlockTrack === 'function') {
+        w.sherlockTrack('purchase_success', { piano: 'singolo', method: 'paypal', value: 3.99, currency: 'EUR' });
+      }
+    } catch (e: any) {
+      loading?.classList.add('hidden');
+      errore?.classList.remove('hidden');
+      if (errMsg) errMsg.textContent = e?.message ?? 'Errore sconosciuto';
+      const w: any = window;
+      if (typeof w.sherlockTrack === 'function') {
+        w.sherlockTrack('purchase_failed', { piano: 'singolo', error: String(e?.message || e).slice(0, 100) });
+      }
+    }
+  }
+
+  const btnCopia = document.getElementById('btn-copia') as HTMLButtonElement | null;
+  btnCopia?.addEventListener('click', () => {
+    const c = codiceOut?.textContent ?? '';
+    navigator.clipboard?.writeText(c).then(() => {
+      btnCopia.textContent = 'Copiato ✓';
+      setTimeout(() => (btnCopia.textContent = 'Copia codice'), 2000);
+    });
+  });
+
+  conferma();
+</script>

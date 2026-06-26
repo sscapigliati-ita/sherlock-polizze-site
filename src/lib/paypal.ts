@@ -13,16 +13,28 @@ function baseApi(): string {
     : 'https://api-m.paypal.com';
 }
 
-export type PianoId = 'mensile' | 'semestrale' | 'annuale';
+export type PianoId = 'mensile' | 'semestrale' | 'annuale' | 'singolo' | 'founder';
+export type TipoCodice = 'pro' | 'singolo';
 
 export const PIANI: Record<
   PianoId,
-  { nome: string; prezzo: string; durataMesi: number }
+  { nome: string; prezzo: string; durataMesi: number; tipo: TipoCodice }
 > = {
-  mensile: { nome: 'Mensile', prezzo: '2.99', durataMesi: 1 },
-  semestrale: { nome: 'Semestrale', prezzo: '7.99', durataMesi: 6 },
-  annuale: { nome: 'Annuale', prezzo: '14.99', durataMesi: 12 },
+  mensile: { nome: 'Pro Mensile', prezzo: '2.99', durataMesi: 1, tipo: 'pro' },
+  semestrale: { nome: 'Pro Semestrale', prezzo: '7.99', durataMesi: 6, tipo: 'pro' },
+  annuale: { nome: 'Pro Annuale', prezzo: '14.99', durataMesi: 12, tipo: 'pro' },
+  // Acquisto una-tantum: 1 lettera, 1 sola generazione. Validità 30 giorni
+  // dall'emissione per consumare il codice.
+  singolo: { nome: 'Lettera Singola', prezzo: '3.99', durataMesi: 1, tipo: 'singolo' },
+  // Founder lifetime: pagamento singolo, accesso Pro "per sempre". Numero
+  // limitato — vedi FOUNDER_MAX. Quando esauriti, /api/paypal/create-order
+  // rifiuta nuovi acquisti founder.
+  founder: { nome: 'Founder (lifetime)', prezzo: '19.90', durataMesi: 1200, tipo: 'pro' },
 };
+
+// Limite assoluto di codici Founder vendibili. Quando il counter KV
+// 'count:founder:venduti' raggiunge questo valore, l'offerta è chiusa.
+export const FOUNDER_MAX = 50;
 
 let cachedToken: { value: string; expiresAt: number } | null = null;
 

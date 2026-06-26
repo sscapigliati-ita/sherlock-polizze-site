@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { catturaOrdinePayPal, calcolaScadenza, PIANI } from '../../../lib/paypal';
 import { generaCodicePro } from '../../../lib/codici';
-import { salvaCodicePro } from '../../../lib/storage';
+import { salvaCodicePro, incrementaFounderVenduti } from '../../../lib/storage';
 import { inviaMailCodice } from '../../../lib/mail';
 import { ga4TrackServer } from '../../../lib/ga4';
 
@@ -43,6 +43,7 @@ export const POST: APIRoute = async ({ request }) => {
   const codice = generaCodicePro();
   const dataEmissione = new Date().toISOString();
   const dataScadenza = calcolaScadenza(cattura.piano, new Date(dataEmissione));
+  const isSingolo = cattura.piano === 'singolo';
 
   await salvaCodicePro({
     codice,
@@ -51,13 +52,20 @@ export const POST: APIRoute = async ({ request }) => {
     dataEmissione,
     dataScadenza,
     paypalOrderId: orderId,
+    ...(isSingolo ? { usato: false } : {}),
   });
+
+  // Founder: incrementa il counter (sblocca la chiusura dell'offerta a FOUNDER_MAX)
+  if (cattura.piano === 'founder') {
+    await incrementaFounderVenduti().catch(() => undefined);
+  }
 
   const mail = await inviaMailCodice({
     email: cattura.email,
     codice,
     piano: PIANI[cattura.piano].nome,
     dataScadenza,
+    tipo: PIANI[cattura.piano].tipo,
   });
 
   void ga4TrackServer('purchase', orderId, {
