@@ -169,6 +169,32 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
           } else {
             window.sherlockSetUser({ ui_language: 'it' });
           }
+          // Referral: se l'URL contiene ?ref=SHK-XXXX-XXXX, salva in localStorage
+          // (TTL 60 giorni) per propagarlo al checkout. Espone window.sherlockRef().
+          (function captureRef() {
+            try {
+              const p = new URLSearchParams(location.search);
+              const r = (p.get('ref') || '').trim().toUpperCase();
+              if (/^SHK-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(r)) {
+                const exp = Date.now() + 60 * 24 * 3600 * 1000;
+                localStorage.setItem('sherlock_ref', JSON.stringify({ code: r, exp }));
+                window.sherlockTrack('ref_link_landed', { code: r });
+              }
+            } catch (e) {}
+          })();
+          window.sherlockRef = function () {
+            try {
+              const raw = localStorage.getItem('sherlock_ref');
+              if (!raw) return null;
+              const o = JSON.parse(raw);
+              if (!o || !o.code || (o.exp && o.exp < Date.now())) {
+                localStorage.removeItem('sherlock_ref');
+                return null;
+              }
+              return o.code;
+            } catch (e) { return null; }
+          };
+
           // Auto-page-view events per le pagine chiave (un solo evento per
           // pageview iniziale).
           const path = location.pathname;

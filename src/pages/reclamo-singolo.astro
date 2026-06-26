@@ -126,17 +126,18 @@ const jsonLd = [
     btn.textContent = 'Sto creando l\'ordine PayPal...';
 
     try {
+      const w: any = window;
+      const ref = typeof w.sherlockRef === 'function' ? w.sherlockRef() : null;
       const r = await fetch('/api/paypal/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ piano: 'singolo', email }),
+        body: JSON.stringify({ piano: 'singolo', email, ...(ref ? { ref } : {}) }),
       });
       const data = await r.json();
       if (!r.ok || !data.approveUrl) {
         throw new Error(data.error || 'Errore creazione ordine');
       }
       // Track event prima del redirect
-      const w: any = window;
       if (typeof w.sherlockTrack === 'function') {
         w.sherlockTrack('paypal_redirect_singolo', { value: 3.99, currency: 'EUR' });
       }

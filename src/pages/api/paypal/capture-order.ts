@@ -1,7 +1,13 @@
 import type { APIRoute } from 'astro';
 import { catturaOrdinePayPal, calcolaScadenza, PIANI } from '../../../lib/paypal';
 import { generaCodicePro } from '../../../lib/codici';
-import { salvaCodicePro, incrementaFounderVenduti } from '../../../lib/storage';
+import {
+  salvaCodicePro,
+  incrementaFounderVenduti,
+  leggiCodicePro,
+  registraReferralAcquisto,
+  estendiScadenza,
+} from '../../../lib/storage';
 import { inviaMailCodice } from '../../../lib/mail';
 import { ga4TrackServer } from '../../../lib/ga4';
 
@@ -60,6 +66,34 @@ export const POST: APIRoute = async ({ request }) => {
     await incrementaFounderVenduti().catch(() => undefined);
   }
 
+  // ===== Referral best-effort =====
+  // Se il custom_id includeva ref:<CODICE>, e quel codice esiste come Pro
+  // valido (escluso il referrer = se stesso e i singoli/usati), accredito
+  // 30gg di estensione e incremento il counter referral. Idempotente sull'orderId.
+  let refApplicato: { referrer: string; nuovaScadenza?: string } | undefined;
+  if (cattura.ref && cattura.ref !== codice) {
+    try {
+      const referrer = await leggiCodicePro(cattura.ref);
+      const validoReferrer = referrer
+        && referrer.piano !== 'singolo'
+        && referrer.email.toLowerCase() !== cattura.email.toLowerCase();
+      if (validoReferrer) {
+        const primo = await registraReferralAcquisto(cattura.ref, orderId);
+        if (primo) {
+          const ext = await estendiScadenza(cattura.ref, 1);
+          refApplicato = { referrer: cattura.ref, nuovaScadenza: ext.nuovaScadenza };
+          void ga4TrackServer('referral_bonus_applied', orderId, {
+            referrer_code: cattura.ref,
+            new_buyer_email: cattura.email,
+            piano: cattura.piano,
+          });
+        }
+      }
+    } catch {
+      // Fallimento del referral non blocca mai l'acquisto principale.
+    }
+  }
+
   const mail = await inviaMailCodice({
     email: cattura.email,
     codice,
@@ -85,5 +119,6 @@ export const POST: APIRoute = async ({ request }) => {
     dataScadenza,
     mailInviata: mail.ok,
     mailError: mail.ok ? undefined : mail.error,
+    referralApplicato: refApplicato ? true : false,
   });
 };

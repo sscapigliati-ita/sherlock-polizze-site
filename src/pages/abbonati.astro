@@ -271,14 +271,23 @@ const jsonLd = [
     </div>
   </section>
 
-  <section class="px-5 pb-8 max-w-3xl mx-auto">
+  <section class="px-5 pb-8 max-w-3xl mx-auto grid sm:grid-cols-2 gap-4">
     <div class="rounded-xl border border-navy-700 bg-navy-900 p-6 text-center">
-      <div class="text-sm text-navy-300 mb-2">Ti serve solo <strong class="text-white">una lettera per una pratica singola</strong>?</div>
+      <div class="text-sm text-navy-300 mb-2">Solo <strong class="text-white">una lettera</strong>?</div>
       <a href="/reclamo-singolo" class="inline-block text-gold-400 hover:text-gold-300 font-bold">
         Acquisto singolo a 3,99€ →
       </a>
       <div class="text-xs text-navy-500 mt-2">
-        Codice usa-e-getta per generare 1 reclamo/IVASS/diffida. Nessun abbonamento.
+        Codice usa-e-getta. Nessun abbonamento.
+      </div>
+    </div>
+    <div class="rounded-xl border border-gold-400/30 bg-navy-900 p-6 text-center">
+      <div class="text-sm text-navy-300 mb-2"><strong class="text-white">Sei già Pro?</strong></div>
+      <a href="/referral" class="inline-block text-gold-400 hover:text-gold-300 font-bold">
+        Invita amici, +30gg Pro ogni amico →
+      </a>
+      <div class="text-xs text-navy-500 mt-2">
+        Nessun trucco: bonus automatico ad ogni acquisto.
       </div>
     </div>
   </section>
@@ -354,10 +363,12 @@ const jsonLd = [
     if (btnText) btnText.textContent = 'Reindirizzamento a PayPal…';
     err.classList.add('hidden');
     try {
+      const wRef: any = window;
+      const ref = typeof wRef.sherlockRef === 'function' ? wRef.sherlockRef() : null;
       const r = await fetch('/api/paypal/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ piano, email }),
+        body: JSON.stringify({ piano, email, ...(ref ? { ref } : {}) }),
       });
       const data = await r.json();
       if (!r.ok || !data.approveUrl) throw new Error(data.error ?? 'Errore inatteso');

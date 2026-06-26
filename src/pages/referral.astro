@@ -1,0 +1,184 @@
+---
+export const prerender = false;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Programma referral Sherlock',
+    description: 'Invita un amico a Sherlock Pro: per ogni amico che attiva un piano, ricevi +30 giorni di Pro gratuiti.',
+    inLanguage: 'it-IT',
+  },
+];
+---
+<BaseLayout
+  title="Invita un amico — +30 giorni Pro gratis | Sherlock"
+  description="Hai un codice Sherlock Pro? Invita amici: per ogni amico che attiva un piano, ti regaliamo 30 giorni di Pro extra. Niente trucchi."
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <section class="px-5 pt-12 pb-6 max-w-3xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
+      Programma Founder Friends
+    </div>
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
+      Invita un amico,<br />
+      <span class="text-gold-400">+30 giorni Pro</span> per te.
+    </h1>
+    <p class="text-lg text-navy-300 max-w-xl mx-auto">
+      Per ogni amico che acquista un piano Pro o Founder usando il tuo link,
+      <strong class="text-white">aggiungiamo automaticamente 30 giorni</strong>
+      al tuo abbonamento. Niente limiti.
+    </p>
+  </section>
+
+  <section class="px-5 pb-16 max-w-2xl mx-auto">
+    <div class="rounded-xl border border-navy-700 bg-navy-900 p-6 mb-6">
+      <div class="text-xs uppercase tracking-widest text-navy-400 font-bold mb-3">Il tuo codice Pro</div>
+      <form id="form-ref" class="space-y-3">
+        <input
+          type="text"
+          name="codice"
+          required
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="SHK-XXXX-XXXX"
+          class="w-full bg-navy-950 border border-navy-700 rounded-lg px-4 py-3 text-white font-mono uppercase tracking-widest text-center placeholder-navy-600 focus:border-gold-400 focus:outline-none"
+        />
+        <button type="submit" class="w-full bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition">
+          Genera il mio link
+        </button>
+        <div id="errore" class="hidden text-sm text-red-300 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3"></div>
+        <p class="text-xs text-navy-500 leading-relaxed">
+          Devi avere un codice Pro o Founder attivo. Se hai pagato e non
+          ricordi il codice, controlla l'email "Il tuo codice Sherlock Pro".
+        </p>
+      </form>
+    </div>
+
+    <div id="risultato" class="hidden rounded-xl border border-gold-400/40 bg-gradient-to-br from-navy-900 to-navy-800 p-6 shadow-xl shadow-gold-400/10">
+      <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-3">Il tuo link personale</div>
+      <div class="bg-navy-950 border border-navy-700 rounded-lg p-4 mb-4">
+        <div id="link-out" class="text-sm text-white font-mono break-all"></div>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 mb-6">
+        <button id="btn-copia" class="flex-1 bg-gold-400 text-navy-900 font-bold px-5 py-3 rounded-lg hover:bg-gold-300 transition">
+          Copia link
+        </button>
+        <button id="btn-share" class="flex-1 border border-navy-600 text-navy-100 font-semibold px-5 py-3 rounded-lg hover:bg-navy-800 transition">
+          Condividi
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="bg-navy-950 border border-navy-700 rounded-lg p-4 text-center">
+          <div class="text-xs uppercase tracking-widest text-navy-400 mb-1">Amici attivati</div>
+          <div id="counter" class="text-3xl font-extrabold text-white">—</div>
+        </div>
+        <div class="bg-navy-950 border border-gold-400/30 rounded-lg p-4 text-center">
+          <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">Giorni Pro guadagnati</div>
+          <div id="giorni" class="text-3xl font-extrabold text-gold-400">—</div>
+        </div>
+      </div>
+
+      <div class="bg-navy-950 border border-navy-800 rounded-lg p-4 text-sm text-navy-300">
+        <div class="font-bold text-white mb-2">Come funziona</div>
+        <ol class="list-decimal list-inside space-y-1 text-xs">
+          <li>Condividi il link sopra (WhatsApp, email, social)</li>
+          <li>L'amico clicca e atterra sul sito Sherlock</li>
+          <li>Quando l'amico acquista un piano, il sistema accredita +30gg al tuo abbonamento</li>
+          <li>Conta solo l'<strong class="text-white">acquisto a buon fine</strong> (non i click)</li>
+        </ol>
+        <p class="text-xs text-navy-500 mt-3 pt-3 border-t border-navy-800">
+          Limiti: 1 bonus per ogni ordine PayPal distinto. Non puoi auto-invitarti
+          (stessa email/codice). Validi solo acquisti Pro, Semestrale, Annuale,
+          Founder (esclusi i singoli).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('form-ref') as HTMLFormElement | null;
+  const errore = document.getElementById('errore');
+  const risultato = document.getElementById('risultato');
+  const linkOut = document.getElementById('link-out');
+  const counter = document.getElementById('counter');
+  const giorni = document.getElementById('giorni');
+  const btnCopia = document.getElementById('btn-copia');
+  const btnShare = document.getElementById('btn-share');
+
+  const SITE = 'https://sherlock-polizze-site-five.vercel.app';
+  let linkAttuale = '';
+
+  function checksumValido(codice: string): boolean {
+    const p = codice.trim().toUpperCase();
+    if (!/^SHK-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(p)) return false;
+    const payload = p.replace('SHK-', '').replace('-', '');
+    let s = 0;
+    for (let i = 0; i < payload.length; i++) s += payload.charCodeAt(i);
+    return s % 7 === 0;
+  }
+
+  form?.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    errore?.classList.add('hidden');
+    const fd = new FormData(form);
+    const codice = String(fd.get('codice') || '').trim().toUpperCase();
+    if (!checksumValido(codice)) {
+      if (errore) {
+        errore.textContent = 'Codice non valido. Formato atteso: SHK-XXXX-XXXX';
+        errore.classList.remove('hidden');
+      }
+      return;
+    }
+
+    try {
+      const r = await fetch('/api/referral/stats?codice=' + encodeURIComponent(codice));
+      const data = await r.json();
+      if (!r.ok || !data.valido) {
+        throw new Error(data.error || 'Codice non riconosciuto');
+      }
+      linkAttuale = `${SITE}/?ref=${codice}`;
+      if (linkOut) linkOut.textContent = linkAttuale;
+      if (counter) counter.textContent = String(data.amici || 0);
+      if (giorni) giorni.textContent = String((data.amici || 0) * 30);
+      risultato?.classList.remove('hidden');
+      const w: any = window;
+      if (typeof w.sherlockTrack === 'function') {
+        w.sherlockTrack('ref_link_view', { amici: data.amici || 0 });
+      }
+    } catch (e: any) {
+      if (errore) {
+        errore.textContent = e?.message ?? 'Errore di verifica';
+        errore.classList.remove('hidden');
+      }
+    }
+  });
+
+  btnCopia?.addEventListener('click', async () => {
+    if (!linkAttuale) return;
+    try {
+      await navigator.clipboard.writeText(linkAttuale);
+      btnCopia.textContent = 'Copiato ✓';
+      setTimeout(() => { if (btnCopia) btnCopia.textContent = 'Copia link'; }, 2000);
+    } catch {}
+  });
+
+  btnShare?.addEventListener('click', async () => {
+    if (!linkAttuale) return;
+    const text = 'Ti consiglio Sherlock per leggere le polizze e capire dove non sei davvero coperto. Usa il mio link per attivarlo:';
+    if ((navigator as any).share) {
+      try { await (navigator as any).share({ title: 'Sherlock — Detective Polizze', text, url: linkAttuale }); } catch {}
+    } else {
+      try { await navigator.clipboard.writeText(`${text} ${linkAttuale}`); } catch {}
+    }
+  });
+</script>

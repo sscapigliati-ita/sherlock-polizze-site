@@ -64,6 +64,62 @@ export async function incrementaFounderVenduti(): Promise<number> {
   return await kv().incr(FOUNDER_KEY);
 }
 
+// ===== Referral =====
+// 'ref:<codiceReferrer>:count'  → counter degli acquisti generati
+// 'ref:<codiceReferrer>:orders' → set degli orderId già accreditati (idempotenza)
+const _refFallback = new Map<string, { count: number; orders: Set<string> }>();
+
+export async function leggiCounterReferral(refCode: string): Promise<number> {
+  const r = refCode.trim().toUpperCase();
+  if (!kvConfigurato()) return _refFallback.get(r)?.count ?? 0;
+  const n = await kv().get<number>(`ref:${r}:count`);
+  return n ?? 0;
+}
+
+// Registra un acquisto come generato dal referral. Idempotente sull'orderId.
+// Ritorna true se è la prima volta che si registra (cioè bisogna applicare il bonus),
+// false se l'orderId era già accreditato (no doppia ricompensa).
+export async function registraReferralAcquisto(refCode: string, orderId: string): Promise<boolean> {
+  const r = refCode.trim().toUpperCase();
+  const oid = orderId.trim();
+  if (!kvConfigurato()) {
+    const entry = _refFallback.get(r) ?? { count: 0, orders: new Set<string>() };
+    if (entry.orders.has(oid)) return false;
+    entry.orders.add(oid);
+    entry.count += 1;
+    _refFallback.set(r, entry);
+    return true;
+  }
+  // sadd ritorna 1 se membro nuovo, 0 se già presente
+  const added = await kv().sadd(`ref:${r}:orders`, oid);
+  if (added === 0) return false;
+  await kv().incr(`ref:${r}:count`);
+  return true;
+}
+
+// Estende dataScadenza di un record Pro di N mesi (bonus referral).
+// Best-effort: non lancia se il record non c'è.
+export async function estendiScadenza(codice: string, mesi: number): Promise<{ ok: boolean; nuovaScadenza?: string }> {
+  const key = `pro:${codice.trim().toUpperCase()}`;
+  const ora = new Date();
+  if (!kvConfigurato()) {
+    const rec = fallback.get(key);
+    if (!rec) return { ok: false };
+    const base = new Date(rec.dataScadenza > ora.toISOString() ? rec.dataScadenza : ora.toISOString());
+    base.setMonth(base.getMonth() + mesi);
+    const nuovaScadenza = base.toISOString();
+    fallback.set(key, { ...rec, dataScadenza: nuovaScadenza });
+    return { ok: true, nuovaScadenza };
+  }
+  const rec = await kv().get<RecordPro>(key);
+  if (!rec) return { ok: false };
+  const base = new Date(rec.dataScadenza > ora.toISOString() ? rec.dataScadenza : ora.toISOString());
+  base.setMonth(base.getMonth() + mesi);
+  const nuovaScadenza = base.toISOString();
+  await kv().set(key, { ...rec, dataScadenza: nuovaScadenza });
+  return { ok: true, nuovaScadenza };
+}
+
 function kvConfigurato(): boolean {
   return Boolean(urlRedis() && tokenRedis());
 }

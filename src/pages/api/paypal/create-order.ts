@@ -13,7 +13,7 @@ function json(body: unknown, status = 200): Response {
 }
 
 export const POST: APIRoute = async ({ request, url }) => {
-  let payload: { piano?: string; email?: string };
+  let payload: { piano?: string; email?: string; ref?: string };
   try {
     payload = await request.json();
   } catch {
@@ -22,6 +22,10 @@ export const POST: APIRoute = async ({ request, url }) => {
 
   const piano = payload.piano as PianoId;
   const email = (payload.email ?? '').trim().toLowerCase();
+  // Referrer opzionale: deve essere un codice ben formato (checksum verificato
+  // al capture per non duplicare lavoro qui). Se vuoto/invalido, lo ignoro.
+  const refRaw = (payload.ref ?? '').trim().toUpperCase();
+  const ref = /^SHK-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(refRaw) ? refRaw : undefined;
 
   if (!piano || !(piano in PIANI)) {
     return json({ error: 'Piano non valido (usa mensile|semestrale|annuale|singolo|founder)' }, 400);
@@ -59,8 +63,9 @@ export const POST: APIRoute = async ({ request, url }) => {
       email,
       returnUrl,
       cancelUrl,
+      ref,
     });
-    void ga4TrackServer('paypal_redirect', orderId, { piano, value: PIANI[piano]?.prezzo || 0, currency: 'EUR' });
+    void ga4TrackServer('paypal_redirect', orderId, { piano, value: PIANI[piano]?.prezzo || 0, currency: 'EUR', has_ref: ref ? 1 : 0 });
     return json({ orderId, approveUrl, piano, email });
   } catch (e: any) {
     void ga4TrackServer('paypal_create_error', email || 'unknown', { piano, reason: String(e?.message || 'unknown').slice(0, 100) });

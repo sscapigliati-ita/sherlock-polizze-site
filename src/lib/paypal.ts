@@ -74,16 +74,24 @@ export async function creaOrdinePayPal(opts: {
   email: string;
   returnUrl: string;
   cancelUrl: string;
+  ref?: string; // codice referrer opzionale
 }): Promise<{ orderId: string; approveUrl: string }> {
   const token = await getAccessToken();
   const dettaglio = PIANI[opts.piano];
+
+  // custom_id propaga email + (opzionale) referrer al capture.
+  // Formato: "<email>" oppure "<email>|ref:<CODICE>"
+  // Limite PayPal: 127 caratteri. Email può essere fino a 254, ma in pratica
+  // sotto i 80; un codice referral aggiunge ~20 char → safe.
+  const refSegment = opts.ref ? `|ref:${opts.ref.trim().toUpperCase().slice(0, 20)}` : '';
+  const customId = (opts.email + refSegment).slice(0, 127);
 
   const body = {
     intent: 'CAPTURE',
     purchase_units: [
       {
         reference_id: opts.piano,
-        custom_id: opts.email,
+        custom_id: customId,
         description: `Sherlock Pro - piano ${dettaglio.nome}`,
         amount: {
           currency_code: 'EUR',
@@ -125,6 +133,7 @@ export type CaptureResult = {
   status: string;
   email: string;
   piano: PianoId;
+  ref?: string; // codice referrer, se presente nel custom_id
 };
 
 export async function catturaOrdinePayPal(orderId: string): Promise<CaptureResult> {
@@ -143,17 +152,25 @@ export async function catturaOrdinePayPal(orderId: string): Promise<CaptureResul
 
   const unit = data.purchase_units?.[0];
   const piano = (unit?.reference_id ?? 'mensile') as PianoId;
-  // Priorità all'email passata in custom_id (dal form), fallback su quella PayPal
-  const email =
+  const customIdRaw: string =
     unit?.custom_id ??
     data?.payer?.email_address ??
     unit?.payments?.captures?.[0]?.payer?.email_address ??
     '';
+  // Parsing custom_id: "<email>" o "<email>|ref:<CODICE>"
+  let email = customIdRaw;
+  let ref: string | undefined;
+  const refMatch = customIdRaw.match(/^(.+)\|ref:([A-Z0-9-]+)$/i);
+  if (refMatch) {
+    email = refMatch[1];
+    ref = refMatch[2].toUpperCase();
+  }
 
   return {
     status: data.status ?? 'UNKNOWN',
     email,
     piano,
+    ref,
   };
 }
 
