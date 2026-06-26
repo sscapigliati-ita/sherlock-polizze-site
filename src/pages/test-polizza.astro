@@ -1,0 +1,244 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Test polizza — Quanto è rischiosa?',
+    description: 'Test gratuito in 60 secondi: 6 domande per capire quanto conosci davvero la tua polizza.',
+    inLanguage: 'it-IT',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://sherlock-polizze-site-five.vercel.app/' },
+      { '@type': 'ListItem', position: 2, name: 'Test polizza', item: 'https://sherlock-polizze-site-five.vercel.app/test-polizza' },
+    ],
+  },
+];
+
+const domande = [
+  {
+    q: 'Hai letto, anche solo a colpo d\'occhio, la sezione "esclusioni" della tua polizza?',
+    sub: 'Le esclusioni sono i casi in cui la compagnia NON paga.',
+  },
+  {
+    q: 'Sai qual è il massimale della tua polizza per il rischio principale?',
+    sub: 'È il tetto massimo che la compagnia rimborsa.',
+  },
+  {
+    q: 'Sai entro quanti giorni devi denunciare un sinistro?',
+    sub: 'Superato il termine, la copertura può decadere.',
+  },
+  {
+    q: 'Sai se la compagnia può nominare un proprio perito per valutare il danno?',
+    sub: 'In molte polizze sì, e tu hai il diritto di nominarne uno tuo.',
+  },
+  {
+    q: 'Hai controllato se ci sono "clausole di decadenza" che fanno perdere il diritto al rimborso?',
+    sub: 'Sono frasi tipo "a pena di decadenza" o "entro e non oltre".',
+  },
+  {
+    q: 'Sai se c\'è uno scoperto percentuale (% di danno sempre a tuo carico)?',
+    sub: 'Spesso sommato alla franchigia: una parte del rimborso non arriva mai.',
+  },
+];
+---
+<BaseLayout
+  title="Quanto è rischiosa la tua polizza? Test gratuito in 60 secondi"
+  description="6 domande per capire se conosci davvero la tua polizza: esclusioni, massimali, decadenze, scoperti. Gratuito, senza registrazione."
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <section class="px-5 pt-12 pb-6 max-w-3xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
+      Test gratuito · 60 secondi · Niente registrazione
+    </div>
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
+      Quanto è <span class="text-gold-400">rischiosa</span> la tua polizza?
+    </h1>
+    <p class="text-lg text-navy-300 max-w-xl mx-auto">
+      6 domande per scoprire se conosci davvero le clausole che possono farti
+      perdere migliaia di euro al primo sinistro.
+    </p>
+  </section>
+
+  <section class="px-5 pb-16 max-w-2xl mx-auto">
+    <div id="quiz" class="space-y-4">
+      {domande.map((d, i) => (
+        <div
+          class="quiz-card bg-navy-900 border border-navy-700 rounded-xl p-5"
+          data-idx={i}
+        >
+          <div class="flex items-start gap-3 mb-4">
+            <div class="w-7 h-7 rounded-full bg-gold-400/15 text-gold-400 font-bold text-sm flex items-center justify-center flex-shrink-0">{i + 1}</div>
+            <div class="flex-1">
+              <div class="font-semibold text-white mb-1">{d.q}</div>
+              <div class="text-xs text-navy-400">{d.sub}</div>
+            </div>
+          </div>
+          <div class="flex gap-2 ml-10">
+            <button type="button" class="quiz-btn quiz-yes flex-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 font-bold py-2.5 rounded-lg transition" data-val="1">Sì</button>
+            <button type="button" class="quiz-btn quiz-no flex-1 bg-red-500/10 border border-red-500/30 text-red-300 hover:bg-red-500/20 font-bold py-2.5 rounded-lg transition" data-val="0">No / Non lo so</button>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div id="risultato" class="hidden mt-8 rounded-xl border border-gold-400/40 bg-gradient-to-br from-navy-900 to-navy-800 p-7 shadow-xl shadow-gold-400/10">
+      <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-2">Il tuo risultato</div>
+      <h2 id="risultato-titolo" class="text-3xl font-extrabold text-white mb-2"></h2>
+      <p id="risultato-sub" class="text-navy-300 mb-5"></p>
+
+      <div class="bg-navy-950 border border-navy-700 rounded-lg p-4 mb-6">
+        <div class="text-xs text-navy-400 mb-1">Consapevolezza polizza</div>
+        <div class="flex items-center gap-3">
+          <div class="flex-1 h-3 bg-navy-800 rounded-full overflow-hidden">
+            <div id="risultato-barra" class="h-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div id="risultato-punteggio" class="text-2xl font-extrabold text-white"></div>
+        </div>
+      </div>
+
+      <p class="text-navy-200 leading-relaxed mb-6" id="risultato-msg"></p>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a
+          href="/app/"
+          data-track="test_polizza_cta_click"
+          class="flex-1 bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
+        >
+          Analizza gratis la tua polizza
+        </a>
+        <button
+          type="button"
+          id="btn-condividi"
+          class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition flex items-center justify-center gap-2"
+        >
+          <span id="btn-condividi-text">Condividi il test</span>
+        </button>
+      </div>
+
+      <p class="text-xs text-navy-500 mt-4 text-center">
+        Sherlock legge la polizza vera e ti dice esattamente quali clausole ti
+        riguardano — incluso il massimale, le esclusioni e i termini di
+        decadenza. Prima analisi gratis.
+      </p>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  // Stato del quiz: array di 0/1 per ogni domanda.
+  const NUM_DOMANDE = 6;
+  const risposte: (0 | 1 | null)[] = Array(NUM_DOMANDE).fill(null);
+
+  const cards = document.querySelectorAll<HTMLDivElement>('.quiz-card');
+  const risultatoBox = document.getElementById('risultato');
+  const risultatoTitolo = document.getElementById('risultato-titolo');
+  const risultatoSub = document.getElementById('risultato-sub');
+  const risultatoBarra = document.getElementById('risultato-barra');
+  const risultatoPunteggio = document.getElementById('risultato-punteggio');
+  const risultatoMsg = document.getElementById('risultato-msg');
+  const btnCondividi = document.getElementById('btn-condividi') as HTMLButtonElement | null;
+  const btnCondividiText = document.getElementById('btn-condividi-text');
+
+  cards.forEach((card) => {
+    const idx = Number(card.dataset.idx);
+    card.querySelectorAll<HTMLButtonElement>('.quiz-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = Number(btn.dataset.val) as 0 | 1;
+        risposte[idx] = val;
+        // Visual feedback: highlight selezione, disable altre
+        card.querySelectorAll<HTMLButtonElement>('.quiz-btn').forEach((b) => {
+          b.classList.remove('ring-2', 'ring-gold-400');
+        });
+        btn.classList.add('ring-2', 'ring-gold-400');
+        verificaCompletamento();
+      });
+    });
+  });
+
+  function verificaCompletamento() {
+    if (risposte.some((r) => r === null)) return;
+    mostraRisultato();
+  }
+
+  function mostraRisultato() {
+    const sì = risposte.filter((r) => r === 1).length;
+    // Punteggio "consapevolezza" 0-100 inverso al rischio
+    const consapevolezza = Math.round((sì / NUM_DOMANDE) * 100);
+    const rischio = 100 - consapevolezza;
+
+    let titolo: string, sub: string, msg: string, colore: string;
+    if (rischio >= 70) {
+      titolo = 'Rischio: ALTO';
+      sub = 'Probabilmente non conosci le clausole più pericolose della tua polizza.';
+      colore = '#ef4444';
+      msg = 'Hai risposto "no/non so" alla maggior parte delle domande. Significa che la tua polizza è una scatola nera: al primo sinistro scoprirai cosa c\'è dentro — e potresti trovarti con un rimborso molto più basso del previsto, o nullo. Fai analizzare la polizza prima che succeda qualcosa.';
+    } else if (rischio >= 40) {
+      titolo = 'Rischio: MEDIO';
+      sub = 'Conosci una parte della polizza, ma restano zone d\'ombra importanti.';
+      colore = '#f59e0b';
+      msg = 'Hai una consapevolezza parziale. Le parti che non conosci sono spesso quelle decisive in caso di sinistro (decadenze, esclusioni, scoperti). Vale la pena far analizzare la polizza per avere il quadro completo prima di averne bisogno.';
+    } else {
+      titolo = 'Rischio: BASSO';
+      sub = 'Conosci bene la tua polizza. Ottimo lavoro.';
+      colore = '#10b981';
+      msg = 'Sei tra i pochi che hanno davvero letto la propria polizza. Ti consigliamo comunque di farla controllare da Sherlock prima di un rinnovo o di una pratica importante — l\'occhio esterno può intercettare clausole che ti sono sfuggite.';
+    }
+
+    if (risultatoTitolo) risultatoTitolo.textContent = titolo;
+    if (risultatoSub) risultatoSub.textContent = sub;
+    if (risultatoMsg) risultatoMsg.textContent = msg;
+    if (risultatoPunteggio) risultatoPunteggio.textContent = `${consapevolezza}/100`;
+    if (risultatoBarra) {
+      risultatoBarra.style.width = `${consapevolezza}%`;
+      risultatoBarra.style.background = colore;
+    }
+
+    risultatoBox?.classList.remove('hidden');
+    setTimeout(() => {
+      risultatoBox?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
+    const w: any = window;
+    if (typeof w.sherlockTrack === 'function') {
+      w.sherlockTrack('test_polizza_completed', { consapevolezza, rischio });
+    }
+  }
+
+  btnCondividi?.addEventListener('click', async () => {
+    const sì = risposte.filter((r) => r === 1).length;
+    const consapevolezza = Math.round((sì / NUM_DOMANDE) * 100);
+    const url = window.location.href;
+    const text = `Ho fatto il test di Sherlock: consapevolezza polizza ${consapevolezza}/100. Quanto ne sai tu della tua polizza?`;
+
+    if ((navigator as any).share) {
+      try {
+        await (navigator as any).share({ title: 'Test polizza Sherlock', text, url });
+      } catch {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${text} ${url}`);
+        if (btnCondividiText) {
+          btnCondividiText.textContent = 'Link copiato ✓';
+          setTimeout(() => { if (btnCondividiText) btnCondividiText.textContent = 'Condividi il test'; }, 2000);
+        }
+      } catch {}
+    }
+
+    const w: any = window;
+    if (typeof w.sherlockTrack === 'function') {
+      w.sherlockTrack('test_polizza_shared', { consapevolezza });
+    }
+  });
+</script>
