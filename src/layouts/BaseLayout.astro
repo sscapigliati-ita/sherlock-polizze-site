@@ -67,12 +67,27 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
   <link rel="apple-touch-startup-image" href="/icons/apple-splash-2360-1640.png" media="(device-width: 1180px) and (device-height: 820px) and (-webkit-device-pixel-ratio: 2)" />
   <link rel="apple-touch-startup-image" href="/icons/apple-splash-2868-1320.png" media="(device-width: 1434px) and (device-height: 660px) and (-webkit-device-pixel-ratio: 2)" />
 
+  <!-- Performance: preconnect a domini di terze parti caricati subito -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+
+  <!-- Google Fonts: caricamento non-blocking per non penalizzare LCP.
+       Il CSS viene precaricato come 'style' e applicato quando pronto.
+       Fallback <noscript> per browser senza JS o crawler. -->
   <link
+    rel="preload"
+    as="style"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
+    onload="this.onload=null;this.rel='stylesheet'"
   />
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </noscript>
 
   <!-- Open Graph -->
   <meta property="og:type" content={type} />
