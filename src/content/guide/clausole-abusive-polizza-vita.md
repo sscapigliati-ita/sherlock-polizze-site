@@ -174,11 +174,11 @@ Apri il PDF e fai `Ctrl+F` su queste parole. Quasi ogni occorrenza è da analizz
 ### 3. Controlla le clausole con doppia firma
 Le clausole vessatorie ex art. 1341 c.c. devono essere **specificamente sottoscritte** dal cliente. Se sulla tua polizza ci sono clausole vessatorie senza che tu abbia firmato due volte → sono nulle.
 
-> 💡 **Vuoi che l'analisi la faccia un'AI specializzata, in 5 secondi, sulle 60 pagine della tua polizza?**
+> 💡 **Vuoi che lo faccia Sherlock in pochi secondi sulle 60 pagine della tua polizza?**
 >
-> **Sherlock — Detective Polizze** legge l'intero documento, identifica le clausole problematiche, fornisce il riferimento normativo e spiega in linguaggio chiaro perché potrebbero essere nulle. La prima analisi è gratuita.
+> **Sherlock — Detective Polizze** legge l'intero documento, identifica le clausole problematiche, fornisce il riferimento normativo e spiega in linguaggio chiaro perché potrebbero essere nulle. La prima analisi è gratuita, dal browser o da app.
 >
-> [Scarica Sherlock gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
+> [Analizza gratis ora →](/app/) · [Scarica su Google Play →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
 
 ---
 
@@ -256,7 +256,7 @@ La buona notizia è che la **giurisprudenza italiana è oggi favorevole al consu
 
 Il primo passo è sempre lo stesso: **leggere la polizza** o farla leggere da uno strumento che la analizzi al posto tuo.
 
-[Sherlock](https://play.google.com/store/apps/details?id=it.sherlock.polizze) analizza l'intera polizza vita in 5 secondi e ti mostra le clausole potenzialmente problematiche con riferimento normativo.
+[Sherlock](/app/) analizza l'intera polizza vita in pochi secondi e ti mostra le clausole potenzialmente problematiche con riferimento normativo. Funziona dal browser, da Android o come PWA su iPhone — prima analisi gratis.
 
 ---
 

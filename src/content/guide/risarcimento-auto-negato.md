@@ -75,7 +75,7 @@ Per legge, la compagnia DEVE motivare per iscritto la mancata liquidazione (art.
 2. La compagnia ha prodotto le PROVE di quanto sostiene?
 3. La motivazione è in linea con i fatti come li conosco io?
 
-> 💡 **Carica la lettera di diniego + la tua polizza su Sherlock**: l'app verifica se la motivazione regge legalmente in 5 secondi, evidenziando i punti deboli da contestare. [Prova gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
+> 💡 **Carica la lettera di diniego + la tua polizza su Sherlock**: verifica in pochi secondi se la motivazione regge, evidenziando i punti contestabili. [Analizza gratis ora →](/app/)
 
 ---
 

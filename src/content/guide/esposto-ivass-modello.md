@@ -311,3 +311,14 @@ Se non vuoi gestire la parte tecnica del documento, [Sherlock](https://play.goog
 > - [Risarcimento auto negato: i 5 passi per ribaltare la decisione](/guide/risarcimento-auto-negato)
 
 > **Disclaimer:** Questo articolo fornisce informazioni a scopo informativo e non costituisce consulenza legale professionale. Per casi specifici, è sempre consigliato consultare un avvocato. Norme citate aggiornate a giugno 2026.
+
+---
+
+## Analizza gratis la tua polizza con Sherlock
+
+Hai una polizza, un diniego o una pratica da contestare?
+[Carica i documenti su Sherlock](/app/): in pochi secondi ricevi un report con clausole, esclusioni e — se serve — la bozza di reclamo PEC o esposto IVASS pronta da rivedere.
+
+[**Analizza gratis ora →**](/app/) · [Vedi esempio report](/esempio-report) · [Vedi esempio reclamo](/esempio-lettera)
+
+> Prima analisi gratis. Nessuna carta richiesta. Documenti non conservati.

@@ -1,0 +1,102 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CTACard from '../components/CTACard.astro';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Sinistro respinto — cosa fare con Sherlock',
+    description: 'Analizza polizza e diniego, individua clausole contestabili, genera una bozza di reclamo.',
+    inLanguage: 'it-IT',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://sherlock-polizze-site-five.vercel.app/' },
+      { '@type': 'ListItem', position: 2, name: 'Sinistro respinto', item: 'https://sherlock-polizze-site-five.vercel.app/sinistro-respinto' },
+    ],
+  },
+];
+---
+<BaseLayout
+  title="Sinistro respinto? Analizza polizza e diniego con Sherlock"
+  description="Carica polizza e lettera di diniego. Sherlock individua clausole, esclusioni e possibili basi di reclamo PEC o IVASS. Prima analisi gratis, senza carta."
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <article class="px-5 py-12 max-w-4xl mx-auto">
+    <nav class="text-xs text-navy-500 mb-6">
+      <a href="/" class="hover:text-gold-300">Home</a> · Sinistro respinto
+    </nav>
+
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight mb-5">
+      La compagnia ha respinto il sinistro?<br />
+      <span class="text-gold-400">Prima del legale, fai leggere tutto a Sherlock.</span>
+    </h1>
+    <p class="text-lg text-navy-300 leading-relaxed mb-8">
+      La maggior parte dei dinieghi si appoggia a clausole specifiche della polizza
+      — esclusioni, franchigie, termini di decadenza. Sherlock estrae quelle clausole
+      e le confronta con la motivazione del diniego, segnalando dove c'è margine per
+      un reclamo.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-3 mb-12">
+      <a href="/app/" class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center">
+        Analizza gratis ora
+      </a>
+      <a href="/esempio-report" class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition text-center">
+        Vedi un esempio di report
+      </a>
+    </div>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Cosa controlla Sherlock nel tuo caso</h2>
+    <ul class="space-y-3 text-navy-200 mb-10">
+      <li class="flex gap-3"><span class="text-gold-400 font-bold">1.</span> La motivazione del diniego cita davvero una clausola della polizza?</li>
+      <li class="flex gap-3"><span class="text-gold-400 font-bold">2.</span> Quella clausola è chiara o ambigua (le ambigue si interpretano a favore dell'assicurato)?</li>
+      <li class="flex gap-3"><span class="text-gold-400 font-bold">3.</span> Hai rispettato termini di denuncia, documentazione e procedure?</li>
+      <li class="flex gap-3"><span class="text-gold-400 font-bold">4.</span> Ci sono clausole vessatorie (decadenze, esclusioni nascoste) potenzialmente contestabili?</li>
+      <li class="flex gap-3"><span class="text-gold-400 font-bold">5.</span> La compagnia ha rispettato i propri obblighi informativi e di gestione?</li>
+    </ul>
+
+    <div class="bg-navy-900 border border-navy-700 rounded-xl p-6 mb-10">
+      <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-3">Esempio pratico</div>
+      <p class="text-navy-200 leading-relaxed mb-3">
+        Compagnia respinge un sinistro casa dicendo che "il danno da infiltrazione
+        non è coperto in caso di mancata manutenzione del tetto".
+      </p>
+      <p class="text-navy-300 leading-relaxed text-sm">
+        Sherlock controlla: la clausola è scritta in modo chiaro o usa formule
+        ambigue? La compagnia ha provato la mancata manutenzione? L'esclusione è
+        richiamata correttamente nel modulo di polizza? Da qui prepara una bozza di
+        reclamo motivato che cita le clausole e chiede riesame.
+      </p>
+    </div>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Cosa ti serve per iniziare</h2>
+    <ul class="space-y-2 text-navy-200 mb-10">
+      <li>📄 Il PDF (o foto chiare) della tua polizza, con condizioni generali e modulo</li>
+      <li>✉️ La lettera di diniego ricevuta dalla compagnia</li>
+      <li>📝 Una breve descrizione del sinistro (cosa è successo, quando, danni)</li>
+    </ul>
+
+    <CTACard
+      title="Analizza polizza e diniego ora"
+      body="Sherlock confronta le due e ti dice se la motivazione regge. Prima analisi gratis, senza carta. Dura pochi secondi."
+    />
+
+    <div class="mt-12 text-sm text-navy-400 leading-relaxed border-t border-navy-800 pt-6">
+      <strong class="text-navy-200">Importante:</strong> Sherlock è uno strumento di analisi informativa.
+      Non sostituisce un avvocato o un consulente. Le bozze di reclamo vanno sempre
+      riviste prima dell'invio. Per casi complessi o di valore elevato, rivolgiti a
+      un professionista iscritto all'albo.
+    </div>
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>

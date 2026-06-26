@@ -129,3 +129,14 @@ Carica il PDF della polizza e Sherlock identifica le clausole contestabili e i r
 | 4. Mediazione + Giudizio | 6-24 mesi | 40 € - migliaia | Decisione vincolante |
 
 Il 90% dei casi si risolve **entro la mossa 3**. La causa è davvero l'ultima carta.
+
+---
+
+## Analizza gratis la tua polizza con Sherlock
+
+Hai una polizza, un diniego o una pratica da contestare?
+[Carica i documenti su Sherlock](/app/): in pochi secondi ricevi un report con clausole, esclusioni e — se serve — la bozza di reclamo PEC o esposto IVASS pronta da rivedere.
+
+[**Analizza gratis ora →**](/app/) · [Vedi esempio report](/esempio-report) · [Vedi esempio reclamo](/esempio-lettera)
+
+> Prima analisi gratis. Nessuna carta richiesta. Documenti non conservati.

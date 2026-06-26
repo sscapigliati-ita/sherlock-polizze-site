@@ -1,0 +1,111 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CTACard from '../components/CTACard.astro';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Reclamo IVASS — bozza personalizzata con Sherlock',
+    description: 'Sherlock legge la polizza e prepara una bozza di reclamo IVASS strutturata.',
+    inLanguage: 'it-IT',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://sherlock-polizze-site-five.vercel.app/' },
+      { '@type': 'ListItem', position: 2, name: 'Reclamo IVASS', item: 'https://sherlock-polizze-site-five.vercel.app/reclamo-ivass' },
+    ],
+  },
+];
+---
+<BaseLayout
+  title="Reclamo IVASS: bozza personalizzata da polizza e diniego"
+  description="Sherlock legge la tua polizza e genera una bozza di reclamo IVASS con riferimenti utili. Strumento informativo, non sostituisce un professionista."
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <article class="px-5 py-12 max-w-4xl mx-auto">
+    <nav class="text-xs text-navy-500 mb-6">
+      <a href="/" class="hover:text-gold-300">Home</a> · Reclamo IVASS
+    </nav>
+
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight mb-5">
+      Reclamo IVASS:<br />
+      <span class="text-gold-400">bozza strutturata in pochi minuti.</span>
+    </h1>
+    <p class="text-lg text-navy-300 leading-relaxed mb-8">
+      L'IVASS è l'autorità di vigilanza sulle assicurazioni. Si rivolge l'IVASS
+      <strong class="text-white">dopo</strong> aver inviato un reclamo formale alla
+      compagnia e non aver ricevuto risposta entro 45 giorni, o avendola ricevuta
+      insoddisfacente. Sherlock prepara entrambe le bozze: prima quella alla
+      compagnia, poi — se serve — l'esposto all'IVASS.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-3 mb-12">
+      <a href="/app/" class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center">
+        Inizia gratis ora
+      </a>
+      <a href="/esempio-lettera" class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition text-center">
+        Vedi un esempio di reclamo
+      </a>
+    </div>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Cosa contiene una bozza di reclamo IVASS</h2>
+    <ul class="space-y-3 text-navy-200 mb-10">
+      <li>👤 Dati anagrafici dell'assicurato e della compagnia</li>
+      <li>📋 Numero di polizza, ramo (auto, casa, vita, salute, ecc.)</li>
+      <li>📅 Cronologia: data sinistro, data denuncia, data diniego, data reclamo alla compagnia, eventuale risposta</li>
+      <li>🔎 Sintesi del fatto e clausole contestate</li>
+      <li>⚖️ Riferimenti normativi (Codice delle Assicurazioni Private, Regolamenti IVASS pertinenti)</li>
+      <li>📎 Documenti da allegare</li>
+      <li>✉️ Richiesta esplicita all'IVASS di vigilanza/intervento</li>
+    </ul>
+
+    <div class="bg-navy-900 border border-navy-700 rounded-xl p-6 mb-10">
+      <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-3">Esempio pratico</div>
+      <p class="text-navy-200 leading-relaxed mb-3">
+        Hai inviato un reclamo formale alla compagnia per un sinistro auto respinto.
+        Dopo 45 giorni: nessuna risposta. Decidi di scrivere all'IVASS.
+      </p>
+      <p class="text-navy-300 leading-relaxed text-sm">
+        Sherlock genera la bozza con: identificazione del reclamo originario,
+        dichiarazione di silenzio della compagnia oltre il termine, sintesi del
+        merito (clausole contestate, valore del danno), richiesta di valutazione
+        IVASS. Tu rivedi, firmi, invii via PEC o portale IVASS.
+      </p>
+    </div>
+
+    <h2 class="text-2xl font-bold text-white mb-4">Prima dell'IVASS: serve un reclamo formale alla compagnia</h2>
+    <p class="text-navy-200 leading-relaxed mb-4">
+      Per regolamento, l'IVASS interviene solo dopo che la compagnia ha avuto
+      l'opportunità di rispondere. Sherlock prepara anche quella bozza (reclamo
+      diretto alla compagnia, di norma via PEC), strutturata per richiedere
+      espressamente riesame entro 45 giorni.
+    </p>
+    <p class="text-navy-200 leading-relaxed mb-10">
+      Se la risposta arriva ed è insoddisfacente, oppure non arriva entro 45 giorni,
+      Sherlock prepara la bozza per l'IVASS riprendendo lo storico.
+    </p>
+
+    <CTACard
+      title="Prepara la tua bozza di reclamo"
+      body="Carica polizza e (se ce l'hai) la lettera di diniego o l'eventuale risposta della compagnia. Sherlock produce una bozza strutturata da rivedere e inviare."
+    />
+
+    <div class="mt-12 text-sm text-navy-400 leading-relaxed border-t border-navy-800 pt-6">
+      <strong class="text-navy-200">Importante:</strong> Le bozze prodotte da Sherlock
+      sono un punto di partenza informativo. Vanno sempre riviste, integrate con i
+      dati specifici della tua pratica e — per casi complessi — valutate con un
+      avvocato. Sherlock non rappresenta legalmente l'utente e non invia nulla per
+      conto suo.
+    </div>
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>

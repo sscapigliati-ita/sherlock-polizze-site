@@ -185,3 +185,14 @@ Carica il PDF della polizza e Sherlock:
 - ti restituisce un testo già pronto per copia-incolla nel client PEC.
 
 [Vedi un esempio di reclamo IVASS generato da Sherlock](/esempio-lettera).
+
+---
+
+## Analizza gratis la tua polizza con Sherlock
+
+Hai una polizza, un diniego o una pratica da contestare?
+[Carica i documenti su Sherlock](/app/): in pochi secondi ricevi un report con clausole, esclusioni e — se serve — la bozza di reclamo PEC o esposto IVASS pronta da rivedere.
+
+[**Analizza gratis ora →**](/app/) · [Vedi esempio report](/esempio-report) · [Vedi esempio reclamo](/esempio-lettera)
+
+> Prima analisi gratis. Nessuna carta richiesta. Documenti non conservati.

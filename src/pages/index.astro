@@ -21,90 +21,93 @@ const jsonLd = [
   },
   {
     '@context': 'https://schema.org',
-    '@type': 'MobileApplication',
+    '@type': 'SoftwareApplication',
     name: 'Sherlock — Detective Polizze',
-    operatingSystem: 'ANDROID',
+    operatingSystem: 'Android, iOS (PWA), Web',
     applicationCategory: 'FinanceApplication',
-    downloadUrl: playStoreUrl,
+    downloadUrl: 'https://sherlock-polizze-site-five.vercel.app/app/',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
     inLanguage: 'it-IT',
+    description: 'Analizza polizze e dinieghi assicurativi. Genera bozze di reclamo PEC o IVASS.',
   },
 ];
 ---
 <BaseLayout
-  title="Sherlock — Analisi AI delle polizze assicurative | il detective delle tue polizze"
-  description="Polizza che non capisci o sinistro respinto? Sherlock legge la polizza, ti dice dove non sei coperto e prepara il reclamo IVASS o la PEC alla compagnia in pochi minuti. 1ª analisi gratis."
+  title="Sinistro respinto o polizza poco chiara? Sherlock controlla e prepara il reclamo"
+  description="Carica polizza e lettera di diniego. Sherlock individua clausole, esclusioni e basi di reclamo PEC o IVASS. 1ª analisi gratis, nessuna carta richiesta."
   jsonLd={jsonLd}
 >
   <Header slot="header" />
 
-  <section class="px-5 pt-16 pb-20 max-w-6xl mx-auto">
+  <section class="px-5 pt-14 pb-16 max-w-6xl mx-auto">
     <div class="grid lg:grid-cols-2 gap-10 items-center">
       <div>
         <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
           <span class="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse"></span>
           1ª analisi gratis · Nessuna carta richiesta
         </div>
-        <h1 class="text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.05] mb-5">
-          Polizza che non capisci?<br />
-          <span class="text-gold-400">Sinistro respinto?</span>
+        <h1 class="text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white tracking-tight leading-[1.05] mb-5">
+          La compagnia ti ha detto <span class="text-red-400">no</span>?<br />
+          <span class="text-gold-400">Prima di arrenderti</span>, fai leggere la polizza a Sherlock.
         </h1>
         <p class="text-lg text-navy-300 leading-relaxed mb-7 max-w-xl">
-          Sherlock legge la tua polizza e ti dice <strong class="text-white">dove rischi di non essere coperto</strong>.
-          Se serve, prepara il <strong class="text-white">reclamo IVASS</strong> o la <strong class="text-white">PEC alla compagnia</strong> in pochi minuti.
-          Pronto soccorso assicurativo, in italiano.
+          Sherlock individua <strong class="text-white">garanzie, esclusioni, franchigie e clausole contestabili</strong>.
+          Se serve, prepara una bozza di <strong class="text-white">reclamo PEC o esposto IVASS</strong>
+          con i riferimenti normativi giusti.
         </p>
+        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+          <a
+            href="/app/"
+            class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
+          >
+            Analizza gratis la tua polizza
+          </a>
+          <a
+            href="/esempio-report"
+            class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition text-center"
+          >
+            Vedi un esempio di report
+          </a>
+        </div>
         <div class="flex flex-col sm:flex-row gap-3 mb-6">
           <a
             href="/abbonati"
-            class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
+            class="text-sm text-navy-400 hover:text-gold-300 underline underline-offset-4 transition"
           >
-            Abbonati ora — da 1,25€/mese
-          </a>
-          <a
-            href={playStoreUrl}
-            target="_blank"
-            rel="noopener"
-            class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition text-center"
-          >
-            Scarica gratis l'app
+            Sblocca Pro da 1,25€/mese →
           </a>
         </div>
         <p class="text-xs text-navy-500">
-          Disponibile su Android · Pagamento sicuro via PayPal · Nessun rinnovo automatico
+          Disponibile su Web, Android e iPhone (installabile come app) · Pagamento PayPal · Nessun rinnovo automatico
         </p>
       </div>
 
       <div class="bg-gradient-to-br from-navy-800 to-navy-900 border border-navy-700 rounded-2xl p-6 shadow-2xl">
-        <div class="bg-gold-400/10 border border-gold-400/30 rounded-lg p-4 mb-5">
-          <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">Storia del fondatore</div>
-          <div class="text-2xl font-extrabold text-white leading-tight">
-            +30.000€ recuperati o<br />non persi grazie a Sherlock.
+        <div class="text-xs uppercase tracking-widest text-navy-400 mb-3">Esempio di report Sherlock</div>
+        <div class="space-y-3 text-sm">
+          <div class="flex items-center justify-between p-3 rounded-lg bg-red-500/10 border border-red-500/30">
+            <span class="text-navy-200">Rischio complessivo</span>
+            <span class="font-bold text-red-300 uppercase tracking-wider">Alto</span>
           </div>
-          <div class="text-xs text-navy-400 mt-2">
-            È il motivo per cui esiste questa app. — Stefano, founder
+          <div class="flex items-center justify-between p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+            <span class="text-navy-200">Clausole critiche trovate</span>
+            <span class="font-bold text-amber-300">4</span>
           </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4 mb-6 text-center">
-          <div>
-            <div class="text-2xl font-extrabold text-gold-400">5 sec</div>
-            <div class="text-xs text-navy-400">Tempo medio analisi</div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+            <span class="text-navy-200">Franchigie / scoperti</span>
+            <span class="font-bold text-amber-300">2</span>
           </div>
-          <div>
-            <div class="text-2xl font-extrabold text-gold-400">3 tipi</div>
-            <div class="text-xs text-navy-400">Di lettere legali</div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-navy-950 border border-navy-700">
+            <span class="text-navy-200">Azione consigliata</span>
+            <span class="font-bold text-white">Reclamo</span>
           </div>
-          <div>
-            <div class="text-2xl font-extrabold text-gold-400">100%</div>
-            <div class="text-xs text-navy-400">Privacy garantita</div>
-          </div>
-          <div>
-            <div class="text-2xl font-extrabold text-gold-400">130k+</div>
-            <div class="text-xs text-navy-400">Follower social</div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+            <span class="text-navy-200">Lettera pronta</span>
+            <span class="font-bold text-emerald-300">Sì</span>
           </div>
         </div>
-        <div class="border-t border-navy-700 pt-5">
-          <div class="text-xs uppercase tracking-widest text-navy-400 mb-2">Tipi di polizze</div>
+        <div class="mt-5 pt-5 border-t border-navy-700">
+          <div class="text-xs uppercase tracking-widest text-navy-400 mb-2">Tipi di polizze analizzate</div>
           <div class="flex flex-wrap gap-2 text-xs">
             {['RC auto','Casa','Vita','Salute','Infortuni','RC professionale','Viaggio','Multirischi'].map(t => (
               <span class="bg-navy-800 text-navy-200 px-2.5 py-1 rounded">{t}</span>
@@ -117,48 +120,117 @@ const jsonLd = [
 
   <section class="bg-navy-900 border-y border-navy-800 px-5 py-16">
     <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">Come funziona</h2>
-      <p class="text-center text-navy-400 mb-12">Tre passi. Nessuna competenza tecnica richiesta.</p>
-      <div class="grid md:grid-cols-3 gap-6">
-        <div class="bg-navy-950 border border-navy-800 rounded-xl p-6">
-          <div class="w-10 h-10 rounded-lg bg-gold-400/15 text-gold-400 font-extrabold text-xl flex items-center justify-center mb-4">1</div>
-          <h3 class="text-xl font-bold text-white mb-2">Carica la polizza</h3>
-          <p class="text-navy-300 text-sm leading-relaxed">
-            Fotografa il documento o carica il PDF direttamente dall'app Android.
-            Funziona con qualsiasi polizza assicurativa italiana.
+      <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">Cosa vuoi fare oggi?</h2>
+      <p class="text-center text-navy-400 mb-12">Scegli il caso più vicino al tuo. Sherlock parte da lì.</p>
+      <div class="grid md:grid-cols-3 gap-5">
+        <a href="/sinistro-respinto" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
+          <div class="text-3xl mb-3">📄</div>
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-gold-300 transition">Mi hanno respinto un sinistro</h3>
+          <p class="text-navy-300 text-sm leading-relaxed mb-4">
+            Carica diniego e polizza. Sherlock cerca clausole contestabili e prepara il reclamo.
           </p>
-        </div>
-        <div class="bg-navy-950 border border-navy-800 rounded-xl p-6">
-          <div class="w-10 h-10 rounded-lg bg-gold-400/15 text-gold-400 font-extrabold text-xl flex items-center justify-center mb-4">2</div>
-          <h3 class="text-xl font-bold text-white mb-2">Sherlock analizza</h3>
-          <p class="text-navy-300 text-sm leading-relaxed">
-            L'AI legge l'intero contratto, identifica garanzie, esclusioni,
-            clausole problematiche e valuta il livello di rischio complessivo.
+          <span class="inline-block text-sm font-bold text-gold-400 group-hover:text-gold-300">Inizia gratis →</span>
+        </a>
+        <a href="/app/" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
+          <div class="text-3xl mb-3">🔍</div>
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-gold-300 transition">Voglio capire una polizza prima di firmare</h3>
+          <p class="text-navy-300 text-sm leading-relaxed mb-4">
+            Sherlock evidenzia garanzie, esclusioni, franchigie e scoperti in linguaggio chiaro.
           </p>
-        </div>
-        <div class="bg-navy-950 border border-navy-800 rounded-xl p-6">
-          <div class="w-10 h-10 rounded-lg bg-gold-400/15 text-gold-400 font-extrabold text-xl flex items-center justify-center mb-4">3</div>
-          <h3 class="text-xl font-bold text-white mb-2">Agisci con consapevolezza</h3>
-          <p class="text-navy-300 text-sm leading-relaxed">
-            Ricevi un report dettagliato e, se necessario, genera in un click la
-            lettera di reclamo, l'esposto IVASS o la diffida legale.
+          <span class="inline-block text-sm font-bold text-gold-400 group-hover:text-gold-300">Inizia gratis →</span>
+        </a>
+        <a href="/reclamo-ivass" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
+          <div class="text-3xl mb-3">⚖️</div>
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-gold-300 transition">Devo scrivere a compagnia o IVASS</h3>
+          <p class="text-navy-300 text-sm leading-relaxed mb-4">
+            Genera una bozza strutturata di PEC, reclamo formale o esposto IVASS.
           </p>
-        </div>
+          <span class="inline-block text-sm font-bold text-gold-400 group-hover:text-gold-300">Inizia gratis →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-5 py-16 max-w-6xl mx-auto">
+    <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">Come funziona</h2>
+    <p class="text-center text-navy-400 mb-12">Tre passi. Nessuna competenza tecnica richiesta.</p>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-6">
+        <div class="w-10 h-10 rounded-lg bg-gold-400/15 text-gold-400 font-extrabold text-xl flex items-center justify-center mb-4">1</div>
+        <h3 class="text-xl font-bold text-white mb-2">Carica polizza (e diniego)</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Fotografa il documento o carica il PDF dal browser, da Android o dalla PWA su iPhone.
+          Se hai ricevuto una lettera di diniego, caricala anche.
+        </p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-6">
+        <div class="w-10 h-10 rounded-lg bg-gold-400/15 text-gold-400 font-extrabold text-xl flex items-center justify-center mb-4">2</div>
+        <h3 class="text-xl font-bold text-white mb-2">Sherlock analizza</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Estrae garanzie, esclusioni, franchigie, scoperti, termini di decadenza e clausole
+          contestabili. In pochi secondi.
+        </p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-6">
+        <div class="w-10 h-10 rounded-lg bg-gold-400/15 text-gold-400 font-extrabold text-xl flex items-center justify-center mb-4">3</div>
+        <h3 class="text-xl font-bold text-white mb-2">Agisci con consapevolezza</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Ricevi un report dettagliato e, se serve, una bozza di reclamo PEC, esposto IVASS o
+          diffida — con i riferimenti normativi corretti, pronta da rivedere e inviare.
+        </p>
+      </div>
+    </div>
+    <div class="text-center mt-10">
+      <div class="text-sm text-navy-400 mb-3">Vuoi vedere cosa produce Sherlock prima di provarlo?</div>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/esempio-report" class="inline-block border border-navy-700 text-navy-100 font-semibold px-5 py-2.5 rounded-lg hover:bg-navy-900 transition">
+          Vedi esempio report
+        </a>
+        <a href="/esempio-lettera" class="inline-block border border-navy-700 text-navy-100 font-semibold px-5 py-2.5 rounded-lg hover:bg-navy-900 transition">
+          Vedi esempio reclamo IVASS
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-navy-900 border-y border-navy-800 px-5 py-16">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">5 frasi della polizza da controllare subito</h2>
+      <p class="text-center text-navy-400 mb-12">Le formule che le compagnie usano per limitare i rimborsi. Spesso si nascondono nella pagina 12.</p>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { f: 'salvo quanto previsto dalle esclusioni', r: 'rimanda a un elenco di casi non coperti — spesso più lungo delle garanzie.' },
+          { f: 'entro e non oltre', r: 'fissa un termine perentorio: superato, perdi il diritto.' },
+          { f: 'a pena di decadenza', r: 'se non rispetti la procedura, il diritto al rimborso si estingue.' },
+          { f: 'scoperto minimo', r: 'una quota di danno resta sempre a tuo carico, anche con polizza attiva.' },
+          { f: 'massimale aggregato', r: 'la somma assicurata vale per tutti i sinistri dell\'anno, non per ognuno.' },
+          { f: 'condizioni particolari prevalenti', r: 'le clausole speciali battono quelle generali — spesso a tuo sfavore.' },
+        ].map(item => (
+          <div class="bg-navy-950 border border-navy-800 rounded-xl p-5">
+            <div class="font-mono text-sm text-gold-300 mb-2">"{item.f}"</div>
+            <div class="text-navy-300 text-sm leading-relaxed">{item.r}</div>
+          </div>
+        ))}
+      </div>
+      <div class="text-center mt-10">
+        <a href="/app/" class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20">
+          Controlla queste frasi nella tua polizza →
+        </a>
       </div>
     </div>
   </section>
 
   <section class="px-5 py-16 max-w-6xl mx-auto">
     <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">Tutto quello che fa Sherlock</h2>
-    <p class="text-center text-navy-400 mb-12">Un assistente legale assicurativo sempre disponibile, al costo di un caffè al mese.</p>
+    <p class="text-center text-navy-400 mb-12">Capisci cosa firmi. Contesta ciò che non torna.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
       {[
-        { title: 'Analisi AI delle polizze', body: 'Auto, casa, vita, salute, RC professionale: Sherlock le analizza in secondi e ti spiega cosa c\'è scritto davvero, senza tecnicismi.' },
-        { title: 'Valutazione del rischio', body: 'Ogni polizza riceve un giudizio strutturato: rischio critico, alto, medio o basso. Sai esattamente cosa sei coperto.' },
-        { title: 'Lettere legali pronte', body: 'Reclamo formale, esposto IVASS e diffida stragiudiziale. Strutturati con i riferimenti normativi corretti, pronti da inviare via PEC.' },
-        { title: 'Clausole abusive', body: 'L\'AI riconosce le clausole vessatorie che le compagnie usano per limitare i rimborsi: decadenze, esclusioni nascoste, condizioni capestro.' },
-        { title: 'App Android nativa', body: 'Carica PDF o fotografie direttamente dallo smartphone. Interfaccia progettata per chi non ha dimestichezza con la tecnologia.' },
-        { title: 'Privacy totale', body: 'I documenti vengono analizzati server-side e mai conservati. Nessun dato personale ceduto a terzi. Il tuo contratto rimane tuo.' },
+        { title: 'Analisi delle polizze', body: 'Auto, casa, vita, salute, RC professionale: Sherlock le legge in pochi secondi e ti spiega cosa c\'è scritto davvero, senza tecnicismi.' },
+        { title: 'Valutazione del rischio', body: 'Ogni polizza riceve un giudizio strutturato: rischio critico, alto, medio o basso. Sai esattamente come sei coperto.' },
+        { title: 'Lettere legali pronte', body: 'Bozze di reclamo formale, esposto IVASS e diffida stragiudiziale. Strutturate con i riferimenti normativi, pronte da rivedere e inviare via PEC.' },
+        { title: 'Clausole contestabili', body: 'Sherlock segnala le clausole vessatorie che le compagnie usano per limitare i rimborsi: decadenze, esclusioni nascoste, condizioni capestro.' },
+        { title: 'Web, Android e iPhone', body: 'Usa Sherlock dal browser, dall\'app Android nativa o installalo come PWA su iPhone (Aggiungi a Home). Stesso backend, stessa esperienza.' },
+        { title: 'Documenti non conservati', body: 'I PDF analizzati non vengono archiviati. Trasmissione HTTPS, lettura una sola volta, report sul tuo dispositivo. Dettagli nella pagina Trasparenza.' },
       ].map(f => (
         <div class="bg-navy-900 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 transition">
           <h3 class="text-lg font-bold text-white mb-2">{f.title}</h3>
@@ -169,28 +241,88 @@ const jsonLd = [
   </section>
 
   <section class="bg-navy-900 border-y border-navy-800 px-5 py-16">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-12">Sherlock è (e non è)</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-navy-950 border border-emerald-500/30 rounded-xl p-6">
+          <div class="text-xs uppercase tracking-widest text-emerald-400 font-bold mb-4">Sherlock è utile se</div>
+          <ul class="space-y-2 text-navy-200 text-sm">
+            <li class="flex gap-2"><span class="text-emerald-400">✓</span> hai ricevuto un diniego dalla compagnia</li>
+            <li class="flex gap-2"><span class="text-emerald-400">✓</span> non capisci franchigie, scoperti o esclusioni</li>
+            <li class="flex gap-2"><span class="text-emerald-400">✓</span> vuoi controllare una polizza prima di rinnovarla</li>
+            <li class="flex gap-2"><span class="text-emerald-400">✓</span> devi scrivere un reclamo formale</li>
+            <li class="flex gap-2"><span class="text-emerald-400">✓</span> vuoi una prima lettura prima di rivolgerti a un avvocato</li>
+          </ul>
+        </div>
+        <div class="bg-navy-950 border border-red-500/30 rounded-xl p-6">
+          <div class="text-xs uppercase tracking-widest text-red-400 font-bold mb-4">Sherlock non è</div>
+          <ul class="space-y-2 text-navy-200 text-sm">
+            <li class="flex gap-2"><span class="text-red-400">✗</span> un avvocato o un consulente assicurativo</li>
+            <li class="flex gap-2"><span class="text-red-400">✗</span> una garanzia di rimborso</li>
+            <li class="flex gap-2"><span class="text-red-400">✗</span> un servizio di rappresentanza legale</li>
+            <li class="flex gap-2"><span class="text-red-400">✗</span> uno strumento per inviare automaticamente atti senza revisione</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-5 py-16 max-w-5xl mx-auto">
+    <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">Cosa succede al tuo PDF?</h2>
+    <p class="text-center text-navy-400 mb-12">Documenti sensibili: ecco esattamente come li trattiamo.</p>
+    <ol class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {[
+        { n: 1, t: 'Caricamento', b: 'Il PDF parte dal tuo browser o dall\'app via HTTPS verso il nostro backend in Europa.' },
+        { n: 2, t: 'Lettura una sola volta', b: 'Il documento viene letto in memoria volatile dall\'AI per generare il report.' },
+        { n: 3, t: 'Nessuna archiviazione', b: 'Il PDF non viene salvato su disco né usato per training. Resta solo il tempo della richiesta.' },
+        { n: 4, t: 'Report sul tuo dispositivo', b: 'Il risultato viene mostrato sul tuo browser/app. Non lo conserviamo.' },
+        { n: 5, t: 'Log tecnici anonimi', b: 'Salviamo solo timestamp, esito e tempo di risposta — mai contenuto del documento.' },
+        { n: 6, t: 'Conformità GDPR', b: 'Per dettagli, base giuridica e diritti vedi la pagina Trasparenza dati.' },
+      ].map(item => (
+        <li class="bg-navy-900 border border-navy-800 rounded-xl p-5 list-none">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-7 h-7 rounded-full bg-gold-400/15 text-gold-400 font-bold flex items-center justify-center text-sm">{item.n}</div>
+            <div class="font-bold text-white">{item.t}</div>
+          </div>
+          <p class="text-navy-300 text-sm leading-relaxed">{item.b}</p>
+        </li>
+      ))}
+    </ol>
+    <div class="text-center mt-8">
+      <a href="/trasparenza" class="inline-block border border-navy-700 text-navy-100 font-semibold px-5 py-2.5 rounded-lg hover:bg-navy-900 transition">
+        Leggi la trasparenza dati →
+      </a>
+    </div>
+  </section>
+
+  <section class="bg-navy-900 border-y border-navy-800 px-5 py-16">
     <div class="max-w-3xl mx-auto">
-      <div class="text-xs uppercase tracking-widest text-gold-400 mb-3">La mia storia</div>
+      <div class="text-xs uppercase tracking-widest text-gold-400 mb-3">La storia del fondatore</div>
       <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-5">
         Perché ho fatto Sherlock
       </h2>
       <div class="space-y-4 text-navy-200 leading-relaxed">
         <p>
-          Mi chiamo <strong>Stefano</strong> e Sherlock è nato da una mia
-          esperienza personale: una compagnia mi negò un risarcimento citando una
-          clausola in piccolo che non avevo mai letto. Da lì ho iniziato a
-          studiare le polizze.
+          Mi chiamo <strong>Stefano</strong>. Sherlock è nato da una mia esperienza
+          personale: una compagnia mi negò un risarcimento citando una clausola in
+          piccolo che non avevo mai letto. Da lì ho iniziato a studiare le polizze.
         </p>
         <p>
-          Da quando uso l'app sulle <strong>mie</strong> polizze, ho recuperato
-          o evitato di perdere <strong class="text-gold-400">oltre 30.000€</strong>
-          tra reclami vinti, clausole abusive contestate e rinnovi rifiutati su
-          condizioni svantaggiose.
+          Negli anni, applicando questo approccio alle <strong>mie</strong> polizze,
+          ho recuperato o evitato di perdere
+          <strong class="text-gold-400">oltre 30.000€</strong>
+          tra importi ottenuti, rischi evitati e rinnovi rifiutati su condizioni
+          svantaggiose.
         </p>
         <p>
-          Sherlock è quello che avrei voluto avere allora. L'ho fatto perché chi
-          firma una polizza dovrebbe sapere cosa sta firmando, senza dover
-          diventare esperto di diritto assicurativo.
+          Sherlock è quello che avrei voluto avere allora. L'ho fatto perché chi firma
+          una polizza dovrebbe capire cosa sta firmando, senza dover diventare esperto
+          di diritto assicurativo.
+        </p>
+        <p class="text-xs text-navy-500 pt-2 border-t border-navy-800 mt-6">
+          Dato riferito all'esperienza personale del fondatore. Non costituisce
+          promessa di risultato: ogni polizza, ogni sinistro e ogni reclamo hanno esiti
+          che dipendono dal caso concreto.
         </p>
       </div>
     </div>
@@ -200,27 +332,25 @@ const jsonLd = [
     <div class="max-w-3xl mx-auto text-center">
       <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-4">Pronto a capire cosa hai firmato?</h2>
       <p class="text-navy-300 mb-8">
-        Sblocca analisi illimitate, reclami e ricorsi IVASS pronti per PEC.
-        Da 1,25€/mese con il piano annuale. Nessun rinnovo automatico.
+        Sblocca analisi e lettere illimitate. Da <strong class="text-white">1,25€/mese</strong>
+        con il piano annuale. Nessun rinnovo automatico.
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a
-          href="/abbonati"
+          href="/app/"
           class="inline-block bg-gold-400 text-navy-900 font-bold px-7 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20"
         >
-          Abbonati ora →
+          Analizza gratis ora
         </a>
         <a
-          href={playStoreUrl}
-          target="_blank"
-          rel="noopener"
+          href="/abbonati"
           class="inline-block border border-navy-600 text-navy-100 font-semibold px-7 py-4 rounded-lg hover:bg-navy-800 transition"
         >
-          Prova gratis (1 analisi)
+          Sblocca Pro da 1,25€/mese
         </a>
       </div>
       <div class="mt-5 text-xs text-navy-500">
-        Nessun rinnovo automatico · Pagamento sicuro PayPal · Privacy garantita
+        Nessun rinnovo automatico · Pagamento sicuro PayPal · Documenti non conservati
       </div>
     </div>
   </section>

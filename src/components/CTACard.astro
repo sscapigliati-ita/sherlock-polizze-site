@@ -6,7 +6,7 @@ export interface Props {
 
 const {
   title = 'Vuoi che Sherlock analizzi la tua polizza?',
-  body = 'Carica il PDF, ricevi il report in 5 secondi e — se serve — il reclamo o l\'esposto IVASS pronti da inviare. Prima analisi gratis, senza carta.',
+  body = 'Carica il PDF, ricevi il report in pochi secondi e — se serve — la bozza di reclamo o esposto IVASS. Prima analisi gratis, senza carta.',
 } = Astro.props;
 
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
@@ -16,18 +16,16 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
   <p class="text-navy-300 mb-5">{body}</p>
   <div class="flex flex-col sm:flex-row gap-3">
     <a
-      href="/abbonati"
+      href="/app/"
       class="bg-gold-400 text-navy-900 font-bold px-5 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20 text-center"
     >
-      Abbonati ora
+      Analizza gratis
     </a>
     <a
-      href={playStoreUrl}
-      target="_blank"
-      rel="noopener"
+      href="/abbonati"
       class="border border-navy-600 text-navy-100 font-semibold px-5 py-3 rounded-lg hover:bg-navy-800 transition text-center"
     >
-      Prova gratis (1 analisi)
+      Sblocca Pro da 1,25€/mese
     </a>
   </div>
 </section>
