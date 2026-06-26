@@ -1077,6 +1077,9 @@ function viewA(a){
     h+='<div class="card2" style="border-color:var(--gold3)"><div style="font-size:.72rem;color:var(--gold3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Sherlock Pro</div><div style="font-size:1rem;color:var(--gold);font-weight:bold;margin-bottom:6px">Vuoi trasformare questa analisi in una lettera pronta da inviare?</div><div style="font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:12px">Sherlock puo generare un reclamo, una diffida o una segnalazione IVASS basata su questa polizza.</div><div style="background:#f7f1df;color:#20160a;border-radius:10px;padding:13px;margin-bottom:10px;position:relative;overflow:hidden"><div style="font-size:.66rem;letter-spacing:.12em;color:#7b642c;font-weight:bold;margin-bottom:8px">ANTEPRIMA LETTERA</div><div style="font-weight:bold;font-size:.82rem;margin-bottom:7px">Oggetto: reclamo formale relativo alla polizza</div><div style="font-size:.76rem;line-height:1.55;color:#4a3820">Spett.le Compagnia,<br>con la presente intendo contestare la gestione della copertura assicurativa relativa a...</div><div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(13,10,7,.08);text-align:center;color:#20160a;font-size:.72rem;font-weight:bold">Sblocca la lettera completa con Pro</div></div><button class="btn btn-gold btn-full" id="btn-upgrade-res">Genera lettera con Sherlock Pro</button><div style="font-size:.68rem;color:var(--text3);text-align:center;margin-top:8px">Da 2,99 euro/mese. Pagamento sicuro via PayPal.</div></div>';
   }
   h+='</div>';
+  // Card "Condividi risultato anonimo" — nessun dato sensibile, solo sintesi.
+  // Sempre visibile (free + pro) come leva virale.
+  h+='<div class="card2 mb12" style="border-color:var(--border2);background:linear-gradient(135deg,var(--surf),var(--surf2));text-align:center;padding:18px 14px;margin-top:14px"><div style="font-size:.72rem;letter-spacing:.12em;color:var(--text2);text-transform:uppercase;font-weight:700;margin-bottom:6px">Condividi il risultato</div><div style="font-size:.82rem;color:var(--text2);line-height:1.55;margin-bottom:12px">Card anonima: solo rischio e numero clausole/esclusioni. Nessun dato della tua polizza o compagnia.</div><button class="btn btn-outline btn-full" id="btn-share-res">&#8599; Condividi card anonima</button></div>';
   document.getElementById("res-content").innerHTML=h;
   var r1=document.getElementById("rb1");if(r1)r1.addEventListener("click",function(){goLetter("reclamo");});
   var r2=document.getElementById("rb2");if(r2)r2.addEventListener("click",function(){goLetter("ivass");});
@@ -1084,7 +1087,36 @@ function viewA(a){
   var lr=document.getElementById("btn-locked-rec");if(lr)lr.addEventListener("click",function(){goPaywall('result');});
   var ur=document.getElementById("btn-upgrade-res");if(ur)ur.addEventListener("click",function(){goPaywall('result');});
   var lp=document.getElementById("btn-locked-preview");if(lp)lp.addEventListener("click",function(){track('preview_cta_click',{});goPaywall('preview');});
+  var sh=document.getElementById("btn-share-res");if(sh)sh.addEventListener("click",function(){shareAnonimo(a);});
   show("result",true);
+}
+
+// Condivisione anonima del risultato analisi: nessun dato personale o
+// identificativo della polizza, solo aggregati e rischio.
+function shareAnonimo(a){
+  var rischio=(a&&a.rischio?String(a.rischio):'?').toUpperCase();
+  var nEsc=(a&&a.esclusioni_critiche)?a.esclusioni_critiche.length:0;
+  var nCla=(a&&a.clausole_rischiose)?a.clausole_rischiose.length:0;
+  var nTer=(a&&a.termini_decadenza)?a.termini_decadenza.length:0;
+  var azione=(rischio==='ALTO'||rischio==='CRITICO')?'Reclamo consigliato':'Polizza da rivedere';
+  var lines=[
+    '🔍 Ho analizzato la mia polizza con Sherlock:',
+    '• Rischio: '+rischio,
+    '• Esclusioni critiche: '+nEsc,
+    '• Clausole rischiose: '+nCla,
+    '• Termini di decadenza: '+nTer,
+    '• Azione: '+azione,
+    '',
+    'Quanto ne sai della tua polizza? Fai il test in 60 sec:',
+    SITE_URL+'test-polizza'
+  ];
+  var txt=lines.join('\n');
+  if(navigator.share){
+    try{ navigator.share({title:'Risultato Sherlock', text:txt}); track('share_result_anon',{rischio:rischio}); return; }catch(e){}
+  }
+  Br.share(txt);
+  Br.toast('Testo copiato. Incollalo dove vuoi condividere.');
+  track('share_result_anon',{rischio:rischio});
 }
 function mkAcc(title,items,fn){
   if(!items.length)return"";
