@@ -27,7 +27,7 @@ function kv(): Redis {
 
 export type EventoAPI = {
   ts: string; // ISO timestamp
-  tipo: 'analizza' | 'lettera';
+  tipo: 'analizza' | 'lettera' | 'compara';
   esito: 'ok' | 'errore' | 'bloccato';
   errore?: string;
   requestId: string;
@@ -112,15 +112,19 @@ export type StatsAPI = {
   analisiOggi: number;
   lettereTotali: number;
   lettereOggi: number;
-  // Aggregato storico (analizza + lettera) — mantenuto per back-compat.
+  comparaTotali: number;
+  comparaOggi: number;
+  // Aggregato storico (analizza + lettera + compara) — mantenuto per back-compat.
   erroriTotali: number;
   bloccatiTotali: number;
   // Per-tipo (disponibili dal deploy che ha introdotto lo split: pre-esistenti
   // contati solo come aggregato).
   erroriAnalizzaTotali: number;
   erroriLetteraTotali: number;
+  erroriComparaTotali: number;
   bloccatiAnalizzaTotali: number;
   bloccatiLetteraTotali: number;
+  bloccatiComparaTotali: number;
   perGiorno: Array<{ giorno: string; analisi: number; errori: number }>;
 };
 
@@ -128,26 +132,30 @@ export async function leggiStats(): Promise<StatsAPI> {
   const oggi = dateKey(new Date());
 
   if (!kvOn()) {
-    const tot = (tipo: 'analizza' | 'lettera') => fallbackLog.filter((e) => e.tipo === tipo).length;
-    const totOggi = (tipo: 'analizza' | 'lettera') =>
+    const tot = (tipo: 'analizza' | 'lettera' | 'compara') => fallbackLog.filter((e) => e.tipo === tipo).length;
+    const totOggi = (tipo: 'analizza' | 'lettera' | 'compara') =>
       fallbackLog.filter((e) => e.tipo === tipo && dateKey(new Date(e.ts)) === oggi).length;
     const errs = fallbackLog.filter((e) => e.esito === 'errore').length;
     const blocs = fallbackLog.filter((e) => e.esito === 'bloccato').length;
-    const errsTipo = (tipo: 'analizza' | 'lettera') =>
+    const errsTipo = (tipo: 'analizza' | 'lettera' | 'compara') =>
       fallbackLog.filter((e) => e.esito === 'errore' && e.tipo === tipo).length;
-    const blocsTipo = (tipo: 'analizza' | 'lettera') =>
+    const blocsTipo = (tipo: 'analizza' | 'lettera' | 'compara') =>
       fallbackLog.filter((e) => e.esito === 'bloccato' && e.tipo === tipo).length;
     return {
       analisiTotali: tot('analizza'),
       analisiOggi: totOggi('analizza'),
       lettereTotali: tot('lettera'),
       lettereOggi: totOggi('lettera'),
+      comparaTotali: tot('compara'),
+      comparaOggi: totOggi('compara'),
       erroriTotali: errs,
       bloccatiTotali: blocs,
       erroriAnalizzaTotali: errsTipo('analizza'),
       erroriLetteraTotali: errsTipo('lettera'),
+      erroriComparaTotali: errsTipo('compara'),
       bloccatiAnalizzaTotali: blocsTipo('analizza'),
       bloccatiLetteraTotali: blocsTipo('lettera'),
+      bloccatiComparaTotali: blocsTipo('compara'),
       perGiorno: serie7giorni(fallbackLog),
     };
   }
@@ -158,6 +166,8 @@ export async function leggiStats(): Promise<StatsAPI> {
     erroriT, bloccatiT,
     erroriAnalizzaT, erroriLetteraT,
     bloccatiAnalizzaT, bloccatiLetteraT,
+    comparaT, comparaO,
+    erroriComparaT, bloccatiComparaT,
   ] = await Promise.all([
     r.get<number>('count:analizza:total'),
     r.get<number>(`count:analizza:${oggi}`),
@@ -169,6 +179,10 @@ export async function leggiStats(): Promise<StatsAPI> {
     r.get<number>('count:errore:lettera:total'),
     r.get<number>('count:bloccato:analizza:total'),
     r.get<number>('count:bloccato:lettera:total'),
+    r.get<number>('count:compara:total'),
+    r.get<number>(`count:compara:${oggi}`),
+    r.get<number>('count:errore:compara:total'),
+    r.get<number>('count:bloccato:compara:total'),
   ]);
 
   const giorni: string[] = [];
@@ -195,12 +209,16 @@ export async function leggiStats(): Promise<StatsAPI> {
     analisiOggi: analisiO ?? 0,
     lettereTotali: lettereT ?? 0,
     lettereOggi: lettereO ?? 0,
+    comparaTotali: comparaT ?? 0,
+    comparaOggi: comparaO ?? 0,
     erroriTotali: erroriT ?? 0,
     bloccatiTotali: bloccatiT ?? 0,
     erroriAnalizzaTotali: erroriAnalizzaT ?? 0,
     erroriLetteraTotali: erroriLetteraT ?? 0,
+    erroriComparaTotali: erroriComparaT ?? 0,
     bloccatiAnalizzaTotali: bloccatiAnalizzaT ?? 0,
     bloccatiLetteraTotali: bloccatiLetteraT ?? 0,
+    bloccatiComparaTotali: bloccatiComparaT ?? 0,
     perGiorno: perGiornoRaw,
   };
 }
