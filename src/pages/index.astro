@@ -39,7 +39,7 @@ const jsonLd = [
 >
   <Header slot="header" />
 
-  <section class="relative px-5 pt-8 pb-4 bg-gradient-to-b from-black via-navy-950 to-navy-900 flex flex-col items-center gap-4">
+  <section class="relative px-5 pt-8 pb-4 bg-gradient-to-b from-black via-navy-950 to-navy-900 flex justify-center">
     <img
       src="/logo-sherlock.png"
       alt="Sherlock — Il detective assicurativo: la tua polizza nasconde trappole, Sherlock le trova in 30 secondi"
@@ -49,17 +49,6 @@ const jsonLd = [
       fetchpriority="high"
       decoding="async"
     />
-    <div class="w-full max-w-6xl flex justify-end">
-      <img
-        src="/logo-sherlock.png"
-        alt="Logo Sherlock"
-        width="34"
-        height="60"
-        class="h-[60px] w-auto rounded-md shadow-md shadow-black/40 ring-1 ring-gold-400/20"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
   </section>
 
   <section class="px-5 pt-14 pb-16 max-w-6xl mx-auto">
@@ -139,6 +128,17 @@ const jsonLd = [
               <span class="bg-navy-800 text-navy-200 px-2.5 py-1 rounded">{t}</span>
             ))}
           </div>
+        </div>
+        <div class="mt-5 pt-5 border-t border-navy-700 flex justify-end">
+          <img
+            src="/logo-sherlock.png"
+            alt="Logo Sherlock"
+            width="34"
+            height="60"
+            class="h-[60px] w-auto rounded-md shadow-md shadow-black/40 ring-1 ring-gold-400/20"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </div>
     </div>
