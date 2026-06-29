@@ -3,13 +3,16 @@ import LangSwitcher from './LangSwitcher.astro';
 ---
 <header class="sticky top-0 z-50 bg-navy-950/85 backdrop-blur-md border-b border-navy-800">
   <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
-    <a href="/" class="flex items-center gap-2 group notranslate" translate="no">
-      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center group-hover:scale-105 transition">
-        <svg viewBox="0 0 24 24" class="w-5 h-5 text-navy-900" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="7" />
-          <line x1="16" y1="16" x2="21" y2="21" />
-        </svg>
-      </div>
+    <a href="/" class="flex items-center gap-2.5 group notranslate" translate="no">
+      <img
+        src="/logo-sherlock.png"
+        alt="Sherlock — Il detective assicurativo"
+        width="34"
+        height="60"
+        class="h-[60px] w-auto rounded-md shadow-md shadow-black/40 group-hover:scale-105 transition"
+        loading="eager"
+        decoding="async"
+      />
       <div>
         <div class="font-extrabold text-white tracking-tight leading-none">Sherlock</div>
         <div class="text-[10px] uppercase tracking-widest text-navy-400 leading-none">Detective Polizze</div>
