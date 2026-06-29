@@ -75,12 +75,20 @@ export async function loggaEvento(ev: EventoAPI): Promise<void> {
   p.incr(`count:${ev.tipo}:${g}`);
   p.incr(`count:${ev.tipo}:total`);
   if (ev.esito === 'errore') {
+    // Counter aggregato (storico, mantenuto per back-compat con vecchie letture).
     p.incr(`count:errore:${g}`);
     p.incr(`count:errore:total`);
+    // Counter per-tipo: introdotti per separare errori analizza vs lettera
+    // nella dashboard. Pre-esistenti partono da 0; la differenza vs aggregato
+    // rappresenta gli errori prima dello split.
+    p.incr(`count:errore:${ev.tipo}:${g}`);
+    p.incr(`count:errore:${ev.tipo}:total`);
   }
   if (ev.esito === 'bloccato') {
     p.incr(`count:bloccato:${g}`);
     p.incr(`count:bloccato:total`);
+    p.incr(`count:bloccato:${ev.tipo}:${g}`);
+    p.incr(`count:bloccato:${ev.tipo}:total`);
   }
   await p.exec();
 }
@@ -104,8 +112,15 @@ export type StatsAPI = {
   analisiOggi: number;
   lettereTotali: number;
   lettereOggi: number;
+  // Aggregato storico (analizza + lettera) — mantenuto per back-compat.
   erroriTotali: number;
   bloccatiTotali: number;
+  // Per-tipo (disponibili dal deploy che ha introdotto lo split: pre-esistenti
+  // contati solo come aggregato).
+  erroriAnalizzaTotali: number;
+  erroriLetteraTotali: number;
+  bloccatiAnalizzaTotali: number;
+  bloccatiLetteraTotali: number;
   perGiorno: Array<{ giorno: string; analisi: number; errori: number }>;
 };
 
@@ -118,6 +133,10 @@ export async function leggiStats(): Promise<StatsAPI> {
       fallbackLog.filter((e) => e.tipo === tipo && dateKey(new Date(e.ts)) === oggi).length;
     const errs = fallbackLog.filter((e) => e.esito === 'errore').length;
     const blocs = fallbackLog.filter((e) => e.esito === 'bloccato').length;
+    const errsTipo = (tipo: 'analizza' | 'lettera') =>
+      fallbackLog.filter((e) => e.esito === 'errore' && e.tipo === tipo).length;
+    const blocsTipo = (tipo: 'analizza' | 'lettera') =>
+      fallbackLog.filter((e) => e.esito === 'bloccato' && e.tipo === tipo).length;
     return {
       analisiTotali: tot('analizza'),
       analisiOggi: totOggi('analizza'),
@@ -125,18 +144,31 @@ export async function leggiStats(): Promise<StatsAPI> {
       lettereOggi: totOggi('lettera'),
       erroriTotali: errs,
       bloccatiTotali: blocs,
+      erroriAnalizzaTotali: errsTipo('analizza'),
+      erroriLetteraTotali: errsTipo('lettera'),
+      bloccatiAnalizzaTotali: blocsTipo('analizza'),
+      bloccatiLetteraTotali: blocsTipo('lettera'),
       perGiorno: serie7giorni(fallbackLog),
     };
   }
 
   const r = kv();
-  const [analisiT, analisiO, lettereT, lettereO, erroriT, bloccatiT] = await Promise.all([
+  const [
+    analisiT, analisiO, lettereT, lettereO,
+    erroriT, bloccatiT,
+    erroriAnalizzaT, erroriLetteraT,
+    bloccatiAnalizzaT, bloccatiLetteraT,
+  ] = await Promise.all([
     r.get<number>('count:analizza:total'),
     r.get<number>(`count:analizza:${oggi}`),
     r.get<number>('count:lettera:total'),
     r.get<number>(`count:lettera:${oggi}`),
     r.get<number>('count:errore:total'),
     r.get<number>('count:bloccato:total'),
+    r.get<number>('count:errore:analizza:total'),
+    r.get<number>('count:errore:lettera:total'),
+    r.get<number>('count:bloccato:analizza:total'),
+    r.get<number>('count:bloccato:lettera:total'),
   ]);
 
   const giorni: string[] = [];
@@ -165,6 +197,10 @@ export async function leggiStats(): Promise<StatsAPI> {
     lettereOggi: lettereO ?? 0,
     erroriTotali: erroriT ?? 0,
     bloccatiTotali: bloccatiT ?? 0,
+    erroriAnalizzaTotali: erroriAnalizzaT ?? 0,
+    erroriLetteraTotali: erroriLetteraT ?? 0,
+    bloccatiAnalizzaTotali: bloccatiAnalizzaT ?? 0,
+    bloccatiLetteraTotali: bloccatiLetteraT ?? 0,
     perGiorno: perGiornoRaw,
   };
 }

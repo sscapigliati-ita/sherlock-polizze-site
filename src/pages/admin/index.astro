@@ -18,7 +18,7 @@ const [stats, abb, eventi, stabRes, usoRes] = await Promise.all([
   leggiAbbonati(),
   leggiUltimiEventi(50),
   leggiStabilitaApp().catch((e: any) => ({ errore: String(e?.message ?? e) }) as any),
-  leggiUsoApp().catch((e: any) => ({ errore: String(e?.message ?? e), installazioniPerGiorno: [], acquisizioni28gg: 0, mau: null, primeAperture28gg: null }) as any),
+  leggiUsoApp().catch((e: any) => ({ errore: String(e?.message ?? e), installazioniPerGiorno: [], acquisizioni28gg: 0, mau: null, primeAperture28gg: null, ultimoGiorno: null, giorniRitardo: null }) as any),
 ]);
 const stab = ('crashRate28gg' in stabRes ? stabRes : null) as Awaited<ReturnType<typeof leggiStabilitaApp>> | null;
 const stabError = (stabRes as any).errore as string | undefined;
@@ -34,6 +34,26 @@ const oggiBreve = (g: string) => {
   const d = new Date(g);
   return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
 };
+
+// Errori/bloccati per tipo: i counter sono stati introdotti dopo il go-live.
+// Il "residuo" è la quota di errori storici aggregati prima dello split, che
+// non possiamo riassegnare a un tipo specifico — la mostriamo come "pre-split"
+// invece di gonfiare arbitrariamente una delle due colonne.
+const erroriPreSplit = Math.max(
+  0,
+  stats.erroriTotali - stats.erroriAnalizzaTotali - stats.erroriLetteraTotali,
+);
+const bloccatiPreSplit = Math.max(
+  0,
+  stats.bloccatiTotali - stats.bloccatiAnalizzaTotali - stats.bloccatiLetteraTotali,
+);
+
+// Considero "stale" il dato Play se il più recente è > 3 giorni fa: il batch
+// Play di solito ha 1-2 giorni di ritardo, oltre i 3 c'è qualcosa che non gira
+// (bucket non aggiornato, SA che ha perso i permessi, ecc.).
+const playStale = (uso.giorniRitardo ?? 0) > 3;
+const fmtDataIt = (g: string) =>
+  new Date(`${g}T12:00:00Z`).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
 
 // Vercel functions girano in UTC; forzo Europe/Rome così la dashboard mostra
 // orari coerenti col fuso italiano (CEST in estate, CET in inverno).
@@ -68,29 +88,50 @@ const fmtSoloData = (iso: string) =>
     </header>
 
     <section class="mb-6">
-      <div class="text-xs uppercase tracking-widest text-navy-400 font-bold mb-3">Utilizzo API</div>
+      <div class="flex items-baseline justify-between mb-3">
+        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Utilizzo API</div>
+        <div class="text-[10px] text-navy-500">i totali includono tentativi falliti e bloccati</div>
+      </div>
       <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Analisi totali</div>
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Richieste analisi</div>
           <div class="text-3xl font-extrabold text-white mt-1">{stats.analisiTotali}</div>
+          <div class="text-[10px] text-navy-500 mt-1">
+            err: <span class="text-red-300">{stats.erroriAnalizzaTotali}</span> · bloc: <span class="text-amber-300">{stats.bloccatiAnalizzaTotali}</span>
+          </div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">Analisi oggi</div>
           <div class="text-3xl font-extrabold text-gold-400 mt-1">{stats.analisiOggi}</div>
+          <div class="text-[10px] text-navy-500 mt-1">tentate (ok + err + bloc)</div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Lettere generate</div>
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Richieste lettera</div>
           <div class="text-3xl font-extrabold text-white mt-1">{stats.lettereTotali}</div>
+          <div class="text-[10px] text-navy-500 mt-1">
+            err: <span class="text-red-300">{stats.erroriLetteraTotali}</span> · bloc: <span class="text-amber-300">{stats.bloccatiLetteraTotali}</span>
+          </div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Richieste bloccate</div>
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Bloccate (tot.)</div>
           <div class="text-3xl font-extrabold text-amber-300 mt-1">{stats.bloccatiTotali}</div>
+          <div class="text-[10px] text-navy-500 mt-1">
+            an: {stats.bloccatiAnalizzaTotali} · le: {stats.bloccatiLetteraTotali}{bloccatiPreSplit > 0 && (<> · pre: {bloccatiPreSplit}</>)}
+          </div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Errori AI</div>
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Errori AI (tot.)</div>
           <div class="text-3xl font-extrabold text-red-400 mt-1">{stats.erroriTotali}</div>
+          <div class="text-[10px] text-navy-500 mt-1">
+            an: {stats.erroriAnalizzaTotali} · le: {stats.erroriLetteraTotali}{erroriPreSplit > 0 && (<> · pre: {erroriPreSplit}</>)}
+          </div>
         </div>
       </div>
+      {(erroriPreSplit > 0 || bloccatiPreSplit > 0) && (
+        <div class="text-[10px] text-navy-500 mt-2">
+          "pre" = eventi registrati prima dello split per tipo (counter introdotti il 29/06/2026); restano contati nei totali.
+        </div>
+      )}
     </section>
 
     <section class="mb-6">
@@ -102,6 +143,12 @@ const fmtSoloData = (iso: string) =>
       {stabError && (
         <div class="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 mb-3 text-xs text-amber-200">
           Stabilit&agrave; non disponibile: <span class="font-mono">{stabError}</span>
+        </div>
+      )}
+
+      {playStale && uso.ultimoGiorno && (
+        <div class="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 mb-3 text-xs text-amber-200">
+          <span class="font-bold">Dati installazioni in ritardo:</span> ultimo CSV Play disponibile {fmtDataIt(uso.ultimoGiorno)} (<span class="font-mono">{uso.giorniRitardo}</span> giorni fa). I valori &quot;28gg&quot; qui sotto si riferiscono alla finestra dei dati disponibili, non agli ultimi 28 giorni di calendario. Se il ritardo persiste, verifica i permessi del Service Account sul bucket Play o forza un <a href="/admin?refresh=play" class="underline hover:text-gold-300">refresh</a>.
         </div>
       )}
 
@@ -121,15 +168,16 @@ const fmtSoloData = (iso: string) =>
           <div class="text-[10px] text-navy-500 mt-1">ultimo: {stab ? fmtPct(stab.anrRateOggi) : '—'}</div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Installazioni nette (28gg)</div>
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Installazioni nette {uso.ultimoGiorno ? `(fino al ${fmtDataIt(uso.ultimoGiorno)})` : '(28gg)'}</div>
           <div class="text-3xl font-extrabold text-white mt-1">{uso.acquisizioni28gg}</div>
-          <div class="text-[10px] text-navy-500 mt-1">install &minus; disinstall</div>
+          <div class="text-[10px] text-navy-500 mt-1">install &minus; disinstall · finestra {uso.installazioniPerGiorno.length} gg</div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Disinstall. (28gg)</div>
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Disinstall. {uso.ultimoGiorno ? `(fino al ${fmtDataIt(uso.ultimoGiorno)})` : '(28gg)'}</div>
           <div class="text-3xl font-extrabold text-amber-300 mt-1">
             {uso.installazioniPerGiorno.reduce((s, g) => s + g.disinstall, 0)}
           </div>
+          <div class="text-[10px] text-navy-500 mt-1">finestra {uso.installazioniPerGiorno.length} gg</div>
         </div>
       </div>
 
@@ -215,7 +263,7 @@ const fmtSoloData = (iso: string) =>
               <tr><td colspan="7" class="p-6 text-center text-navy-400">Nessun abbonato ancora.</td></tr>
             ) : abb.records.map((r) => {
               const attivo = new Date(r.dataScadenza) > new Date();
-              const importo = ({ mensile: '2,99 €', semestrale: '7,99 €', annuale: '14,99 €' } as const)[r.piano];
+              const importo = ({ mensile: '2,99 €', semestrale: '7,99 €', annuale: '14,99 €', singolo: '3,99 €', founder: '19,90 €' } as const)[r.piano];
               return (
                 <tr class="border-b border-navy-800 last:border-0">
                   <td class="p-3 text-navy-200">{fmtSoloData(r.dataEmissione)}</td>

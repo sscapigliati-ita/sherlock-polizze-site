@@ -28,7 +28,9 @@ function kv(): Redis {
 export type RecordPro = {
   codice: string;
   email: string;
-  piano: 'mensile' | 'semestrale' | 'annuale' | 'singolo';
+  // Allineato con PianoId di paypal.ts. Il 'founder' è arrivato col commit
+  // b915b65 ma il tipo qui era rimasto indietro.
+  piano: 'mensile' | 'semestrale' | 'annuale' | 'singolo' | 'founder';
   dataEmissione: string; // ISO
   dataScadenza: string; // ISO
   paypalOrderId: string;
@@ -185,10 +187,14 @@ export type SintesiAbbonati = {
   ricavoEuroCent: number;
 };
 
+// Allineati con paypal.ts > PIANI. Espressi in centesimi per evitare floating
+// point sull'aggregato ricavo.
 const PREZZI_CENT: Record<RecordPro['piano'], number> = {
   mensile: 299,
   semestrale: 799,
   annuale: 1499,
+  singolo: 399,
+  founder: 1990,
 };
 
 export async function leggiAbbonati(): Promise<SintesiAbbonati> {

@@ -229,6 +229,12 @@ export type UsoApp = {
   mau: number | null;             // utenti attivi mensili (ultimo dato disponibile)
   acquisizioni28gg: number;       // installazioni nette ultimi 28 giorni
   primeAperture28gg: number | null;
+  // Ultimo giorno (YYYY-MM-DD) per cui Play ha pubblicato dati nel CSV.
+  // Serve a mostrare la finestra effettiva nella dashboard e a segnalare
+  // staleness se Play non aggiorna da troppi giorni.
+  ultimoGiorno: string | null;
+  // Giorni di ritardo del dato più recente rispetto a oggi (UTC).
+  giorniRitardo: number | null;
   errore?: string;                // se il bucket non è ancora accessibile
 };
 
@@ -299,12 +305,30 @@ export async function leggiUsoApp(): Promise<UsoApp> {
       // ultimi 28 giorni
       const ultimi28 = righe.slice(-28);
       const acquisizioni28gg = ultimi28.reduce((s, r) => s + (r.nuove - r.disinstall), 0);
+      const ultimoGiorno = ultimi28.at(-1)?.giorno ?? null;
+      const giorniRitardo = ultimoGiorno
+        ? Math.floor(
+            (Date.UTC(
+              new Date().getUTCFullYear(),
+              new Date().getUTCMonth(),
+              new Date().getUTCDate(),
+            ) -
+              Date.UTC(
+                Number(ultimoGiorno.slice(0, 4)),
+                Number(ultimoGiorno.slice(5, 7)) - 1,
+                Number(ultimoGiorno.slice(8, 10)),
+              )) /
+              86_400_000,
+          )
+        : null;
 
       return {
         installazioniPerGiorno: ultimi28,
         mau: null, // TODO: leggere da retained_installers CSV o equivalente
         acquisizioni28gg,
         primeAperture28gg: null, // TODO: store_performance CSV
+        ultimoGiorno,
+        giorniRitardo,
       };
     } catch (e: any) {
       return {
@@ -312,6 +336,8 @@ export async function leggiUsoApp(): Promise<UsoApp> {
         mau: null,
         acquisizioni28gg: 0,
         primeAperture28gg: null,
+        ultimoGiorno: null,
+        giorniRitardo: null,
         errore: e?.message ?? String(e),
       };
     }
