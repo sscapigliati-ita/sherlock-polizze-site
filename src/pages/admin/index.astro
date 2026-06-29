@@ -41,11 +41,11 @@ const oggiBreve = (g: string) => {
 // invece di gonfiare arbitrariamente una delle due colonne.
 const erroriPreSplit = Math.max(
   0,
-  stats.erroriTotali - stats.erroriAnalizzaTotali - stats.erroriLetteraTotali,
+  stats.erroriTotali - stats.erroriAnalizzaTotali - stats.erroriLetteraTotali - stats.erroriComparaTotali,
 );
 const bloccatiPreSplit = Math.max(
   0,
-  stats.bloccatiTotali - stats.bloccatiAnalizzaTotali - stats.bloccatiLetteraTotali,
+  stats.bloccatiTotali - stats.bloccatiAnalizzaTotali - stats.bloccatiLetteraTotali - stats.bloccatiComparaTotali,
 );
 
 // Considero "stale" il dato Play se il più recente è > 3 giorni fa: il batch
@@ -92,7 +92,7 @@ const fmtSoloData = (iso: string) =>
         <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Utilizzo API</div>
         <div class="text-[10px] text-navy-500">i totali includono tentativi falliti e bloccati</div>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">Richieste analisi</div>
           <div class="text-3xl font-extrabold text-white mt-1">{stats.analisiTotali}</div>
@@ -113,17 +113,24 @@ const fmtSoloData = (iso: string) =>
           </div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Richieste compara</div>
+          <div class="text-3xl font-extrabold text-white mt-1">{stats.comparaTotali}</div>
+          <div class="text-[10px] text-navy-500 mt-1">
+            err: <span class="text-red-300">{stats.erroriComparaTotali}</span> · bloc: <span class="text-amber-300">{stats.bloccatiComparaTotali}</span>
+          </div>
+        </div>
+        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">Bloccate (tot.)</div>
           <div class="text-3xl font-extrabold text-amber-300 mt-1">{stats.bloccatiTotali}</div>
           <div class="text-[10px] text-navy-500 mt-1">
-            an: {stats.bloccatiAnalizzaTotali} · le: {stats.bloccatiLetteraTotali}{bloccatiPreSplit > 0 && (<> · pre: {bloccatiPreSplit}</>)}
+            an: {stats.bloccatiAnalizzaTotali} · le: {stats.bloccatiLetteraTotali} · cp: {stats.bloccatiComparaTotali}{bloccatiPreSplit > 0 && (<> · pre: {bloccatiPreSplit}</>)}
           </div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">Errori AI (tot.)</div>
           <div class="text-3xl font-extrabold text-red-400 mt-1">{stats.erroriTotali}</div>
           <div class="text-[10px] text-navy-500 mt-1">
-            an: {stats.erroriAnalizzaTotali} · le: {stats.erroriLetteraTotali}{erroriPreSplit > 0 && (<> · pre: {erroriPreSplit}</>)}
+            an: {stats.erroriAnalizzaTotali} · le: {stats.erroriLetteraTotali} · cp: {stats.erroriComparaTotali}{erroriPreSplit > 0 && (<> · pre: {erroriPreSplit}</>)}
           </div>
         </div>
       </div>
