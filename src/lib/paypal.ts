@@ -20,16 +20,16 @@ export const PIANI: Record<
   PianoId,
   { nome: string; prezzo: string; durataMesi: number; tipo: TipoCodice }
 > = {
-  mensile: { nome: 'Pro Mensile', prezzo: '2.99', durataMesi: 1, tipo: 'pro' },
-  semestrale: { nome: 'Pro Semestrale', prezzo: '7.99', durataMesi: 6, tipo: 'pro' },
-  annuale: { nome: 'Pro Annuale', prezzo: '14.99', durataMesi: 12, tipo: 'pro' },
+  mensile: { nome: 'Pass Pro 1 mese', prezzo: '2.99', durataMesi: 1, tipo: 'pro' },
+  semestrale: { nome: 'Pass Pro 6 mesi', prezzo: '7.99', durataMesi: 6, tipo: 'pro' },
+  annuale: { nome: 'Pass Pro 12 mesi', prezzo: '14.99', durataMesi: 12, tipo: 'pro' },
   // Acquisto una-tantum: 1 lettera, 1 sola generazione. Validità 30 giorni
   // dall'emissione per consumare il codice.
   singolo: { nome: 'Lettera Singola', prezzo: '3.99', durataMesi: 1, tipo: 'singolo' },
   // Founder lifetime: pagamento singolo, accesso Pro "per sempre". Numero
   // limitato — vedi FOUNDER_MAX. Quando esauriti, /api/paypal/create-order
   // rifiuta nuovi acquisti founder.
-  founder: { nome: 'Founder (lifetime)', prezzo: '19.90', durataMesi: 1200, tipo: 'pro' },
+  founder: { nome: 'Pass Pro a vita (Founder)', prezzo: '19.90', durataMesi: 1200, tipo: 'pro' },
 };
 
 // Limite assoluto di codici Founder vendibili. Quando il counter KV

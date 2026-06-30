@@ -22,16 +22,17 @@ const piani = [
   ...(founderAttivo
     ? [{
         id: 'founder',
-        nome: 'Founder (lifetime)',
+        nome: 'Pass Pro a vita (Founder)',
+        durata: 'Accesso permanente · una tantum',
         prezzo: '19,90 €',
         alMese: 'una tantum, accesso per sempre',
         badge: `Solo ${founderRimanenti}/${FOUNDER_MAX}`,
         recommended: true,
       }]
     : []),
-  { id: 'mensile', nome: 'Mensile', prezzo: '2,99 €', alMese: '2,99 €/mese', badge: null, recommended: !founderAttivo && false },
-  { id: 'semestrale', nome: 'Semestrale', prezzo: '7,99 €', alMese: '1,33 €/mese', badge: 'Risparmi 55%', recommended: false },
-  { id: 'annuale', nome: 'Annuale', prezzo: '14,99 €', alMese: '1,25 €/mese', badge: founderAttivo ? 'Più conveniente (no Founder)' : 'Più conveniente', recommended: !founderAttivo },
+  { id: 'mensile', nome: 'Pass Pro 1 mese', durata: 'Valido 30 giorni · nessun rinnovo automatico', prezzo: '2,99 €', alMese: '2,99 €/mese', badge: null, recommended: !founderAttivo && false },
+  { id: 'semestrale', nome: 'Pass Pro 6 mesi', durata: 'Valido 6 mesi · nessun rinnovo automatico', prezzo: '7,99 €', alMese: '1,33 €/mese', badge: 'Risparmi 55%', recommended: false },
+  { id: 'annuale', nome: 'Pass Pro 12 mesi', durata: 'Valido 12 mesi · nessun rinnovo automatico', prezzo: '14,99 €', alMese: '1,25 €/mese', badge: founderAttivo ? 'Più conveniente (escluso Founder)' : 'Più conveniente', recommended: !founderAttivo },
 ];
 
 const faqItems = [
@@ -155,6 +156,7 @@ const jsonLd = [
                     )}
                   </div>
                   <div class="text-sm text-navy-300">{p.alMese}</div>
+                  <div class="text-xs text-navy-400 mt-1">{p.durata}</div>
                 </div>
                 <div class="text-right">
                   <div class="text-2xl font-extrabold text-white">{p.prezzo}</div>
@@ -172,7 +174,7 @@ const jsonLd = [
           </div>
           {piani.map((p) => (
             <div class="grid grid-cols-3 p-3 border-b border-navy-800 last:border-0 text-sm">
-              <div class="text-navy-200 capitalize">{p.nome}</div>
+              <div class="text-navy-200">{p.nome}</div>
               <div class="text-right text-white font-bold">{p.prezzo}</div>
               <div class="text-right text-gold-300">{p.alMese.replace('/mese', '')}</div>
             </div>
