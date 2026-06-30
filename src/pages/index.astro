@@ -42,7 +42,11 @@ const jsonLd = [
   <section class="px-5 pt-14 pb-16 max-w-6xl mx-auto">
     <div class="grid lg:grid-cols-[2fr_3fr] gap-8 items-stretch">
       <div>
-        <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
+        <a href="/abbonati" data-track="hero_badge_compara_click" class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/40 px-3 py-1 rounded-full text-xs text-emerald-300 font-semibold mb-3 hover:bg-emerald-500/20 transition">
+          <span class="bg-emerald-400 text-navy-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded">NUOVO</span>
+          Confronta due polizze omologhe (Pro)
+        </a>
+        <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5 ml-0 sm:ml-2">
           <span class="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse"></span>
           1ª analisi gratis · Nessuna carta richiesta
         </div>
@@ -140,7 +144,7 @@ const jsonLd = [
     <div class="max-w-6xl mx-auto">
       <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">Cosa vuoi fare oggi?</h2>
       <p class="text-center text-navy-400 mb-12">Scegli il caso più vicino al tuo. Sherlock parte da lì.</p>
-      <div class="grid md:grid-cols-3 gap-5">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
         <a href="/sinistro-respinto" data-track="path_card_sinistro_click" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
           <div class="text-3xl mb-3">📄</div>
           <h3 class="text-lg font-bold text-white mb-2 group-hover:text-gold-300 transition">Mi hanno respinto un sinistro</h3>
@@ -156,6 +160,15 @@ const jsonLd = [
             Sherlock evidenzia garanzie, esclusioni, franchigie e scoperti in linguaggio chiaro.
           </p>
           <span class="inline-block text-sm font-bold text-gold-400 group-hover:text-gold-300">Inizia gratis →</span>
+        </a>
+        <a href="/abbonati" data-track="path_card_compara_click" class="relative block bg-navy-950 border border-emerald-500/40 rounded-xl p-6 hover:border-emerald-400 hover:shadow-xl transition group">
+          <span class="absolute top-3 right-3 bg-emerald-400 text-navy-950 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded">Nuovo</span>
+          <div class="text-3xl mb-3">🆚</div>
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-emerald-300 transition">Devo scegliere tra due polizze</h3>
+          <p class="text-navy-300 text-sm leading-relaxed mb-4">
+            Carica due polizze omologhe: Sherlock le mette a confronto e ti dice quando conviene l'una o l'altra.
+          </p>
+          <span class="inline-block text-sm font-bold text-emerald-400 group-hover:text-emerald-300">Sblocca Pro →</span>
         </a>
         <a href="/reclamo-ivass" data-track="path_card_ivass_click" class="block bg-navy-950 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 hover:shadow-xl transition group">
           <div class="text-3xl mb-3">⚖️</div>
@@ -249,14 +262,18 @@ const jsonLd = [
     <p class="text-center text-navy-400 mb-12">Capisci cosa firmi. Contesta ciò che non torna.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
       {[
-        { title: 'Analisi delle polizze', body: 'Auto, casa, vita, salute, RC professionale: Sherlock le legge in pochi secondi e ti spiega cosa c\'è scritto davvero, senza tecnicismi.' },
-        { title: 'Valutazione del rischio', body: 'Ogni polizza riceve un giudizio strutturato: rischio critico, alto, medio o basso. Sai esattamente come sei coperto.' },
-        { title: 'Lettere legali pronte', body: 'Bozze di reclamo formale, esposto IVASS e diffida stragiudiziale. Strutturate con i riferimenti normativi, pronte da rivedere e inviare via PEC.' },
-        { title: 'Clausole contestabili', body: 'Sherlock segnala le clausole vessatorie che le compagnie usano per limitare i rimborsi: decadenze, esclusioni nascoste, condizioni capestro.' },
-        { title: 'Web, Android e iPhone', body: 'Usa Sherlock dal browser, dall\'app Android nativa o installalo come PWA su iPhone (Aggiungi a Home). Stesso backend, stessa esperienza.' },
-        { title: 'Documenti non conservati', body: 'I PDF analizzati non vengono archiviati. Trasmissione HTTPS, lettura una sola volta, report sul tuo dispositivo. Dettagli nella pagina Trasparenza.' },
+        { title: 'Analisi delle polizze', body: 'Auto, casa, vita, salute, RC professionale: Sherlock le legge in pochi secondi e ti spiega cosa c\'è scritto davvero, senza tecnicismi.', nuovo: false },
+        { title: 'Confronto tra due polizze omologhe', body: 'Carica Polizza A e Polizza B: Sherlock le mette a confronto su coperture, esclusioni, massimali e franchigie. Tabella sintetica, differenze chiave per impatto e verdetto imparziale con i casi in cui conviene l\'una o l\'altra.', nuovo: true },
+        { title: 'Valutazione del rischio', body: 'Ogni polizza riceve un giudizio strutturato: rischio critico, alto, medio o basso. Sai esattamente come sei coperto.', nuovo: false },
+        { title: 'Lettere legali pronte', body: 'Bozze di reclamo formale, esposto IVASS e diffida stragiudiziale. Strutturate con i riferimenti normativi, pronte da rivedere e inviare via PEC.', nuovo: false },
+        { title: 'Clausole contestabili', body: 'Sherlock segnala le clausole vessatorie che le compagnie usano per limitare i rimborsi: decadenze, esclusioni nascoste, condizioni capestro.', nuovo: false },
+        { title: 'Web, Android e iPhone', body: 'Usa Sherlock dal browser, dall\'app Android nativa o installalo come PWA su iPhone (Aggiungi a Home). Stesso backend, stessa esperienza.', nuovo: false },
+        { title: 'Documenti non conservati', body: 'I PDF analizzati non vengono archiviati. Trasmissione HTTPS, lettura una sola volta, report sul tuo dispositivo. Dettagli nella pagina Trasparenza.', nuovo: false },
       ].map(f => (
-        <div class="bg-navy-900 border border-navy-800 rounded-xl p-6 hover:border-gold-400/40 transition">
+        <div class={`relative bg-navy-900 rounded-xl p-6 transition ${f.nuovo ? 'border border-emerald-500/40 hover:border-emerald-400' : 'border border-navy-800 hover:border-gold-400/40'}`}>
+          {f.nuovo && (
+            <span class="absolute top-3 right-3 bg-emerald-400 text-navy-950 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded">Nuovo</span>
+          )}
           <h3 class="text-lg font-bold text-white mb-2">{f.title}</h3>
           <p class="text-navy-300 text-sm leading-relaxed">{f.body}</p>
         </div>
