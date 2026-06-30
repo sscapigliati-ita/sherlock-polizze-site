@@ -39,7 +39,56 @@ const jsonLd = [
 >
   <Header slot="header" />
 
-  <section class="px-5 pt-14 pb-16 max-w-6xl mx-auto">
+  <section
+    aria-labelledby="caso-studio-hero"
+    class="relative overflow-hidden border-b border-gold-400/40 bg-gradient-to-br from-navy-900 via-navy-950 to-navy-900"
+  >
+    <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-gold-400/10 blur-3xl"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 rounded-full bg-red-500/10 blur-3xl"></div>
+    </div>
+    <div class="relative max-w-5xl mx-auto px-5 py-12 lg:py-16">
+      <div class="inline-flex items-center gap-2 bg-gold-400/15 border border-gold-400/60 px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.18em] text-gold-300 font-extrabold mb-5 shadow-lg shadow-gold-400/10">
+        <span class="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse"></span>
+        🔎 Caso studio · vita vissuta
+      </div>
+      <h2 id="caso-studio-hero" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.08] tracking-tight mb-5">
+        Ho fatto ricorso all'<span class="text-gold-400">Arbitro Assicurativo</span>.<br class="hidden sm:block" />
+        Il dispositivo dice <span class="text-red-400">«non accoglie»</span>.
+        <span class="text-white">Le motivazioni dicono altro.</span>
+      </h2>
+      <p class="text-lg lg:text-xl text-navy-100 leading-relaxed max-w-3xl mb-4">
+        Polizza infortuni, contestazione personale. Nel dispositivo: <em>respinto</em>.
+        Nelle motivazioni: la compagnia aveva torto su quasi tutto — tranne un punto
+        tecnico evitabile. <strong class="text-white">Da quel ricorso è nata Sherlock</strong>:
+        perché capire cosa firmiamo non può essere un privilegio di chi ha uno studio
+        legale alle spalle.
+      </p>
+      <p class="text-sm text-navy-400 leading-relaxed max-w-3xl mb-7">
+        Una storia vera, documentata, con copia dell'atto dell'Arbitro.
+        Nessun caso ipotetico, nessuno screenshot di marketing: l'evento concreto
+        che ha generato questo progetto.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a
+          href="/storia-sherlock"
+          data-track="caso_studio_hero_cta_click"
+          class="inline-flex items-center justify-center gap-2 bg-gold-400 text-navy-900 font-extrabold text-base px-6 py-4 rounded-xl hover:bg-gold-300 transition shadow-xl shadow-gold-400/30"
+        >
+          Leggi la storia completa →
+        </a>
+        <a
+          href="#hero-app"
+          data-track="caso_studio_hero_skip_click"
+          class="inline-flex items-center justify-center gap-2 border border-navy-600 text-navy-100 font-semibold text-base px-6 py-4 rounded-xl hover:bg-navy-800 transition"
+        >
+          Vai direttamente all'app
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="hero-app" class="px-5 pt-14 pb-16 max-w-6xl mx-auto">
     <div class="grid lg:grid-cols-[2fr_3fr] gap-8 items-stretch">
       <div>
         <a href="/abbonati" data-track="hero_badge_compara_click" class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/40 px-3 py-1 rounded-full text-xs text-emerald-300 font-semibold mb-3 hover:bg-emerald-500/20 transition">
@@ -54,8 +103,40 @@ const jsonLd = [
           La compagnia ti ha detto <span class="text-red-400">no</span>?<br />
           <span class="text-gold-400">Prima di arrenderti</span>, fai leggere la polizza a Sherlock.
         </h1>
-        <p class="text-lg text-navy-300 leading-relaxed">
-          Sherlock individua <strong class="text-white">garanzie, esclusioni, franchigie e clausole contestabili</strong>.
+        <p class="text-lg text-navy-100 leading-relaxed mb-6">
+          <strong class="text-white">Hai ricevuto un rifiuto dalla compagnia?</strong><br />
+          Carica il testo del diniego o la polizza: Sherlock ti aiuta a capire
+          <strong class="text-white">quali punti verificare</strong>.
+        </p>
+        <div class="grid sm:grid-cols-3 gap-3">
+          <a
+            href={playStoreUrl}
+            target="_blank"
+            rel="noopener"
+            data-track="hero_cta_polizza_click"
+            class="bg-gold-400 text-navy-900 font-bold text-base px-4 py-4 rounded-xl hover:bg-gold-300 transition shadow-lg shadow-gold-400/20 text-center"
+          >
+            Analizza una polizza
+          </a>
+          <a
+            href={playStoreUrl}
+            target="_blank"
+            rel="noopener"
+            data-track="hero_cta_diniego_click"
+            class="bg-red-500/15 border border-red-500/40 text-red-100 font-bold text-base px-4 py-4 rounded-xl hover:bg-red-500/25 transition text-center"
+          >
+            Analizza un diniego
+          </a>
+          <a
+            href="/esempio-report"
+            data-track="hero_cta_esempio_click"
+            class="border border-navy-600 text-navy-100 font-semibold text-base px-4 py-4 rounded-xl hover:bg-navy-800 transition text-center"
+          >
+            Guarda esempio report
+          </a>
+        </div>
+        <p class="text-sm text-navy-400 mt-5 leading-relaxed">
+          Sherlock individua garanzie, esclusioni, franchigie e clausole contestabili.
           Se serve, prepara una bozza di <strong class="text-white">reclamo PEC o esposto IVASS</strong>
           con i riferimenti normativi giusti.
         </p>
@@ -109,24 +190,7 @@ const jsonLd = [
       </div>
     </div>
 
-    <div class="mt-10 grid sm:grid-cols-2 gap-4">
-      <a
-        href="/app/"
-        data-track="hero_cta_analizza_click"
-        class="bg-gold-400 text-navy-900 font-bold text-lg px-8 py-6 rounded-xl hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
-      >
-        Analizza gratis la tua polizza
-      </a>
-      <a
-        href="/esempio-report"
-        data-track="hero_cta_esempio_click"
-        class="border border-navy-600 text-navy-100 font-semibold text-lg px-8 py-6 rounded-xl hover:bg-navy-800 transition text-center"
-      >
-        Vedi un esempio di report
-      </a>
-    </div>
-
-    <div class="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="mt-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <a
         href="/abbonati"
         data-track="hero_cta_pro_click"
@@ -266,7 +330,7 @@ const jsonLd = [
         { title: 'Confronto tra due polizze omologhe', body: 'Carica Polizza A e Polizza B: Sherlock le mette a confronto su coperture, esclusioni, massimali e franchigie. Tabella sintetica, differenze chiave per impatto e verdetto imparziale con i casi in cui conviene l\'una o l\'altra.', nuovo: true },
         { title: 'Valutazione del rischio', body: 'Ogni polizza riceve un giudizio strutturato: rischio critico, alto, medio o basso. Sai esattamente come sei coperto.', nuovo: false },
         { title: 'Lettere legali pronte', body: 'Bozze di reclamo formale, esposto IVASS e diffida stragiudiziale. Strutturate con i riferimenti normativi, pronte da rivedere e inviare via PEC.', nuovo: false },
-        { title: 'Clausole contestabili', body: 'Sherlock segnala le clausole vessatorie che le compagnie usano per limitare i rimborsi: decadenze, esclusioni nascoste, condizioni capestro.', nuovo: false },
+        { title: 'Clausole contestabili', body: 'Sherlock segnala le clausole potenzialmente vessatorie o contestabili che le compagnie usano per limitare i rimborsi: decadenze, esclusioni nascoste, condizioni capestro.', nuovo: false },
         { title: 'Web, Android e iPhone', body: 'Usa Sherlock dal browser, dall\'app Android nativa o installalo come PWA su iPhone (Aggiungi a Home). Stesso backend, stessa esperienza.', nuovo: false },
         { title: 'Documenti non conservati', body: 'I PDF analizzati non vengono archiviati. Trasmissione HTTPS, lettura una sola volta, report sul tuo dispositivo. Dettagli nella pagina Trasparenza.', nuovo: false },
       ].map(f => (
