@@ -23,7 +23,7 @@ I piani Pass Pro 1/6/12 mesi e Lettera Singola **non** vengono migrati in questa
 | Strategia rilascio | Production 100% subito (preceduto da Internal Testing minimo) | Scelta utente; mitigato da test plan stringente prima del promote |
 | Acknowledge | Lo fa il backend dopo verify | Best practice ufficiale Google; se backend giù → Play rimborsa entro 3gg = safety net |
 | Verify server-side | Sempre, via Play Developer API + Service Account | Sicurezza: impossibile fingere un purchase token valido |
-| Email al checkout | Opzionale, abilita rescue cross-device | Niente friction obbligatoria, ma chi la fornisce sblocca recovery |
+| Email al checkout | **Obbligatoria** | Garantisce rescue cross-device per il 100% degli acquirenti; senza email il restore funziona solo sullo stesso Google account |
 | Codice virtuale `PLAY-*` | Generato server-side e salvato in Upstash come `RecordPro` con `fonte: 'play'` | Coerenza con sistema esistente (header `x-pro-code` continua a funzionare invariato per `/api/lettera`, `/api/compara`, ecc.) |
 
 ## Architettura
@@ -149,9 +149,9 @@ Nuovo stato v4.3:
 🏆 Pass Pro a vita
    Una tantum, accesso permanente. Numero limitato.
 
-   [ Email (opzionale, per recuperare il Pro su altri device) ]
+   [ Email (obbligatoria, ti serve per recuperare il Pro su altri device) ]
 
-   [ Sblocca a 19,90€ ]    ← CTA oro, chiama Android.startPurchase('founder_lifetime', email?)
+   [ Sblocca a 19,90€ ]    ← CTA oro, disabilitato finché email non valida; chiama Android.startPurchase('founder_lifetime', email)
 
    ─── oppure ───
 
@@ -192,14 +192,19 @@ function startPlayPurchase() {
     track('play_billing_unavailable');
     return;
   }
+  const email = (document.getElementById('founder-email')?.value || '').trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    toast("Inserisci la tua email per continuare. Ti serve per recuperare il Pro su altri device.", 'warn');
+    track('play_billing_email_required');
+    document.getElementById('founder-email')?.focus();
+    return;
+  }
   track('play_billing_initiated');
-  const email = document.getElementById('founder-email')?.value?.trim() || '';
-  if (email) Android.startPurchase('founder_lifetime', email);
-  else Android.startPurchase('founder_lifetime');
+  Android.startPurchase('founder_lifetime', email);
 }
 ```
 
-Debounce 500ms incluso per gestire doppio tap.
+Il CTA "Sblocca a 19,90€" è disabilitato finché l'input email non passa la regex (event listener su `input`). Debounce 500ms incluso per gestire doppio tap.
 
 ### Eventi JS aggiuntivi
 
@@ -220,11 +225,11 @@ Endpoint POST chiamato da `MainActivity` dopo dialog Play success.
 
 **Input**:
 ```json
-{ "purchaseToken": "...", "productId": "founder_lifetime", "email": "stefano@x.it" /* opzionale */ }
+{ "purchaseToken": "...", "productId": "founder_lifetime", "email": "stefano@x.it" }
 ```
 
 **Logica**:
-1. Validate input (productId in whitelist `['founder_lifetime']`; purchaseToken non vuoto)
+1. Validate input (productId in whitelist `['founder_lifetime']`; purchaseToken non vuoto; email obbligatoria, regex `^[^@\s]+@[^@\s]+\.[^@\s]+$` — 400 `EMAIL_REQUIRED` se assente/invalida). Eccezione: restore flow (`source=restore` nel body), dove l'app potrebbe re-inviare un token già verificato anche senza email — in quel caso si recupera l'email dal record esistente.
 2. **Verify token** via Play Developer API: `GET /androidpublisher/v3/applications/it.sherlock.polizze/purchases/products/{productId}/tokens/{purchaseToken}` con bearer del Service Account
 3. Check risposta: `purchaseState == 0` (PURCHASED), `consumptionState == 0` (non consumato)
 4. **Idempotenza**: se `purchaseToken` già registrato in Upstash → restituisci codice esistente (caso restore/retry)
