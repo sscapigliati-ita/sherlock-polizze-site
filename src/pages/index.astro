@@ -39,21 +39,9 @@ const jsonLd = [
 >
   <Header slot="header" />
 
-  <section class="relative px-5 pt-8 pb-4 bg-gradient-to-b from-black via-navy-950 to-navy-900 flex justify-center">
-    <img
-      src="/logo-sherlock.png"
-      alt="Sherlock — Il detective assicurativo: la tua polizza nasconde trappole, Sherlock le trova in 30 secondi"
-      width="512"
-      height="900"
-      class="block w-auto max-h-[78vh] sm:max-h-[640px] h-auto rounded-xl shadow-2xl shadow-black/60 ring-1 ring-gold-400/20"
-      fetchpriority="high"
-      decoding="async"
-    />
-  </section>
-
   <section class="px-5 pt-14 pb-16 max-w-6xl mx-auto">
     <div class="grid lg:grid-cols-[2fr_3fr] gap-8 items-stretch">
-      <div class="max-w-md">
+      <div>
         <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
           <span class="w-1.5 h-1.5 bg-gold-400 rounded-full animate-pulse"></span>
           1ª analisi gratis · Nessuna carta richiesta
@@ -62,42 +50,15 @@ const jsonLd = [
           La compagnia ti ha detto <span class="text-red-400">no</span>?<br />
           <span class="text-gold-400">Prima di arrenderti</span>, fai leggere la polizza a Sherlock.
         </h1>
-        <p class="text-lg text-navy-300 leading-relaxed mb-7 max-w-xl">
+        <p class="text-lg text-navy-300 leading-relaxed">
           Sherlock individua <strong class="text-white">garanzie, esclusioni, franchigie e clausole contestabili</strong>.
           Se serve, prepara una bozza di <strong class="text-white">reclamo PEC o esposto IVASS</strong>
           con i riferimenti normativi giusti.
         </p>
-        <div class="flex flex-col sm:flex-row gap-3 mb-4">
-          <a
-            href="/app/"
-            data-track="hero_cta_analizza_click"
-            class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
-          >
-            Analizza gratis la tua polizza
-          </a>
-          <a
-            href="/esempio-report"
-            data-track="hero_cta_esempio_click"
-            class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition text-center"
-          >
-            Vedi un esempio di report
-          </a>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-3 mb-6">
-          <a
-            href="/abbonati"
-            data-track="hero_cta_pro_click"
-            class="text-sm text-navy-400 hover:text-gold-300 underline underline-offset-4 transition"
-          >
-            Sblocca Pro da 1,25€/mese →
-          </a>
-        </div>
-        <p class="text-xs text-navy-500">
-          Disponibile su Web, Android e iPhone (installabile come app) · Pagamento PayPal · Nessun rinnovo automatico
-        </p>
       </div>
 
-      <div class="bg-gradient-to-br from-navy-800 to-navy-900 border border-navy-700 rounded-2xl p-6 shadow-2xl flex flex-col h-full">
+      <div class="flex flex-col gap-5 h-full">
+      <div class="bg-gradient-to-br from-navy-800 to-navy-900 border border-navy-700 rounded-2xl p-6 shadow-2xl">
         <div class="text-xs uppercase tracking-widest text-navy-400 mb-3">Esempio di report Sherlock</div>
         <div class="space-y-3 text-sm">
           <div class="flex items-center justify-between p-3 rounded-lg bg-red-500/10 border border-red-500/30">
@@ -129,18 +90,49 @@ const jsonLd = [
             ))}
           </div>
         </div>
-        <div class="mt-5 pt-5 border-t border-navy-700 flex justify-end">
+      </div>
+        <div class="flex-1 min-h-0 relative">
           <img
             src="/logo-sherlock.png"
-            alt="Logo Sherlock"
-            width="34"
-            height="60"
-            class="h-[60px] w-auto rounded-md shadow-md shadow-black/40 ring-1 ring-gold-400/20"
+            alt="Sherlock"
+            width="512"
+            height="900"
+            class="absolute inset-0 m-auto max-h-full max-w-full w-auto h-auto object-contain rounded-xl shadow-2xl shadow-black/60 ring-1 ring-gold-400/20"
             loading="lazy"
             decoding="async"
           />
         </div>
       </div>
+    </div>
+
+    <div class="mt-10 grid sm:grid-cols-2 gap-4">
+      <a
+        href="/app/"
+        data-track="hero_cta_analizza_click"
+        class="bg-gold-400 text-navy-900 font-bold text-lg px-8 py-6 rounded-xl hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
+      >
+        Analizza gratis la tua polizza
+      </a>
+      <a
+        href="/esempio-report"
+        data-track="hero_cta_esempio_click"
+        class="border border-navy-600 text-navy-100 font-semibold text-lg px-8 py-6 rounded-xl hover:bg-navy-800 transition text-center"
+      >
+        Vedi un esempio di report
+      </a>
+    </div>
+
+    <div class="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <a
+        href="/abbonati"
+        data-track="hero_cta_pro_click"
+        class="text-sm text-navy-400 hover:text-gold-300 underline underline-offset-4 transition"
+      >
+        Sblocca Pro da 1,25€/mese →
+      </a>
+      <p class="text-xs text-navy-500">
+        Disponibile su Web, Android e iPhone (installabile come app) · Pagamento PayPal · Nessun rinnovo automatico
+      </p>
     </div>
   </section>
 
