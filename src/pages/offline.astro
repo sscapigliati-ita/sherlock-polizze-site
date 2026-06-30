@@ -10,17 +10,56 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="max-w-md text-center">
       <div class="text-6xl mb-4">📡</div>
       <h1 class="text-3xl font-extrabold text-white mb-3">Sembri offline</h1>
-      <p class="text-navy-300 mb-6">
-        Non c'è connessione. Le pagine che hai già aperto restano disponibili nella cache locale.
-        Riprova quando torni online.
+      <p class="text-navy-300 mb-4">
+        Non riusciamo a raggiungere il sito. Se la connessione c'è, può essere una cache
+        locale stantia: prova a pulirla e riprovare.
       </p>
-      <button
-        type="button"
-        onclick="location.reload()"
-        class="inline-block rounded-lg bg-gold-400 px-6 py-3 font-bold text-navy-900 hover:bg-gold-300 transition"
-      >
-        Riprova
-      </button>
+      <div class="flex flex-col gap-3 mb-6">
+        <button
+          type="button"
+          onclick="location.reload()"
+          class="inline-block rounded-lg bg-gold-400 px-6 py-3 font-bold text-navy-900 hover:bg-gold-300 transition"
+        >
+          Riprova
+        </button>
+        <button
+          type="button"
+          id="btn-reset-cache"
+          class="inline-block rounded-lg border border-navy-600 text-navy-100 px-6 py-3 font-semibold hover:bg-navy-800 transition"
+        >
+          Pulisci cache e riprova
+        </button>
+      </div>
+      <p id="reset-status" class="text-xs text-navy-400 min-h-[1em]"></p>
     </div>
   </main>
+  <script is:inline>
+    (function(){
+      var btn = document.getElementById('btn-reset-cache');
+      var status = document.getElementById('reset-status');
+      if (!btn) return;
+      btn.addEventListener('click', async function(){
+        btn.disabled = true;
+        status.textContent = 'Pulizia in corso...';
+        try {
+          if ('serviceWorker' in navigator) {
+            var regs = await navigator.serviceWorker.getRegistrations();
+            for (var r of regs) { try { await r.unregister(); } catch(e){} }
+          }
+          if ('caches' in window) {
+            var keys = await caches.keys();
+            await Promise.all(keys.map(function(k){ return caches.delete(k); }));
+          }
+          status.textContent = 'Cache pulita. Ricarico...';
+          setTimeout(function(){
+            // bypass cache HTTP, vai alla home
+            location.replace('/?nocache=' + Date.now());
+          }, 600);
+        } catch (e) {
+          status.textContent = 'Errore: ' + (e && e.message || e) + ' — prova a chiudere e riaprire Safari.';
+          btn.disabled = false;
+        }
+      });
+    })();
+  </script>
 </BaseLayout>

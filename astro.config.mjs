@@ -16,7 +16,7 @@ export default defineConfig({
     sitemap(),
     mdx(),
     AstroPWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate', // SW si aggiorna senza chiedere conferma — evita versioni stantie
       strategies: 'generateSW',
       injectRegister: false, // registriamo manualmente dal componente Toast
       manifest: {
@@ -40,25 +40,34 @@ export default defineConfig({
         // Precache di tutti gli asset statici buildati
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}'],
         globIgnores: ['**/abbonati*.html', '**/abbonati/**/*.html', '**/admin*.html', '**/admin/**/*.html'],
-        // Esclude le pagine dinamiche dal precache HTML (sono server-rendered)
-        navigateFallback: '/offline',
+        // Pulisce le cache di vecchie versioni dei precache automatically
+        cleanupOutdatedCaches: true,
+        // Prende controllo subito dei tab aperti, evita confusione tra vecchio/nuovo SW
+        clientsClaim: true,
+        skipWaiting: true,
+        // Niente navigateFallback globale: era la causa di "Sembri offline" falsi positivi
+        // su connessioni mobili lente. Il fallback offline si attiva solo via runtimeCaching
+        // catch handler sotto.
         navigateFallbackDenylist: [
           /^\/admin/,
           /^\/abbonati/,
           /^\/api\//,
+          /^\/app\//,
         ],
         runtimeCaching: [
           {
-            // Pagine marketing: NetworkFirst con timeout 3s, fallback cache
+            // Pagine marketing: NetworkFirst con timeout PIÙ LUNGO (8s) per tollerare 4G lento.
+            // Solo se la rete davvero non risponde, si va a cache; se anche cache miss, /offline.
             urlPattern: ({ url, request }) =>
               request.mode === 'navigate' &&
               !url.pathname.startsWith('/admin') &&
               !url.pathname.startsWith('/abbonati') &&
-              !url.pathname.startsWith('/api/'),
+              !url.pathname.startsWith('/api/') &&
+              !url.pathname.startsWith('/app/'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'pages-marketing',
-              networkTimeoutSeconds: 3,
+              networkTimeoutSeconds: 8,
               expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 7 },
             },
           },
