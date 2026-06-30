@@ -9,7 +9,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.3",
@@ -23,6 +25,7 @@
     "tailwindcss": "^4.3.1"
   },
   "devDependencies": {
-    "pwa-asset-generator": "^7.0.0"
+    "pwa-asset-generator": "^7.0.0",
+    "vitest": "^3.2.4"
   }
 }
