@@ -328,41 +328,40 @@ Da aggiungere:
    - Aggiungi `stefano.scapigliati@gmail.com` + eventuali altri tester
    - Test response: `RESPOND_NORMALLY` (flusso realistico senza addebito reale)
 
-## Sequenza operativa di rilascio
+## Sequenza operativa di rilascio (single-session, tutto oggi)
 
-**Giorno 0 — Setup Play Console (utente)**
-1. Punti 1-5 sopra
-2. Conferma a Claude completati
+**Fasi parallele dall'inizio** (utente + Claude lavorano in contemporanea):
 
-**Giorno 1 — Backend (`sherlock-site/`)**
+**Fase 0 — Setup Play Console (utente, blocking ~30 min)**
+1. Punti 1-5 della sezione Play Console sopra (prodotto `founder_lifetime` + Service Account perm + License testing)
+2. **Conferma a Claude quando fatto** — il backend si può sviluppare in parallelo, ma il test end-to-end richiede questo completato
+
+**Fase 1 — Backend (Claude, ~1h, parallelo a Fase 0)**
 3. `src/lib/play-billing.ts` + `src/pages/api/play-billing/verify.ts` + estensione `storage.ts`
-4. Deploy preview Vercel + test con curl simulato (mock purchaseToken: 410 INVALID_TOKEN atteso)
+4. Deploy preview Vercel + test con curl simulato (mock purchaseToken: 410 INVALID_TOKEN atteso → confermo che la pipeline di verifica funziona prima di avere un token reale)
 5. Merge → production
-6. Check: backend pronto e inutilizzato
 
-**Giorno 2 — App (`sherlock_project/`)**
-7. `app/build.gradle`: aggiungo `billing:7.1.1`
-8. `BillingManager.java` (nuovo)
-9. `MainActivity.java` (bridge + lifecycle)
-10. `assets/www/index.html` (paywall + funzioni globali)
-11. Bump `versionCode 52→53`, `versionName 4.2→4.3`
-12. Build `.aab` firmato
+**Fase 2 — App (Claude, ~2h)**
+6. `app/build.gradle`: aggiungo `billing:7.1.1`
+7. `BillingManager.java` (nuovo)
+8. `MainActivity.java` (bridge + lifecycle)
+9. `assets/www/index.html` (paywall + funzioni globali + email obbligatoria)
+10. Bump `versionCode 52→53`, `versionName 4.2→4.3`
+11. Build `.aab` firmato (richiede Android Studio aperto o gradle CLI con JAVA_HOME corretto)
 
-**Giorno 3 — Internal Testing track**
-13. Upload `.aab` su **Internal testing** (NON production)
-14. Aggiungo tester
-15. 3 test reali (matrix sotto)
-16. Verifica `/admin` (`fonte: 'play'`)
-17. Verifica GA4 DebugView eventi
+**Fase 3 — Internal Testing (utente + Claude, ~1h)**
+12. Upload `.aab` su Play Console **Internal testing** (utente fa upload, Claude attende conferma)
+13. Install via opt-in link su device tester
+14. 3 test reali con Claude in supporto: happy path, restore (clear data), dismiss
+15. Verifica `/admin` per `fonte: 'play'` + GA4 DebugView per sequenza eventi
 
-**Giorno 4 — Promote a Production**
-18. Se test passano: promote release Internal → Production
-19. Rollout 100% (scelta utente)
-20. Monitor /admin + GA4 prime 24h
+**Fase 4 — Promote a Production (utente, ~10 min)**
+16. Se test passano: promote release Internal → Production (rollout 100%)
+17. Monitor /admin + GA4 prime 24h
 
-**Giorno 4+ — Post-rilascio**
-21. Anomalie → halt rollout via Play Console (utenti non aggiornati restano su v4.2)
-22. Verifica manuale primi 10 acquisti reali in KV
+**Stima totale**: ~4-5 ore di lavoro effettivo, comprimibile se Play Console setup e Service Account permissions vanno lisci al primo tentativo. Punto critico: il blocking step è "Service Account permissions propagate" (5-10 min di attesa dopo edit in Play Console).
+
+**Rollback**: se anomalie post-promote → Play Console > halt rollout (utenti non aggiornati restano su v4.2). Verifica manuale primi 10 acquisti reali in Upstash per coerenza dati.
 
 ## Test plan
 
