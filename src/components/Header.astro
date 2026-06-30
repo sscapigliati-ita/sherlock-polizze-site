@@ -2,20 +2,20 @@
 import LangSwitcher from './LangSwitcher.astro';
 ---
 <header class="sticky top-0 z-50 bg-navy-950/85 backdrop-blur-md border-b border-navy-800">
-  <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
-    <a href="/" class="group notranslate flex items-center gap-3" translate="no">
+  <div class="max-w-6xl mx-auto px-3 sm:px-5 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
+    <a href="/" class="group notranslate flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink" translate="no">
       <img
         src="/logo-sherlock.png"
         alt="Sherlock"
         width="34"
         height="60"
-        class="h-12 w-auto rounded-md shadow-md shadow-black/40 ring-1 ring-gold-400/20"
+        class="h-10 sm:h-12 w-auto rounded-md shadow-md shadow-black/40 ring-1 ring-gold-400/20 flex-shrink-0"
         fetchpriority="high"
         decoding="async"
       />
-      <div>
+      <div class="min-w-0">
         <div class="font-extrabold text-white tracking-tight leading-none group-hover:text-gold-300 transition">Sherlock</div>
-        <div class="text-[10px] uppercase tracking-widest text-navy-400 leading-none mt-1">Detective Polizze</div>
+        <div class="text-[10px] uppercase tracking-widest text-navy-400 leading-none mt-1 truncate">Detective Polizze</div>
       </div>
     </a>
 
@@ -25,14 +25,21 @@ import LangSwitcher from './LangSwitcher.astro';
       <a href="/abbonati" class="hover:text-white transition">Abbonamento</a>
     </nav>
 
-    <div class="flex items-center gap-3">
-      <LangSwitcher />
+    <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+      <div class="hidden sm:flex"><LangSwitcher /></div>
       <a
         href="/abbonati"
-        class="bg-gold-400 text-navy-900 font-bold text-sm px-4 py-2 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20"
+        class="bg-gold-400 text-navy-900 font-bold text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20 whitespace-nowrap"
       >
-        Abbonati
+        Pass Pro
       </a>
+    </div>
+  </div>
+
+  <!-- Mobile language switcher: barra secondaria sotto l'header, visibile solo sotto sm -->
+  <div class="sm:hidden border-t border-navy-800/60 bg-navy-950/70">
+    <div class="max-w-6xl mx-auto px-3 py-1.5 flex justify-center">
+      <LangSwitcher />
     </div>
   </div>
 </header>
