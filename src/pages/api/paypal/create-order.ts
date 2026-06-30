@@ -65,7 +65,9 @@ export const POST: APIRoute = async ({ request, url }) => {
       cancelUrl,
       ref,
     });
-    void ga4TrackServer('paypal_redirect', orderId, { piano, value: PIANI[piano]?.prezzo || 0, currency: 'EUR', has_ref: ref ? 1 : 0 });
+    const valore = PIANI[piano]?.prezzo || 0;
+    void ga4TrackServer('paypal_redirect', orderId, { piano, value: valore, currency: 'EUR', has_ref: ref ? 1 : 0 });
+    void ga4TrackServer('checkout_started', orderId, { piano, value: valore, currency: 'EUR' });
     return json({ orderId, approveUrl, piano, email });
   } catch (e: any) {
     void ga4TrackServer('paypal_create_error', email || 'unknown', { piano, reason: String(e?.message || 'unknown').slice(0, 100) });

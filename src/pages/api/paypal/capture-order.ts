@@ -111,6 +111,11 @@ export const POST: APIRoute = async ({ request }) => {
     mail_sent: mail.ok ? 1 : 0,
   });
   void ga4TrackServer('paypal_success', orderId, { piano: cattura.piano });
+  void ga4TrackServer('payment_completed', orderId, {
+    piano: cattura.piano,
+    value: PIANI[cattura.piano]?.prezzo || 0,
+    currency: 'EUR',
+  });
 
   return json({
     codice,
