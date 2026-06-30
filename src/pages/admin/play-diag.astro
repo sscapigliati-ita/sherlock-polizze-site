@@ -1,0 +1,92 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { listaOggettiInstalls, ispezionaCsvMese, freshnessReporting } from '../../lib/play';
+
+const oggi = new Date();
+const ymCorrente = `${oggi.getUTCFullYear()}${String(oggi.getUTCMonth() + 1).padStart(2, '0')}`;
+const meseScorso = new Date(oggi); meseScorso.setUTCMonth(oggi.getUTCMonth() - 1);
+const ymScorso = `${meseScorso.getUTCFullYear()}${String(meseScorso.getUTCMonth() + 1).padStart(2, '0')}`;
+
+const [oggetti, csvScorso, csvCorrente, freshCrash, freshAnr, freshErr] = await Promise.all([
+  listaOggettiInstalls(200),
+  ispezionaCsvMese(ymScorso),
+  ispezionaCsvMese(ymCorrente),
+  freshnessReporting('crashRateMetricSet'),
+  freshnessReporting('anrRateMetricSet'),
+  freshnessReporting('errorCountMetricSet'),
+]);
+
+const adminEmail = Astro.locals.adminEmail ?? '';
+
+// Ordina oggetti per "updated" desc, limita a 40 più recenti
+const ordinati = [...oggetti.oggetti].sort((a, b) => b.updated.localeCompare(a.updated)).slice(0, 40);
+---
+<BaseLayout title="Play Diagnostica — Sherlock" description="Diagnosi bucket Play e Reporting API">
+  <main class="notranslate px-5 py-10 max-w-6xl mx-auto text-sm" translate="no">
+    <header class="mb-6">
+      <h1 class="text-2xl font-extrabold text-white">Play Diagnostica</h1>
+      <p class="text-navy-400 text-xs mt-1">{adminEmail} · <a href="/admin" class="underline hover:text-gold-300">← dashboard</a></p>
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-gold-400 text-xs font-bold tracking-widest mb-2">REPORTING API FRESHNESS (DAILY)</h2>
+      <div class="rounded-xl bg-navy-900/50 border border-navy-700 p-3 font-mono text-xs">
+        {[freshCrash, freshAnr, freshErr].map((f) => (
+          <div class="mb-1">
+            <span class="text-gold-300">{f.metricSet}</span>
+            {' · status: '}<span class={f.status === 200 ? 'text-emerald-400' : 'text-red-400'}>{f.status}</span>
+            {f.freshness ? (
+              <span> · ultimo: <span class="text-white">{f.freshness.year}-{String(f.freshness.month).padStart(2,'0')}-{String(f.freshness.day).padStart(2,'0')}</span></span>
+            ) : (
+              <span class="text-navy-400"> · freshness mancante</span>
+            )}
+            {f.errore && <span class="text-red-400"> · {f.errore}</span>}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-gold-400 text-xs font-bold tracking-widest mb-2">CSV MENSILI INSTALLS — MESI RILEVANTI</h2>
+      <div class="rounded-xl bg-navy-900/50 border border-navy-700 p-3 font-mono text-xs space-y-3">
+        {[csvScorso, csvCorrente].map((c) => (
+          <div>
+            <div class="text-gold-300">{c.obj}</div>
+            <div class="text-navy-300">
+              status: <span class={c.status === 'ok' ? 'text-emerald-400' : c.status === '404' ? 'text-amber-400' : 'text-red-400'}>{c.status}</span>
+              {c.righe !== undefined && <span> · righe dati: <span class="text-white">{c.righe}</span></span>}
+              {c.primoGiorno && <span> · primo: <span class="text-white">{c.primoGiorno}</span></span>}
+              {c.ultimoGiorno && <span> · ultimo: <span class="text-white">{c.ultimoGiorno}</span></span>}
+              {c.updated && <span> · file_updated: <span class="text-white">{c.updated}</span></span>}
+              {c.size && <span> · size: {c.size}</span>}
+              {c.errore && <span class="text-red-400"> · {c.errore}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-gold-400 text-xs font-bold tracking-widest mb-2">OGGETTI BUCKET — stats/installs/ (top 40 by updated desc)</h2>
+      {oggetti.errore && <div class="text-red-400 text-xs mb-2">Errore lista: {oggetti.errore}</div>}
+      <div class="rounded-xl bg-navy-900/50 border border-navy-700 p-3 font-mono text-[11px] overflow-auto">
+        <table class="w-full">
+          <thead class="text-gold-300 text-left">
+            <tr><th class="py-1 pr-2">updated</th><th class="py-1 pr-2">size</th><th class="py-1">name</th></tr>
+          </thead>
+          <tbody>
+            {ordinati.map((o) => (
+              <tr class="border-t border-navy-800/60">
+                <td class="py-1 pr-2 text-white whitespace-nowrap">{o.updated}</td>
+                <td class="py-1 pr-2 text-navy-300 text-right">{o.size}</td>
+                <td class="py-1 text-navy-200 break-all">{o.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div class="text-navy-400 mt-2">Mostrati {ordinati.length} di {oggetti.oggetti.length} totali.</div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

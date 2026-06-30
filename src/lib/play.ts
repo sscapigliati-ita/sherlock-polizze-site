@@ -108,6 +108,75 @@ async function cached<T>(chiave: string, ttlSec: number, calcola: () => Promise<
   return valore;
 }
 
+// ===== Diagnostica raw (usata da /admin/play-diag) =====
+// Esporta primitive grezze sul bucket Play + freshness Reporting API per
+// capire perché i CSV si fermano (es. SA senza permessi sui nuovi oggetti,
+// path cambiati, file non aggiornati da Play).
+
+export type DiagOggetto = { name: string; updated: string; size: string };
+
+export async function listaOggettiInstalls(maxResults = 100): Promise<{ oggetti: DiagOggetto[]; errore?: string }> {
+  const b = bucket();
+  if (!b) return { oggetti: [], errore: 'PLAY_REPORTS_BUCKET non configurato' };
+  try {
+    const token = await accessToken('https://www.googleapis.com/auth/devstorage.read_only');
+    const url = `https://storage.googleapis.com/storage/v1/b/${b}/o?prefix=stats/installs/&maxResults=${maxResults}`;
+    const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const j = (await r.json()) as { items?: Array<{ name: string; updated: string; size: string }>; error?: { message?: string } };
+    if (!r.ok) return { oggetti: [], errore: `GCS ${r.status}: ${j.error?.message ?? 'unknown'}` };
+    return { oggetti: (j.items ?? []).map((o) => ({ name: o.name, updated: o.updated, size: o.size })) };
+  } catch (e: any) {
+    return { oggetti: [], errore: e?.message ?? String(e) };
+  }
+}
+
+export type DiagCsv = { obj: string; status: 'ok' | '404' | 'errore'; righe?: number; primoGiorno?: string; ultimoGiorno?: string; updated?: string; size?: string; errore?: string };
+
+export async function ispezionaCsvMese(ym: string): Promise<DiagCsv> {
+  const b = bucket();
+  const p = pkg();
+  const obj = `stats/installs/installs_${p}_${ym}_overview.csv`;
+  if (!b) return { obj, status: 'errore', errore: 'PLAY_REPORTS_BUCKET non configurato' };
+  try {
+    const token = await accessToken('https://www.googleapis.com/auth/devstorage.read_only');
+    // Metadata
+    const mUrl = `https://storage.googleapis.com/storage/v1/b/${b}/o/${encodeURIComponent(obj)}`;
+    const mr = await fetch(mUrl, { headers: { Authorization: `Bearer ${token}` } });
+    if (mr.status === 404) return { obj, status: '404' };
+    if (!mr.ok) return { obj, status: 'errore', errore: `metadata ${mr.status}` };
+    const meta = (await mr.json()) as { updated?: string; size?: string };
+    // Content
+    const cUrl = `${mUrl}?alt=media`;
+    const cr = await fetch(cUrl, { headers: { Authorization: `Bearer ${token}` } });
+    const buf = Buffer.from(await cr.arrayBuffer());
+    const txt = (buf[0] === 0xff && buf[1] === 0xfe) ? buf.subarray(2).toString('utf16le') : buf.toString('utf8');
+    const righe = txt.split(/\r?\n/).filter((l) => l.trim());
+    const dati = righe.slice(1);
+    const primoGiorno = dati[0]?.split(',')[0]?.trim();
+    const ultimoGiorno = dati.at(-1)?.split(',')[0]?.trim();
+    return { obj, status: 'ok', righe: dati.length, primoGiorno, ultimoGiorno, updated: meta.updated, size: meta.size };
+  } catch (e: any) {
+    return { obj, status: 'errore', errore: e?.message ?? String(e) };
+  }
+}
+
+export type DiagFreshness = { metricSet: string; status: number; freshness?: Freshness | null; errore?: string };
+
+export async function freshnessReporting(metricSet: 'crashRateMetricSet' | 'anrRateMetricSet' | 'errorCountMetricSet'): Promise<DiagFreshness> {
+  try {
+    const token = await accessToken('https://www.googleapis.com/auth/playdeveloperreporting');
+    const r = await fetch(`https://playdeveloperreporting.googleapis.com/v1beta1/apps/${pkg()}/${metricSet}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!r.ok) return { metricSet, status: r.status, errore: await r.text().then((t) => t.slice(0, 200)).catch(() => '') };
+    const j = (await r.json()) as { freshnessInfo?: { freshnesses?: Array<{ aggregationPeriod?: string; latestEndTime?: Freshness }> } };
+    const daily = j.freshnessInfo?.freshnesses?.find((f) => f.aggregationPeriod === 'DAILY');
+    return { metricSet, status: r.status, freshness: daily?.latestEndTime ?? null };
+  } catch (e: any) {
+    return { metricSet, status: 0, errore: e?.message ?? String(e) };
+  }
+}
+
 // Invalida la cache delle stats Play — utile per forzare il refresh dopo
 // che la freshness Reporting API è avanzata o che il bucket è stato sbloccato.
 export async function invalidaCachePlay(): Promise<void> {

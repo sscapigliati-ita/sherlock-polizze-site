@@ -155,7 +155,7 @@ const fmtSoloData = (iso: string) =>
 
       {playStale && uso.ultimoGiorno && (
         <div class="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 mb-3 text-xs text-amber-200">
-          <span class="font-bold">Dati installazioni in ritardo:</span> ultimo CSV Play disponibile {fmtDataIt(uso.ultimoGiorno)} (<span class="font-mono">{uso.giorniRitardo}</span> giorni fa). I valori &quot;28gg&quot; qui sotto si riferiscono alla finestra dei dati disponibili, non agli ultimi 28 giorni di calendario. Se il ritardo persiste, verifica i permessi del Service Account sul bucket Play o forza un <a href="/admin?refresh=play" class="underline hover:text-gold-300">refresh</a>.
+          <span class="font-bold">Pipeline CSV Play fermo dal {fmtDataIt(uso.ultimoGiorno)}</span> (<span class="font-mono">{uso.giorniRitardo}</span> giorni fa). Il blocco è <strong>upstream lato Google</strong>: anche il download manuale CSV da Play Console mostra la stessa data limite. Vitals (crash/ANR) e dati live di Play Console sono invece aggiornati via Reporting API. I valori &quot;28gg&quot; qui sotto coprono solo la finestra di dati ricevuti. Azioni: apri ticket Play Console support, oppure controlla <a href="/admin/play-diag" class="underline hover:text-gold-300">diagnostica</a> · <a href="/admin?refresh=play" class="underline hover:text-gold-300">forza refresh</a>.
         </div>
       )}
 
