@@ -8,7 +8,7 @@ const lingue = [
   { code: 'zh', google: 'zh-CN', flag: '🇨🇳', name: '中文' },
 ];
 ---
-<div class="flex items-center gap-1 notranslate" translate="no" id="lang-switcher" aria-label="Selezione lingua">
+<div class="flex items-center gap-1 notranslate lang-switcher" translate="no" aria-label="Selezione lingua">
   {lingue.map(({ code, google, flag, name }) => (
     <button
       type="button"
@@ -23,6 +23,8 @@ const lingue = [
 
 <script is:inline>
 (function(){
+  if (window.__sherlockLangSwitcherInit) return;
+  window.__sherlockLangSwitcherInit = true;
   function getCookie(name){
     var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
     return m ? decodeURIComponent(m[1]) : '';
@@ -46,14 +48,14 @@ const lingue = [
   }
   function highlight(){
     var active = currentLang();
-    document.querySelectorAll('#lang-switcher button').forEach(function(btn){
+    document.querySelectorAll('.lang-switcher button').forEach(function(btn){
       var on = btn.getAttribute('data-lang') === active;
       btn.style.opacity = on ? '1' : '0.5';
       btn.style.borderColor = on ? 'rgb(250 204 21)' : 'transparent';
     });
   }
   document.addEventListener('click', function(e){
-    var btn = e.target.closest && e.target.closest('#lang-switcher button');
+    var btn = e.target.closest && e.target.closest('.lang-switcher button');
     if (!btn) return;
     setGoogTrans(btn.getAttribute('data-google'));
     location.reload();
