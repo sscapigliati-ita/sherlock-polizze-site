@@ -3,6 +3,7 @@ export const prerender = true;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ShareButtons from '../components/ShareButtons.astro';
 
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
 ---
@@ -14,7 +15,7 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
 
   <article class="px-5 pt-12 pb-20 max-w-3xl mx-auto text-navy-100">
     <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
-      Esempio di report Sherlock
+      Guarda un esempio reale di analisi Sherlock
     </h1>
     <p class="text-navy-300 text-lg mb-2">
       Polizza RC Auto, compagnia top-10 italiana. Caricato il PDF, analisi in
@@ -143,7 +144,7 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
         valido, salvo specifica trattativa.
       </li>
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
-        Se la compagnia ti contesta una clausola vessatoria, contesta la <strong class="text-white">nullità</strong>
+        Se la compagnia ti contesta sulla base di una clausola potenzialmente vessatoria, contesta la <strong class="text-white">nullità</strong>
         per mancata specifica approvazione (art. 1341 c.c. + art. 33 Cod. Cons.).
       </li>
     </ol>
@@ -156,6 +157,8 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
         Scarica gratis l'app
       </a>
     </div>
+
+    <ShareButtons title="Esempio reale di analisi Sherlock — polizza RC Auto" path="/esempio-report" variant="app" />
 
     <p class="text-xs text-navy-500 text-center">
       Sherlock è uno strumento di analisi AI, non sostituisce un avvocato o consulente

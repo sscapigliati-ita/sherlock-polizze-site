@@ -122,7 +122,7 @@ CONTESTA
 il comportamento della Compagnia per i seguenti motivi:
 
 [Punto 1: es. mancata liquidazione]
-[Punto 2: es. clausola invocata vessatoria]
+[Punto 2: es. clausola invocata potenzialmente vessatoria]
 [Punto 3: es. tempi non rispettati]
 
 CHIEDE

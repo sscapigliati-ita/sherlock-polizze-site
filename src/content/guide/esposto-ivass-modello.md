@@ -52,7 +52,7 @@ L'esposto si può presentare in queste situazioni:
 | Violazione delle condizioni di polizza | Compagnia interpreta una clausola in modo distorto |
 | Mancata fornitura di documentazione | Compagnia non ti dà la perizia che hai richiesto |
 | Comportamenti vessatori dei call center | Ti richiamano in continuazione per farti ritirare il reclamo |
-| Sospetto di clausole vessatorie | Hai una clausola che ti sembra contraria al Codice del Consumo |
+| Sospetto di clausole potenzialmente vessatorie | Hai una clausola che ti sembra contraria al Codice del Consumo |
 | Mancata applicazione di sconti o bonus | La compagnia non ti applica il bonus dovuto |
 | Ritardo nei rimborsi anche dopo accordo | La compagnia ha accettato di pagare ma non paga |
 

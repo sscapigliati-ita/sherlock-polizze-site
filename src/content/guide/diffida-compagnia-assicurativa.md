@@ -64,7 +64,7 @@ Il diritto al risarcimento da RC auto si prescrive in **2 anni** dal sinistro (a
 ### 4. La compagnia non fornisce documentazione richiesta
 Se hai richiesto la perizia, l'estratto polizza o la corrispondenza interna e la compagnia non li produce.
 
-### 5. La compagnia applica clausole vessatorie
+### 5. La compagnia applica clausole potenzialmente vessatorie
 Quando intendi contestare la nullità di una clausola della polizza.
 
 > ⚠️ **Importante:** la diffida è uno strumento **formale**. Sbagliarla rende inefficace l'interruzione della prescrizione e ti espone a rischio di perdere il diritto. Se il caso è economicamente rilevante, valuta consulenza legale o usa uno strumento che generi la diffida con tutti gli elementi corretti.
