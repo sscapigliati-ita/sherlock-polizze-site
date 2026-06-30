@@ -1,0 +1,305 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'La storia vera dietro Sherlock: un ricorso AAS e quattro vittorie nascoste in una sconfitta',
+    description: 'Caso studio reale: ho fatto ricorso all\'Arbitro Assicurativo per una polizza infortuni. Il dispositivo dice "non accoglie". Le motivazioni dicono altro. Ecco perché ho fatto Sherlock.',
+    author: { '@type': 'Person', name: 'Stefano Scapigliati' },
+    datePublished: '2026-06-30',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Sherlock — Detective Polizze',
+      logo: { '@type': 'ImageObject', url: 'https://sherlock-polizze-site-five.vercel.app/icon.png' },
+    },
+  },
+];
+---
+<BaseLayout
+  title="La storia vera dietro Sherlock — un ricorso AAS e quattro vittorie nascoste in una sconfitta"
+  description="Caso studio reale: il mio ricorso all'Arbitro Assicurativo per una polizza infortuni. Formalmente respinto, ma con motivazioni che dimostrano quasi tutto a mio favore. Ecco perché ho costruito Sherlock."
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <article class="px-5 pt-12 pb-20 max-w-3xl mx-auto text-navy-100">
+    <div class="text-xs uppercase tracking-widest text-gold-400 mb-3 font-bold">Caso studio reale · vita vissuta</div>
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight mb-5">
+      Ho fatto causa alla mia compagnia.
+      <br /><span class="text-gold-400">Ho "perso".</span>
+      <br />Ma leggi cosa scrive l'Arbitro.
+    </h1>
+    <p class="text-lg text-navy-200 leading-relaxed mb-3">
+      Questa non è una storia di marketing. È quello che è successo a me — e che mi ha
+      convinto a costruire Sherlock.
+    </p>
+    <p class="text-sm text-navy-400 mb-10">
+      Tutto quello che leggi qui sotto è verificabile: la decisione dell'Arbitro
+      Assicurativo è pubblica (anonimizzata) nei registri ufficiali. Ho rimosso nomi
+      di parti e identificativi per ragioni di riservatezza e perché il punto non è
+      la specifica compagnia, ma il meccanismo.
+    </p>
+
+    <!-- I FATTI -->
+    <h2 class="text-2xl font-bold text-white mb-3">I fatti, in 6 righe</h2>
+    <div class="bg-navy-900 border border-navy-800 rounded-xl p-6 mb-10 text-navy-100 leading-relaxed">
+      <ul class="space-y-2 text-base">
+        <li><strong class="text-gold-400">Settembre 2024:</strong> firmo una polizza infortuni con una grande compagnia italiana.</li>
+        <li><strong class="text-gold-400">Prima della firma</strong> avevo comunicato per PEC il mio stato di invalidità preesistente. La compagnia non aveva contestato, e ha emesso la polizza.</li>
+        <li><strong class="text-gold-400">Marzo 2025:</strong> subisco un infortunio reale (lesione della cuffia dei rotatori).</li>
+        <li><strong class="text-gold-400">Aprile-Giugno 2025:</strong> apertura sinistro. La compagnia oppone <em>"reticenza sulle reali condizioni di salute al momento della stipula"</em> e prova ad annullare la polizza.</li>
+        <li><strong class="text-gold-400">Luglio 2025:</strong> reclamo formale. La compagnia, dopo settimane di silenzio, fa marcia indietro sulla reticenza e offre <strong class="text-white">400 €</strong> (invalidità permanente 5% &times; massimale 20.000 € meno franchigia 3%).</li>
+        <li><strong class="text-gold-400">Gennaio 2026:</strong> faccio ricorso all'Arbitro Assicurativo, chiedendo riconoscimento del diritto e 25.000 € a titolo di indennizzo e risarcimento.</li>
+      </ul>
+    </div>
+
+    <!-- IL DISPOSITIVO -->
+    <h2 class="text-2xl font-bold text-white mb-3">Il dispositivo, letto al volo</h2>
+    <div class="bg-red-500/10 border border-red-500/40 rounded-xl p-6 mb-3 text-navy-100">
+      <div class="text-xs uppercase tracking-widest text-red-300 font-bold mb-2">Decisione 7 maggio 2026</div>
+      <p class="text-2xl font-extrabold text-white">"Il Collegio non accoglie il ricorso."</p>
+    </div>
+    <p class="text-base text-navy-300 leading-relaxed mb-10">
+      Se uno legge solo il dispositivo, è una sconfitta. Punto. E in effetti
+      <strong class="text-white">formalmente lo è</strong>. Ma la decisione di un Collegio
+      arbitrale non si esaurisce nel dispositivo: si legge nella motivazione. E nella
+      motivazione c'è quello che segue.
+    </p>
+
+    <!-- LE 4 VITTORIE -->
+    <h2 class="text-3xl font-extrabold text-white mb-2">Le quattro vittorie nascoste</h2>
+    <p class="text-navy-300 mb-8 text-base">
+      Quattro affermazioni del Collegio che mi lasciano gli appigli per andare avanti
+      — in sede giudiziale o con nuovo procedimento documentato.
+    </p>
+
+    <!-- VITTORIA 1 -->
+    <div class="bg-emerald-500/10 border-l-4 border-emerald-400 rounded-r-xl p-6 mb-5">
+      <div class="text-xs uppercase tracking-widest text-emerald-300 font-bold mb-2">Vittoria 1 · ammissibilità del ricorso</div>
+      <h3 class="text-xl font-bold text-white mb-3">La compagnia ha tentato di farmi cacciare per "valore". Respinta.</h3>
+      <p class="text-navy-100 leading-relaxed mb-3">
+        La compagnia ha eccepito che il ricorso era inammissibile perché la mia richiesta
+        di 25.000 € era formulata <em>"anche quale acconto, con riserva di agire in altra
+        sede per il maggior importo"</em>. Tentativo: farmi dichiarare la causa fuori dal
+        limite di valore dell'AAS.
+      </p>
+      <p class="text-navy-100 leading-relaxed">
+        <strong class="text-emerald-300">Cosa scrive il Collegio:</strong> "la formulazione
+        della domanda avanzata dal ricorrente, con riserva di agire in giudizio, non è
+        idonea ad ampliare surrettiziamente la cognizione dell'AAS e, rientrando nel
+        valore soglia imperativamente stabilito dal Decreto, è da ritenersi ammissibile".
+      </p>
+    </div>
+
+    <!-- VITTORIA 2 -->
+    <div class="bg-emerald-500/10 border-l-4 border-emerald-400 rounded-r-xl p-6 mb-5">
+      <div class="text-xs uppercase tracking-widest text-emerald-300 font-bold mb-2">Vittoria 2 · ammissibilità della mala gestio</div>
+      <h3 class="text-xl font-bold text-white mb-3">La compagnia ha tentato di farmi cacciare la mala gestio. Respinta.</h3>
+      <p class="text-navy-100 leading-relaxed mb-3">
+        Secondo tentativo della compagnia: dichiarare inammissibile la mia domanda di
+        risarcimento per mala gestio, perché — sosteneva — non era contenuta nel reclamo
+        originario.
+      </p>
+      <p class="text-navy-100 leading-relaxed">
+        <strong class="text-emerald-300">Cosa scrive il Collegio:</strong> "il ricorrente
+        nei vari reclami succedutisi nel tempo ha fin da subito lamentato una non corretta
+        gestione della pratica da parte dell'impresa chiedendo il relativo risarcimento
+        del danno: la domanda di risarcimento del danno da mala gestio, pertanto, può
+        ritenersi ammissibile".
+      </p>
+    </div>
+
+    <!-- VITTORIA 3 — la più importante -->
+    <div class="bg-gold-400/10 border-l-4 border-gold-400 rounded-r-xl p-6 mb-5">
+      <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-2">Vittoria 3 · merito · <span class="text-white">LA PIÙ IMPORTANTE</span></div>
+      <h3 class="text-xl font-bold text-white mb-3">L'Arbitro dice che la contestazione di reticenza era infondata.</h3>
+      <p class="text-navy-100 leading-relaxed mb-3">
+        Sul punto centrale della vicenda — se la compagnia avesse o no diritto a contestarmi
+        "reticenza" sulle mie condizioni di salute, dopo che gliele avevo comunicate via
+        PEC <em>prima</em> della stipula — l'Arbitro è chiarissimo.
+      </p>
+      <div class="bg-navy-950 border border-gold-400/40 rounded-lg p-4 mb-3">
+        <p class="text-gold-200 italic text-base leading-relaxed">
+          "...la domanda di accertamento sulla operatività della polizza sottoscritta e
+          quindi dell'illegittimo recesso/annullamento dell'impresa per reticenza
+          <strong class="text-gold-400 not-italic">pare comunque fondata, vista la documentazione
+          prodotta in atti che prova che all'impresa era nota la circostanza contestata</strong>".
+        </p>
+      </div>
+      <p class="text-navy-100 leading-relaxed">
+        Questo è oro. Significa che la mia narrazione dei fatti è stata accolta da un
+        Collegio composto da membri IVASS, magistratura assicurativa, rappresentanti
+        delle imprese e dei consumatori. Per qualsiasi causa civile successiva,
+        <strong class="text-white">questo passaggio è una motivazione che pesa</strong>.
+      </p>
+    </div>
+
+    <!-- VITTORIA 4 -->
+    <div class="bg-emerald-500/10 border-l-4 border-emerald-400 rounded-r-xl p-6 mb-10">
+      <div class="text-xs uppercase tracking-widest text-emerald-300 font-bold mb-2">Vittoria 4 · riconoscimento implicito del diritto</div>
+      <h3 class="text-xl font-bold text-white mb-3">La compagnia, facendo offerta, ha implicitamente riconosciuto il mio diritto. Per sempre.</h3>
+      <p class="text-navy-100 leading-relaxed mb-3">
+        Il Collegio applica l'<strong class="text-white">art. 1444, comma 2, del Codice civile</strong>:
+        chi esegue volontariamente un atto (cioè la compagnia che mi ha offerto i 400 €)
+        riconosce implicitamente il rapporto sottostante.
+      </p>
+      <p class="text-navy-100 leading-relaxed">
+        <strong class="text-emerald-300">Cosa scrive il Collegio:</strong> "vi è quindi nei
+        fatti un riconoscimento del diritto da parte dell'impresa convenuta ai sensi
+        dell'art. 1444, comma 2, cod. civ., facendo venire meno l'interesse alla
+        pronuncia da parte dell'Arbitro sul punto".
+      </p>
+      <p class="text-navy-100 leading-relaxed mt-3">
+        In altre parole: la compagnia <strong class="text-white">non può più rimettere in
+        discussione</strong> l'operatività della polizza. Non può più tornare a parlarmi
+        di reticenza. Il diritto è acquisito.
+      </p>
+    </div>
+
+    <!-- LA SCONFITTA TECNICA -->
+    <h2 class="text-2xl font-bold text-white mb-3">L'unica sconfitta — ed è tecnica</h2>
+    <div class="bg-navy-900 border border-navy-800 rounded-xl p-6 mb-3">
+      <p class="text-navy-100 leading-relaxed mb-3">
+        Sul <strong class="text-white">quantum</strong> (cioè <em>quanto</em> mi spetta) il
+        Collegio mi dà torto, ma per un motivo molto specifico:
+      </p>
+      <p class="text-navy-100 leading-relaxed italic mb-3">
+        "il ricorso appare privo dei necessari elementi probatori a supporto della domanda
+        formulata. Il ricorrente non ha versato in atti alcuna documentazione utile alla
+        quantificazione dell'indennizzo dovuto (per esempio spese e/o relazioni mediche)
+        e neppure ha contestato in modo rigoroso e nel merito l'offerta proposta
+        dall'impresa, ritenendola genericamente irrisoria".
+      </p>
+      <p class="text-navy-100 leading-relaxed">
+        Tradotto: l'AAS è un <strong class="text-white">procedimento documentale</strong>.
+        Non basta dire "i 400 € sono ridicoli", bisogna provare con perizia medico-legale
+        che l'invalidità reale è superiore al 5% e contestare punto per punto il calcolo.
+        Non l'ho fatto. Punto.
+      </p>
+    </div>
+    <p class="text-base text-navy-300 leading-relaxed mb-10">
+      Questa sconfitta tecnica non chiude la partita: posso ancora andare in causa
+      civile con la documentazione medica corretta, citando le motivazioni AAS a mio favore.
+    </p>
+
+    <!-- LE LEVE -->
+    <h2 class="text-3xl font-extrabold text-white mb-5">Cosa mi ha lasciato l'AAS per andare avanti</h2>
+    <ol class="space-y-4 mb-10">
+      <li class="flex gap-4">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gold-400/15 text-gold-400 font-extrabold flex items-center justify-center">1</div>
+        <div>
+          <strong class="text-white">Un riconoscimento esplicito che la contestazione di reticenza era infondata.</strong>
+          In causa civile, cito la motivazione AAS: l'esistenza della polizza non si discute più.
+        </div>
+      </li>
+      <li class="flex gap-4">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gold-400/15 text-gold-400 font-extrabold flex items-center justify-center">2</div>
+        <div>
+          <strong class="text-white">L'effetto dell'art. 1444 c.c.</strong> La compagnia, avendo
+          offerto, ha implicitamente riconosciuto il diritto. È materiale prezioso in giudizio.
+        </div>
+      </li>
+      <li class="flex gap-4">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gold-400/15 text-gold-400 font-extrabold flex items-center justify-center">3</div>
+        <div>
+          <strong class="text-white">La decisione AAS non è vincolante per il giudice civile</strong>
+          (art. 4 D.M. 215/2024). Posso fare causa di nuovo, con perizia medica completa, e
+          le motivazioni a mio favore restano agli atti.
+        </div>
+      </li>
+      <li class="flex gap-4">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gold-400/15 text-gold-400 font-extrabold flex items-center justify-center">4</div>
+        <div>
+          <strong class="text-white">L'onere della prova chiarito.</strong> Ora so esattamente
+          cosa serve: perizia medico-legale, contestazione analitica del 5%, calcolo
+          alternativo dell'IP. Sono cose che si fanno.
+        </div>
+      </li>
+    </ol>
+
+    <!-- IL SENSO DI TUTTO QUESTO -->
+    <div class="bg-gradient-to-br from-gold-400/15 to-gold-600/5 border border-gold-400/40 rounded-2xl p-7 mb-10">
+      <h2 class="text-2xl font-extrabold text-white mb-4">Perché ho costruito Sherlock</h2>
+      <p class="text-navy-100 leading-relaxed text-lg mb-4">
+        Tutto quello che ho descritto è successo a me. Sulla mia pelle. Non è
+        un esempio inventato per vendere un'app.
+      </p>
+      <p class="text-navy-100 leading-relaxed mb-4">
+        E in tutta questa vicenda, c'è una cosa che mi ha lasciato il senso di ingiustizia
+        più forte: <strong class="text-white">le motivazioni del rigetto AAS erano evitabili</strong>.
+        Se avessi avuto, da subito:
+      </p>
+      <ul class="space-y-2 mb-5 text-navy-100">
+        <li>✅ La lettura strutturata della mia polizza (massimale, franchigia, percentuale IP, esclusioni)</li>
+        <li>✅ La verifica che la mia comunicazione PEC pre-stipula bastava a invalidare la reticenza</li>
+        <li>✅ Una bozza di reclamo già impostata sui punti giusti</li>
+        <li>✅ Il calcolo automatico della congruità dei 400 € rispetto alla mia lesione reale</li>
+      </ul>
+      <p class="text-navy-100 leading-relaxed mb-5">
+        ...avrei vinto. Non c'è dubbio. E forse non sarei arrivato neppure all'AAS, perché
+        la compagnia, vedendo un avversario preparato, avrebbe transatto al reclamo.
+      </p>
+      <p class="text-white font-bold text-lg">
+        Sherlock è esattamente questo: lo strumento che avrei voluto avere allora.
+      </p>
+    </div>
+
+    <!-- COSA FA SHERLOCK -->
+    <h2 class="text-2xl font-bold text-white mb-4">Cosa fa Sherlock al posto tuo</h2>
+    <div class="grid sm:grid-cols-2 gap-4 mb-10">
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-gold-400 font-bold mb-2">Legge la polizza in 30 secondi</div>
+        <p class="text-navy-300 text-sm leading-relaxed">Estrae massimali, franchigie, percentuali IP, esclusioni, clausole potenzialmente vessatorie e contestabili. Quello che a me è costato giorni di studio.</p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-gold-400 font-bold mb-2">Identifica clausole contestabili</div>
+        <p class="text-navy-300 text-sm leading-relaxed">Segnala clausole potenzialmente vessatorie non specificamente sottoscritte (art. 1341 c.c.) e contraddizioni con norme imperative.</p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-gold-400 font-bold mb-2">Prepara la bozza di reclamo</div>
+        <p class="text-navy-300 text-sm leading-relaxed">Con i riferimenti normativi corretti — Reg. IVASS 24/2008, art. 1892 c.c., art. 1444 c.c. — pronta per PEC.</p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-gold-400 font-bold mb-2">Ti dice cosa serve per AAS</div>
+        <p class="text-navy-300 text-sm leading-relaxed">Lista esatta della documentazione probatoria che devi raccogliere PRIMA di presentare il ricorso. Esattamente quello che a me è mancato.</p>
+      </div>
+    </div>
+
+    <!-- CTA FINALE -->
+    <div class="bg-gradient-to-br from-navy-900 to-navy-950 border border-navy-700 rounded-2xl p-7 text-center mb-8">
+      <div class="text-xs uppercase tracking-widest text-gold-400 mb-3 font-bold">Non aspettare di avere la mia stessa storia</div>
+      <h3 class="text-2xl font-extrabold text-white mb-4">
+        Carica la tua polizza adesso. Prima del prossimo sinistro.
+      </h3>
+      <p class="text-navy-300 mb-6">1ª analisi gratis · Nessuna carta richiesta · Documenti non conservati</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href={playStoreUrl} target="_blank" rel="noopener" data-track="storia_cta_app_click" class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20">
+          Scarica gratis l'app
+        </a>
+        <a href="/esempio-report" data-track="storia_cta_esempio_click" class="inline-block border border-navy-600 text-navy-100 font-semibold px-6 py-4 rounded-lg hover:bg-navy-800 transition">
+          Guarda un esempio reale di analisi
+        </a>
+      </div>
+    </div>
+
+    <ShareButtons title="Storia vera di un ricorso AAS — quattro vittorie nascoste in una sconfitta" path="/storia-sherlock" variant="storia" />
+
+    <p class="text-xs text-navy-500 text-center leading-relaxed">
+      Caso reale del fondatore di Sherlock. Decisione dell'Arbitro Assicurativo
+      pubblicata nei registri ufficiali in forma anonimizzata. Nomi di parti e
+      identificativi rimossi per riservatezza. Le citazioni testuali sono
+      letteralmente tratte dalla motivazione. Per dettagli sul procedimento AAS
+      vedi <a href="/guide/ricorso-aas-arbitro-assicurativo-come-vincere" class="underline hover:text-gold-300">la guida tecnica al ricorso AAS</a>.
+    </p>
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>
