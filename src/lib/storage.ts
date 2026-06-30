@@ -32,11 +32,15 @@ export type RecordPro = {
   // b915b65 ma il tipo qui era rimasto indietro.
   piano: 'mensile' | 'semestrale' | 'annuale' | 'singolo' | 'founder';
   dataEmissione: string; // ISO
-  dataScadenza: string; // ISO
-  paypalOrderId: string;
+  dataScadenza: string; // ISO (per lifetime usiamo 2099-12-31)
+  paypalOrderId?: string;
   // Solo per piano='singolo': true dopo la 1ª generazione lettera (codice usa-e-getta)
   usato?: boolean;
   dataUso?: string;
+  // Play Billing — popolati quando fonte='play'
+  fonte?: 'paypal' | 'play';
+  purchaseToken?: string;
+  playOrderId?: string;
 };
 
 export async function marcaCodiceUsato(codice: string): Promise<void> {
@@ -178,6 +182,26 @@ export async function codiciAttiviPerEmail(email: string): Promise<RecordPro[]> 
   // più recente per primo
   records.sort((a, b) => b.dataEmissione.localeCompare(a.dataEmissione));
   return records;
+}
+
+// ===== Play Billing — indice secondario purchaseToken -> codice =====
+// Permette idempotenza dell'endpoint /api/play-billing/verify: lo stesso
+// purchaseToken (es. dopo restore o retry) deve ritornare sempre il
+// medesimo codice virtuale già emesso.
+const PLAY_TOKEN_INDEX_PREFIX = 'play_token:';
+
+export async function cercaPerPurchaseToken(token: string): Promise<RecordPro | null> {
+  if (!token) return null;
+  if (!kvConfigurato()) return null;
+  const codice = await kv().get<string>(`${PLAY_TOKEN_INDEX_PREFIX}${token}`);
+  if (!codice) return null;
+  return await leggiCodicePro(codice);
+}
+
+export async function salvaPurchaseTokenIndex(token: string, codice: string): Promise<void> {
+  if (!token || !codice) return;
+  if (!kvConfigurato()) return;
+  await kv().set(`${PLAY_TOKEN_INDEX_PREFIX}${token}`, codice);
 }
 
 export type SintesiAbbonati = {
