@@ -61,7 +61,7 @@ function b64url(buf: Buffer | string): string {
 // Compute riusa istanze, quindi paga senso); fallback a 1h TTL per sicurezza.
 const _tokenCache = new Map<string, { token: string; exp: number }>();
 
-async function accessToken(scope: string): Promise<string> {
+export async function accessToken(scope: string): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
   const cached = _tokenCache.get(scope);
   if (cached && cached.exp - now > 60) return cached.token;
