@@ -9,6 +9,7 @@ vi.mock('../../src/lib/storage', () => ({
   cercaPerPurchaseToken: vi.fn(),
   salvaPurchaseTokenIndex: vi.fn(),
   salvaCodicePro: vi.fn(),
+  incrementaFounderVenduti: vi.fn().mockResolvedValue(1),
 }));
 
 vi.mock('../../src/lib/ga4', () => ({

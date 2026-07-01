@@ -4,6 +4,7 @@ import {
   cercaPerPurchaseToken,
   salvaPurchaseTokenIndex,
   salvaCodicePro,
+  incrementaFounderVenduti,
   type RecordPro,
 } from '../../../lib/storage';
 import { ga4TrackServer } from '../../../lib/ga4';
@@ -96,6 +97,9 @@ export const POST: APIRoute = async ({ request }) => {
   };
   await salvaCodicePro(record);
   await salvaPurchaseTokenIndex(purchaseToken, codice);
+
+  // Founder venduto via Play — incrementa contatore condiviso con flusso PayPal
+  await incrementaFounderVenduti().catch(() => undefined);
 
   void ga4TrackServer('play_billing_verified', purchaseToken.slice(0, 8), {
     product: productId,
