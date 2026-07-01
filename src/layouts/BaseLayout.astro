@@ -37,13 +37,12 @@ const organizationSchema = {
   ],
 };
 
-// Token di verifica Search Console. Sostituire con il valore reale (fornito
-// da Google Search Console al momento della verifica proprietà) oppure
-// impostare la env var PUBLIC_GOOGLE_SITE_VERIFICATION su Vercel.
-// Fallback: il file /public/googlea8b3c155b0ce48ba.html (già presente) verifica
-// via metodo file-based, quindi il meta tag qui sotto è ridondante ma inserito
-// per completezza secondo best practice SEO.
-const searchConsoleToken = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? '';
+// Token di verifica Search Console per la proprietà www.sherlockpolizze.it.
+// Valore pubblico (finisce comunque nel meta HTML) → hardcodato come default.
+// La env var PUBLIC_GOOGLE_SITE_VERIFICATION può overridarlo se in futuro
+// Google emette un token nuovo (es. cambio proprietà, delega admin).
+const SEARCH_CONSOLE_DEFAULT = 'Gt6_Gl8rQWMM0ukWbARFmOcsogYwp3sCt3XAw9D9SCo';
+const searchConsoleToken = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? SEARCH_CONSOLE_DEFAULT;
 
 // Firebase Analytics — caricato solo se le env vars PUBLIC_FIREBASE_* sono presenti.
 // Quando l'utente registra l'app Web su Firebase Console (project sherlock-6f88c)
