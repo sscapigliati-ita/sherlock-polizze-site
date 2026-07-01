@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 const { g } = Astro.props;
 const { Content } = await render(g);
 
-const articleUrl = `https://sherlock-polizze-site-five.vercel.app/guide/${g.id.replace(/\.mdx?$/, '')}`;
+const articleUrl = `https://www.sherlockpolizze.it/guide/${g.id.replace(/\.mdx?$/, '')}`;
 
 const jsonLd = [
   {
@@ -30,7 +30,7 @@ const jsonLd = [
     publisher: {
       '@type': 'Organization',
       name: 'Sherlock',
-      logo: { '@type': 'ImageObject', url: 'https://sherlock-polizze-site-five.vercel.app/icon.png' },
+      logo: { '@type': 'ImageObject', url: 'https://www.sherlockpolizze.it/icon.png' },
     },
     datePublished: g.data.date.toISOString().split('T')[0],
     image: 'https://i.ibb.co/Y4MpcWtN/og-cover.png',

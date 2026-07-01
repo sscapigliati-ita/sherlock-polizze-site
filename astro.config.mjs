@@ -8,12 +8,25 @@ import AstroPWA from '@vite-pwa/astro';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://sherlock-polizze-site-five.vercel.app',
+  site: 'https://www.sherlockpolizze.it',
   trailingSlash: 'never',
   output: 'server',
   adapter: vercel(),
   integrations: [
-    sitemap(),
+    sitemap({
+      // Escludiamo dalla sitemap le pagine amministrative, di flusso o utility
+      // che non hanno valore per l'indicizzazione (già Disallow su robots.txt).
+      filter: (page) =>
+        !page.includes('/admin') &&
+        !page.includes('/abbonamento/conferma') &&
+        !page.includes('/reclamo-singolo/conferma') &&
+        !page.endsWith('/offline') &&
+        !page.endsWith('/offline/'),
+      i18n: {
+        defaultLocale: 'it',
+        locales: { it: 'it-IT' },
+      },
+    }),
     mdx(),
     AstroPWA({
       registerType: 'autoUpdate', // SW si aggiorna senza chiedere conferma — evita versioni stantie

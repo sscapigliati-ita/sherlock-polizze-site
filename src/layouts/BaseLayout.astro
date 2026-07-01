@@ -14,13 +14,36 @@ export interface Props {
 const {
   title,
   description,
-  image = 'https://i.ibb.co/Y4MpcWtN/og-cover.png',
+  image: imageProp,
   type = 'website',
   canonical,
   jsonLd = [],
 } = Astro.props;
 
 const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+const image = imageProp ?? new URL('/og-cover.png', Astro.site).toString();
+
+// Organization JSON-LD globale (identifica il brand su tutte le pagine).
+// Le singole pagine possono aggiungerne altri (Article, FAQPage, BreadcrumbList).
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Sherlock — Detective Polizze',
+  alternateName: 'Sherlock Polizze',
+  url: Astro.site!.toString().replace(/\/$/, ''),
+  logo: new URL('/logo-sherlock.png', Astro.site).toString(),
+  sameAs: [
+    'https://play.google.com/store/apps/details?id=it.sherlock.polizze',
+  ],
+};
+
+// Token di verifica Search Console. Sostituire con il valore reale (fornito
+// da Google Search Console al momento della verifica proprietà) oppure
+// impostare la env var PUBLIC_GOOGLE_SITE_VERIFICATION su Vercel.
+// Fallback: il file /public/googlea8b3c155b0ce48ba.html (già presente) verifica
+// via metodo file-based, quindi il meta tag qui sotto è ridondante ma inserito
+// per completezza secondo best practice SEO.
+const searchConsoleToken = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? '';
 
 // Firebase Analytics — caricato solo se le env vars PUBLIC_FIREBASE_* sono presenti.
 // Quando l'utente registra l'app Web su Firebase Console (project sherlock-6f88c)
@@ -45,6 +68,17 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
   <meta name="description" content={description} />
   <link rel="canonical" href={canonicalURL} />
   <meta name="robots" content="index,follow,max-image-preview:large" />
+
+  {/* Search Console: placeholder — imposta PUBLIC_GOOGLE_SITE_VERIFICATION su Vercel
+      con il token fornito da https://search.google.com/search-console. */}
+  {searchConsoleToken && <meta name="google-site-verification" content={searchConsoleToken} />}
+
+  {/* Hreflang: il sito ha un solo set di URL crawlable (italiano). Le altre lingue
+      sono UX-only tramite Google Translate widget lato client — Google le tratta
+      come traduzioni della stessa risorsa. Dichiariamo self it-IT + x-default per
+      evitare che Google inferisca hreflang errati da signals esterni. */}
+  <link rel="alternate" hreflang="it-IT" href={canonicalURL} />
+  <link rel="alternate" hreflang="x-default" href={canonicalURL} />
   <!-- PWA: installabilità iOS + Android -->
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -108,7 +142,7 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
 
   <!-- Google Play smart banner -->
   <meta name="google-play-app" content="app-id=it.sherlock.polizze" />
-  <link rel="alternate" href="android-app://it.sherlock.polizze/https/sherlock-polizze.it/" />
+  <link rel="alternate" href="android-app://it.sherlock.polizze/https/www.sherlockpolizze.it/" />
 
   <!-- Google Translate widget (caricato solo se cookie googtrans presente) -->
   <style is:global>
@@ -137,6 +171,9 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
       document.head.appendChild(s);
     })();
   </script>
+
+  {/* Organization JSON-LD — presente su tutte le pagine per identificare il brand */}
+  <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
 
   {jsonLd.map((schema) => (
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />

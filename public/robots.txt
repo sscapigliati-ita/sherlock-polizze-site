@@ -21,4 +21,4 @@ Disallow: /
 User-agent: CCBot
 Disallow: /
 
-Sitemap: https://sherlock-polizze.it/sitemap-index.xml
+Sitemap: https://www.sherlockpolizze.it/sitemap-index.xml
