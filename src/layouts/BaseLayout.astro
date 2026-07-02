@@ -236,12 +236,39 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
             }
           } catch (e) {}
 
+          // Traffico interno: attivato con ?internal=1 (persiste in localStorage),
+          // disattivato con ?internal=0. Setta traffic_type=internal sulla config
+          // gtag della sola property Ads (G-21MQHMK771); Firebase (G-VVW7CNHTYJ)
+          // resta libero perché è un'altra property e i suoi eventi legacy non
+          // devono essere filtrati come "internal" da questa configurazione.
+          // Su GA4: Admin → Data Streams → Web → Configure tag settings →
+          // Define internal traffic; poi Admin → Data Filters → Exclude Internal
+          // Traffic → State: Active.
+          var isInternal = false;
+          try {
+            var qsUrl = new URL(window.location.href);
+            var flag = qsUrl.searchParams.get('internal');
+            if (flag === '1') {
+              localStorage.setItem('sherlock_internal', '1');
+              isInternal = true;
+              // Log solo la prima attivazione per feedback all'utente-owner.
+              try { console.info('[sherlock] Traffico interno attivato per questo browser.'); } catch (e) {}
+            } else if (flag === '0') {
+              localStorage.removeItem('sherlock_internal');
+              try { console.info('[sherlock] Traffico interno disattivato per questo browser.'); } catch (e) {}
+            } else {
+              isInternal = localStorage.getItem('sherlock_internal') === '1';
+            }
+          } catch (e) {}
+
           gtag('js', new Date());
-          gtag('config', ga4Id, {
+          var gtagConfigParams = {
             transport_type: 'beacon',
             anonymize_ip: true,
             send_page_view: true,
-          });
+          };
+          if (isInternal) gtagConfigParams.traffic_type = 'internal';
+          gtag('config', ga4Id, gtagConfigParams);
 
           // Carica gtag.js
           var s = document.createElement('script');
