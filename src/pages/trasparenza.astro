@@ -19,7 +19,7 @@ import Footer from '../components/Footer.astro';
       esattamente cosa ne facciamo, con quali fornitori, per quanto.
     </p>
     <p class="text-navy-500 text-sm mb-10">
-      Ultimo aggiornamento: 23 giugno 2026. Questa pagina e la
+      Ultimo aggiornamento: 2 luglio 2026. Questa pagina e la
       <a href="/privacy" class="text-gold-400 hover:underline">Privacy Policy</a>
       dicono le stesse cose: se trovi un'incongruenza segnalacela.
     </p>
@@ -98,6 +98,20 @@ import Footer from '../components/Footer.astro';
       <li><strong>Solo se ti abboni</strong>: la tua email e il codice Pro generato (formato <code class="notranslate text-gold-400" translate="no">SHK-XXXX-XXXX</code>), salvati in Upstash Redis (cifrato a riposo). Servono a validare le tue future richieste Pro. <span class="text-navy-400 text-sm">Conservati fino a richiesta di cancellazione.</span></li>
       <li><strong>Eventi anonimi di utilizzo</strong> via Firebase Analytics: apertura app, cambio lingua, analisi completata (con livello rischio, NON contenuto), visualizzazione paywall, ecc. <span class="text-navy-400 text-sm">Conservati 14 mesi (impostazione standard Firebase).</span></li>
       <li><strong>Crash logs e diagnostica</strong>: modello dispositivo, versione OS, errori applicativi. Inviati a Firebase. <span class="text-navy-400 text-sm">Conservati 90 giorni.</span></li>
+      <li>
+        <strong>Solo sul sito, solo con il tuo consenso</strong>: eventi di conversione
+        Google Analytics 4 (property "Sherlock Polizze Web") e cookie Google Ads
+        (<code class="notranslate text-gold-400" translate="no">_ga</code>,
+        <code class="notranslate text-gold-400" translate="no">_ga_*</code>,
+        <code class="notranslate text-gold-400" translate="no">_gcl_*</code>) per misurare
+        la performance delle nostre campagne pubblicitarie e mostrare annunci di
+        remarketing di Sherlock su altri siti Google.
+        <span class="text-navy-400 text-sm">Alla prima visita nessun cookie di misurazione
+        viene scritto: un banner in basso ti chiede di scegliere Accetta o Rifiuta
+        (Google Consent Mode v2 default DENIED). Conservati 14 mesi per gli eventi GA4,
+        24 mesi per <code class="notranslate">_ga</code>, 90 giorni per i click-ID
+        <code class="notranslate">_gcl_*</code>.</span>
+      </li>
     </ul>
     <p class="mb-10 text-navy-300">
       <strong class="text-white">Non registriamo mai</strong>: il contenuto del PDF, il
@@ -134,8 +148,14 @@ import Footer from '../components/Footer.astro';
         dopo il pagamento.
       </li>
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
-        <strong class="text-white">Google Firebase Analytics</strong> — eventi anonimi
-        di utilizzo dell'app e crash log. Nessun dato del PDF.
+        <strong class="text-white">Google Ireland Ltd</strong> (Irlanda, con eventuali
+        trasferimenti verso Google LLC USA coperti da Standard Contractual Clauses) —
+        tre servizi distinti: <strong class="text-white">Firebase Analytics</strong> per eventi
+        anonimi dell'app e crash log; <strong class="text-white">Google Analytics 4</strong>
+        e <strong class="text-white">Google Ads</strong> (attivi sul sito web solo previo
+        tuo consenso via banner cookie) per misurare le nostre campagne pubblicitarie
+        e mostrare annunci di remarketing. Nessun dato del PDF o del report viene mai
+        condiviso con Google.
       </li>
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
         <strong class="text-white">Google Play Store</strong> — distribuisce l'app
@@ -152,7 +172,10 @@ import Footer from '../components/Footer.astro';
         ❌ Non addestriamo modelli AI sui tuoi documenti.
       </li>
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
-        ❌ Non profiliamo né taggiamo utenti per pubblicità mirata.
+        ❌ Non condividiamo profili utente con broker, comparatori assicurativi o
+        altre terze parti. Su Google Ads facciamo remarketing e misurazione delle
+        <em>nostre</em> campagne — solo con il tuo consenso e senza mai includere
+        contenuti del PDF o del report.
       </li>
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
         ❌ Non inviamo i tuoi report a compagnie assicurative o regolatori — l'invio di
