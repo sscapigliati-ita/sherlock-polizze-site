@@ -1,0 +1,73 @@
+---
+// Banner minimale per Consent Mode v2. Si attiva solo se PUBLIC_GA4_ID
+// (o il fallback hardcoded) è presente; il caller (BaseLayout) lo rende
+// condizionatamente solo in produzione + hostname corretto.
+// Nessun cambio di layout: position fixed, uscita al primo click.
+---
+<div
+  id="sherlock-cookie-banner"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="sherlock-cookie-banner-title"
+  hidden
+  class="fixed inset-x-0 bottom-0 z-[100] bg-navy-900/95 backdrop-blur-md border-t border-navy-700 shadow-2xl"
+>
+  <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+    <p id="sherlock-cookie-banner-title" class="text-sm text-navy-200 flex-1 leading-relaxed">
+      Usiamo cookie tecnici e, con il tuo consenso, cookie di misurazione e
+      pubblicità (Google Analytics / Google Ads) per capire come viene usato il
+      sito e migliorare le campagne. Puoi cambiare idea in qualsiasi momento.
+      Dettagli nella <a href="/privacy" class="underline hover:text-white">Privacy Policy</a>.
+    </p>
+    <div class="flex gap-2 flex-shrink-0">
+      <button
+        type="button"
+        data-consent="deny"
+        class="text-sm px-4 py-2 rounded-md border border-navy-600 text-navy-200 hover:bg-navy-800 transition"
+      >
+        Rifiuta
+      </button>
+      <button
+        type="button"
+        data-consent="grant"
+        class="text-sm px-4 py-2 rounded-md bg-gold-400 text-navy-900 font-bold hover:bg-gold-300 transition"
+      >
+        Accetta
+      </button>
+    </div>
+  </div>
+</div>
+<script is:inline>
+  (function () {
+    var el = document.getElementById('sherlock-cookie-banner');
+    if (!el) return;
+
+    var STORAGE_KEY = 'sherlock_gtag_consent';
+    var stored = null;
+    try { stored = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+
+    // Mostra il banner solo se l'utente non ha ancora scelto.
+    if (stored !== 'granted' && stored !== 'denied') {
+      el.hidden = false;
+    }
+
+    function apply(choice) {
+      try { localStorage.setItem(STORAGE_KEY, choice); } catch (e) {}
+      if (typeof window.gtag === 'function') {
+        var v = choice === 'granted' ? 'granted' : 'denied';
+        window.gtag('consent', 'update', {
+          ad_storage: v,
+          ad_user_data: v,
+          ad_personalization: v,
+          analytics_storage: v,
+        });
+      }
+      el.hidden = true;
+    }
+
+    var grant = el.querySelector('[data-consent="grant"]');
+    var deny = el.querySelector('[data-consent="deny"]');
+    if (grant) grant.addEventListener('click', function () { apply('granted'); });
+    if (deny) deny.addEventListener('click', function () { apply('denied'); });
+  })();
+</script>

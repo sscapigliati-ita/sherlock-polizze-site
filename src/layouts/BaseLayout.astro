@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import PwaUpdateToast from '../components/PwaUpdateToast.astro';
+import CookieBanner from '../components/CookieBanner.astro';
 
 export interface Props {
   title: string;
@@ -43,6 +44,18 @@ const organizationSchema = {
 // Google emette un token nuovo (es. cambio proprietà, delega admin).
 const SEARCH_CONSOLE_DEFAULT = 'Gt6_Gl8rQWMM0ukWbARFmOcsogYwp3sCt3XAw9D9SCo';
 const searchConsoleToken = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? SEARCH_CONSOLE_DEFAULT;
+
+// GA4 gtag.js per Google Ads/conversions. Property SEPARATA da PUBLIC_FIREBASE_MEASUREMENT_ID
+// (Firebase Analytics resta attivo in parallelo per gli eventi già cablati:
+// play_store_click, app_open_click, subscribe_plan_click, paywall_view_intent, ecc.).
+// Stream "Sherlock Polizze Web" (stream ID 15187336886). Il Measurement ID è pubblico
+// by design (finisce nel bundle client), quindi hardcodato come default coerente con
+// SEARCH_CONSOLE_DEFAULT. PUBLIC_GA4_ID può overridarlo se in futuro cambia lo stream.
+const GA4_ID_DEFAULT = 'G-21MQHMK771';
+const ga4Id = import.meta.env.PUBLIC_GA4_ID ?? GA4_ID_DEFAULT;
+// Emesso nell'HTML solo se PROD (esclude astro dev locale). Il check runtime
+// sull'hostname esclude i preview deployment di Vercel (*.vercel.app).
+const enableGtag = import.meta.env.PROD;
 
 // Firebase Analytics — caricato solo se le env vars PUBLIC_FIREBASE_* sono presenti.
 // Quando l'utente registra l'app Web su Firebase Console (project sherlock-6f88c)
@@ -177,6 +190,146 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
   {jsonLd.map((schema) => (
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   ))}
+
+  {enableGtag && (
+    <script is:inline define:vars={{ ga4Id }}>
+      // Google Ads / GA4 gtag.js con Consent Mode v2.
+      // - Attivo solo su www.sherlockpolizze.it (skip preview *.vercel.app).
+      // - Consent default DENIED per ad_storage, ad_user_data, ad_personalization,
+      //   analytics_storage. Il banner CookieBanner chiama gtag('consent','update')
+      //   quando l'utente sceglie; le hit precedenti al consenso sono deposit-only
+      //   (pings anonimi ai server Google) grazie a Consent Mode.
+      // - transport_type: 'beacon' → i click outbound (Play Store) non perdono l'hit.
+      (function () {
+        try {
+          if (typeof window === 'undefined') return;
+          var host = window.location.hostname;
+          // Whitelist di hostname produzione. Include il dominio nudo per robustezza.
+          var isProdHost = host === 'www.sherlockpolizze.it' || host === 'sherlockpolizze.it';
+          if (!isProdHost) return;
+
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { window.dataLayer.push(arguments); }
+          window.gtag = gtag;
+
+          // Consent Mode v2: default DENIED. wait_for_update ritarda le hit
+          // per ~500ms dando tempo al banner (o al replay dell'ultima scelta
+          // salvata in localStorage) di aggiornare lo stato.
+          gtag('consent', 'default', {
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+            analytics_storage: 'denied',
+            wait_for_update: 500,
+          });
+
+          // Replay scelta precedente (l'utente aveva già acconsentito/rifiutato).
+          try {
+            var prev = localStorage.getItem('sherlock_gtag_consent');
+            if (prev === 'granted' || prev === 'denied') {
+              gtag('consent', 'update', {
+                ad_storage: prev,
+                ad_user_data: prev,
+                ad_personalization: prev,
+                analytics_storage: prev,
+              });
+            }
+          } catch (e) {}
+
+          gtag('js', new Date());
+          gtag('config', ga4Id, {
+            transport_type: 'beacon',
+            anonymize_ip: true,
+            send_page_view: true,
+          });
+
+          // Carica gtag.js
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ga4Id);
+          document.head.appendChild(s);
+
+          // Deduce cta_position dal contesto DOM.
+          function ctaPosition(el) {
+            if (!el || !el.closest) return 'body';
+            var marked = el.closest('[data-cta-position]');
+            if (marked) return marked.getAttribute('data-cta-position') || 'body';
+            if (el.closest('header')) return 'header';
+            if (el.closest('footer')) return 'footer';
+            var section = el.closest('section');
+            if (section) {
+              var firstSection = document.querySelector('main section');
+              if (section === firstSection) return 'hero';
+            }
+            return 'body';
+          }
+
+          // Helper globale per emissione manuale (pagine specifiche possono chiamarlo).
+          window.sherlockGtag = function (name, params) {
+            if (typeof window.gtag !== 'function') return;
+            var base = { page_location: window.location.href };
+            var merged = Object.assign(base, params || {});
+            window.gtag('event', name, merged);
+          };
+
+          // Click delegate per gli eventi di conversione richiesti da Ads.
+          document.addEventListener('click', function (e) {
+            var a = e.target && e.target.closest && e.target.closest('a[href]');
+            if (!a) return;
+            var href = a.getAttribute('href') || '';
+            var pos = ctaPosition(a);
+            var label = (a.textContent || '').trim().slice(0, 60);
+            var eventName = null;
+
+            if (href.indexOf('play.google.com/store/apps') !== -1) {
+              eventName = 'click_play_store';
+            } else if (
+              href === '/app' || href === '/app/' ||
+              href.indexOf('/app/') === 0 || href.indexOf('/app?') === 0
+            ) {
+              eventName = 'start_analysis';
+            } else if (
+              href === '/abbonati' ||
+              href === '/abbonati/' ||
+              href.indexOf('/abbonamento/') === 0
+            ) {
+              eventName = 'click_abbonati';
+            } else if (
+              href === '/reclamo-ivass' || href === '/reclamo-ivass/' ||
+              href === '/reclamo-singolo' || href === '/reclamo-singolo/' ||
+              href === '/sinistro-respinto' || href === '/sinistro-respinto/' ||
+              href.indexOf('/reclamo-singolo/') === 0
+            ) {
+              eventName = 'contact_or_report';
+            }
+
+            if (!eventName) return;
+            window.gtag('event', eventName, {
+              page_location: window.location.href,
+              cta_position: pos,
+              link_label: label,
+            });
+          }, true);
+
+          // Pass Pro nell'header è un link a /abbonati: sarà catturato sopra
+          // e riceverà cta_position = 'header' automaticamente. Nessun tag manuale.
+
+          // View-based: pagina di conferma reclamo singolo = conversione forte.
+          try {
+            var p = window.location.pathname;
+            if (p === '/reclamo-singolo/conferma' || p === '/reclamo-singolo/conferma/') {
+              window.sherlockGtag('contact_or_report', {
+                cta_position: 'confirmation',
+                stage: 'conferma_reclamo',
+              });
+            }
+          } catch (e) {}
+        } catch (err) {
+          // Nessuna eccezione deve mai bloccare il rendering della pagina.
+        }
+      })();
+    </script>
+  )}
 
   {firebaseConfig && (
     <script is:inline type="module" define:vars={{ cfg: firebaseConfig }}>
@@ -321,6 +474,7 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
   </main>
   <slot name="footer" />
   <PwaUpdateToast />
+  {enableGtag && <CookieBanner />}
   <script is:inline>
     // Su iOS l'app Android non è installabile: riscrivo i link Play Store
     // per puntare a /app/ (la stessa app WebView servita come PWA).
