@@ -265,14 +265,18 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
           }
 
           // Helper globale per emissione manuale (pagine specifiche possono chiamarlo).
+          // send_to isola l'evento alla property Ads: senza questo il dataLayer condiviso
+          // con Firebase Analytics rimbalzerebbe l'evento anche alla property Firebase.
           window.sherlockGtag = function (name, params) {
             if (typeof window.gtag !== 'function') return;
-            var base = { page_location: window.location.href };
+            var base = { page_location: window.location.href, send_to: ga4Id };
             var merged = Object.assign(base, params || {});
+            merged.send_to = ga4Id; // enforce anche se params sovrascriveva
             window.gtag('event', name, merged);
           };
 
           // Click delegate per gli eventi di conversione richiesti da Ads.
+          // Capture phase (true) → parte prima di qualunque handler bubble del sito.
           document.addEventListener('click', function (e) {
             var a = e.target && e.target.closest && e.target.closest('a[href]');
             if (!a) return;
@@ -304,11 +308,42 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
             }
 
             if (!eventName) return;
-            window.gtag('event', eventName, {
+
+            var params = {
               page_location: window.location.href,
               cta_position: pos,
               link_label: label,
-            });
+              send_to: ga4Id,
+            };
+
+            // Se il link naviga in una NUOVA tab (target=_blank, ctrl/meta/shift click,
+            // middle click), la pagina corrente resta viva → sendBeacon parte tranquillo.
+            var target = (a.getAttribute('target') || '').toLowerCase();
+            var newTab = target === '_blank' ||
+              e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1;
+
+            // Se il link naviga in SAME TAB (start_analysis /app, click_abbonati /abbonati,
+            // contact_or_report /reclamo-*), la navigazione parte prima che gtag flushi la hit.
+            // preventDefault + event_callback che naviga dopo → race risolta.
+            // Safety net a 700ms nel caso gtag non richiami mai il callback (event_timeout
+            // di gtag è 2000ms di default: 700ms è un buon compromesso UX / affidabilità).
+            var isInternalNav = !newTab && href.charAt(0) === '/' && !href.startsWith('//');
+
+            if (isInternalNav) {
+              e.preventDefault();
+              var navigated = false;
+              var doNav = function () {
+                if (navigated) return;
+                navigated = true;
+                window.location.href = href;
+              };
+              params.event_callback = doNav;
+              params.event_timeout = 500;
+              window.gtag('event', eventName, params);
+              setTimeout(doNav, 700);
+            } else {
+              window.gtag('event', eventName, params);
+            }
           }, true);
 
           // Pass Pro nell'header è un link a /abbonati: sarà catturato sopra
