@@ -265,13 +265,15 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
           }
 
           // Helper globale per emissione manuale (pagine specifiche possono chiamarlo).
-          // send_to isola l'evento alla property Ads: senza questo il dataLayer condiviso
-          // con Firebase Analytics rimbalzerebbe l'evento anche alla property Firebase.
+          // NOTA: NON usiamo send_to per isolare alla property Ads. Osservato in produzione:
+          // se il container gtag di G-21MQHMK771 non è ancora servito dalla CDN Google
+          // (property nuova → risposta 503 su gtag/js?id=...), send_to fa scartare l'evento
+          // invece di routarlo. Meglio la cross-contamination con Firebase (nomi custom
+          // click_* sono comunque distinti dai nomi legacy Firebase play_store_click ecc.).
           window.sherlockGtag = function (name, params) {
             if (typeof window.gtag !== 'function') return;
-            var base = { page_location: window.location.href, send_to: ga4Id };
+            var base = { page_location: window.location.href };
             var merged = Object.assign(base, params || {});
-            merged.send_to = ga4Id; // enforce anche se params sovrascriveva
             window.gtag('event', name, merged);
           };
 
@@ -309,11 +311,12 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
 
             if (!eventName) return;
 
+            // Nessun send_to: vedi nota su sherlockGtag sopra (container G-21MQHMK771
+            // non ancora servito → send_to fa scartare l'evento).
             var params = {
               page_location: window.location.href,
               cta_position: pos,
               link_label: label,
-              send_to: ga4Id,
             };
 
             // Se il link naviga in una NUOVA tab (target=_blank, ctrl/meta/shift click,
