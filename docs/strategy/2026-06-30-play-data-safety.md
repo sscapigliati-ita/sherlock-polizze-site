@@ -25,7 +25,7 @@ Apri: Play Console → Sherlock → **Norme** → **Sicurezza dei dati**.
 ✅ **Sì** — tutte le chiamate al backend usano HTTPS
 
 **Gli utenti possono richiedere la cancellazione dei dati?**
-✅ **Sì** — via email a stefano.scapigliati@gmail.com (sito + Privacy Policy)
+✅ **Sì** — via email a scaplab@sherlockpolizze.it (sito + Privacy Policy)
 
 **L'app è conforme alle norme di Play sulla famiglia?**
 ☐ Non applicabile (non target bambini)

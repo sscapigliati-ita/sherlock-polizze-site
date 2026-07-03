@@ -110,7 +110,7 @@ Per controversie complesse o di alto valore, consulta sempre un
 professionista qualificato.
 
 📩 SUPPORTO
-stefano.scapigliati@gmail.com
+scaplab@sherlockpolizze.it
 ```
 
 ## Tag / categoria

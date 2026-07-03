@@ -38,7 +38,7 @@ Per ogni dato sotto, devi cliccare la categoria, attivare il toggle "Collected",
   - 📩 **Resend** (per inviare il codice Pro via email)
   - 💳 **PayPal** (in fase di checkout pagamento, PayPal vede l'email del pagatore)
 - **Encrypted in transit**: Yes
-- **Users can request deletion**: Yes (via email a `stefano.scapigliati@gmail.com`)
+- **Users can request deletion**: Yes (via email a `scaplab@sherlockpolizze.it`)
 
 ### 2.2 — Personal info → User IDs
 
@@ -152,7 +152,7 @@ Per ogni dato sotto, devi cliccare la categoria, attivare il toggle "Collected",
 | Domanda | Risposta |
 |---------|----------|
 | Is your data encrypted in transit? | ✅ **Yes** — TLS 1.3 fra app e backend Vercel, fra backend e Anthropic, Firebase, PayPal, Upstash. |
-| Do you provide a way for users to request that their data be deleted? | ✅ **Yes** — il file `/trasparenza` del sito documenta che basta una richiesta a `stefano.scapigliati@gmail.com` per cancellare l'email e il codice Pro entro 7 giorni lavorativi (GDPR art. 17). |
+| Do you provide a way for users to request that their data be deleted? | ✅ **Yes** — il file `/trasparenza` del sito documenta che basta una richiesta a `scaplab@sherlockpolizze.it` per cancellare l'email e il codice Pro entro 7 giorni lavorativi (GDPR art. 17). |
 | Are you committed to following the Play Families Policy? | ❌ **No** (non è app per famiglie/minori) |
 | Has your app been independently security reviewed? | ❌ **No** (a meno che tu abbia una certificazione) |
 

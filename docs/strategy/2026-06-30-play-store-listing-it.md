@@ -152,5 +152,5 @@ https://sherlock-polizze-site-five.vercel.app/
 ## Email contatto sviluppatore
 
 ```
-stefano.scapigliati@gmail.com
+scaplab@sherlockpolizze.it
 ```

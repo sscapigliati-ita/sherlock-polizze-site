@@ -18,7 +18,7 @@ export async function inviaMailCodice(opts: {
   }
 
   const from = getEnv('MAIL_FROM') ?? 'Sherlock <onboarding@resend.dev>';
-  const replyTo = getEnv('MAIL_REPLY_TO') ?? 'stefano.scapigliati@gmail.com';
+  const replyTo = getEnv('MAIL_REPLY_TO') ?? 'scaplab@sherlockpolizze.it';
 
   const dataLeggibile = new Date(opts.dataScadenza).toLocaleDateString('it-IT', {
     day: 'numeric',

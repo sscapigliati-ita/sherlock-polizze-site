@@ -259,7 +259,7 @@ Il sito ora gestisce direttamente il pagamento degli abbonamenti via PayPal REST
 | `PAYPAL_MODE` | `live` (default) o `sandbox` per test | no |
 | `RESEND_API_KEY` | resend.com → API Keys (gratis 100 mail/giorno) | ✅ sì (per inviare codice) |
 | `MAIL_FROM` | es. `Sherlock <noreply@sherlock-polizze.it>` (dominio da verificare su Resend) | no |
-| `MAIL_REPLY_TO` | `stefano.scapigliati@gmail.com` (default) | no |
+| `MAIL_REPLY_TO` | `scaplab@sherlockpolizze.it` (default) | no |
 
 ### Vercel KV (storage codici emessi)
 
