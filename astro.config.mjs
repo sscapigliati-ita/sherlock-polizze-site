@@ -21,7 +21,9 @@ export default defineConfig({
         !page.includes('/abbonamento/conferma') &&
         !page.includes('/reclamo-singolo/conferma') &&
         !page.endsWith('/offline') &&
-        !page.endsWith('/offline/'),
+        !page.endsWith('/offline/') &&
+        !page.endsWith('/stampa') &&
+        !page.endsWith('/stampa/'),
       i18n: {
         defaultLocale: 'it',
         locales: { it: 'it-IT' },

@@ -1,0 +1,117 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<BaseLayout
+  title="Press kit — Sherlock"
+  description="Materiali per la stampa: sintesi del caso, link alle pagine di riferimento, screenshot app, bio autore, contatto stampa."
+  noindex={true}
+>
+  <Header slot="header" />
+
+  <article class="px-5 py-12 max-w-3xl mx-auto text-navy-100">
+    <div class="text-xs uppercase tracking-widest text-navy-500 mb-3">Press kit</div>
+    <h1 class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-6">
+      Sherlock — materiali per la stampa
+    </h1>
+
+    <section class="mb-10">
+      <h2 class="text-xl font-bold text-white mb-3">Il caso, in dieci righe</h2>
+      <p class="text-navy-200 leading-relaxed">
+        Un consumatore italiano sottoscrive una polizza infortuni con una
+        primaria compagnia assicurativa nel settembre 2024. A seguito di
+        un infortunio con lesione a una spalla, la compagnia oppone
+        reticenza sulle condizioni di salute al momento della stipula;
+        la contestazione rientra e la compagnia propone un'offerta di
+        importo simbolico. Il consumatore invia reclamo formale nel
+        luglio 2025 e, non ottenendo soddisfazione, presenta ricorso
+        all'Arbitro Assicurativo nel gennaio 2026, chiedendo il
+        riconoscimento del diritto, l'indennizzo entro la soglia di valore
+        prevista per il procedimento e il risarcimento del danno da
+        gestione della pratica. La decisione, nella primavera 2026, non
+        accoglie il ricorso, ma nelle motivazioni riconosce il torto della
+        compagnia sul merito: il rigetto ricade su un unico profilo
+        tecnico-formale, la mancata produzione probatoria del quantum e
+        la mancata contestazione analitica dell'offerta. Da quella
+        vicenda nasce Sherlock, per ridurre — a chiunque altro — il
+        rischio di rigetti per ragioni formali.
+      </p>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-xl font-bold text-white mb-3">Approfondimenti</h2>
+      <ul class="space-y-2 text-navy-200">
+        <li>
+          <a href="/arbitro-assicurativo" class="text-gold-400 hover:text-gold-300 font-semibold">
+            Guida al ricorso all'Arbitro Assicurativo
+          </a>
+          <span class="text-navy-400"> — pagina pilastro con caso studio e checklist.</span>
+        </li>
+        <li>
+          <a href="/storia-sherlock" class="text-gold-400 hover:text-gold-300 font-semibold">
+            Storia di Sherlock
+          </a>
+          <span class="text-navy-400"> — la vicenda personale da cui nasce il progetto.</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-xl font-bold text-white mb-3">Screenshot dell'app</h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <figure class="bg-navy-900 border border-navy-700 rounded-xl p-4">
+          <img
+            src="/app_report.png"
+            alt="Schermata di Sherlock: report di analisi di una polizza"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto rounded-lg"
+          />
+          <figcaption class="text-xs text-navy-400 mt-2 text-center">Report Sherlock</figcaption>
+        </figure>
+        <figure class="bg-navy-900 border border-navy-700 rounded-xl p-4">
+          <img
+            src="/app_lettera.png"
+            alt="Schermata di Sherlock: bozza di reclamo o esposto IVASS"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto rounded-lg"
+          />
+          <figcaption class="text-xs text-navy-400 mt-2 text-center">Bozza di reclamo</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-xl font-bold text-white mb-3">Bio autore</h2>
+      <p class="text-navy-200 leading-relaxed">
+        Sono un ingegnere e docente universitario presso l'Università degli
+        Studi Guglielmo Marconi. Ha maturato esperienza nell'ambito della
+        formazione tecnica e scientifica e ha conseguito un Master
+        universitario di secondo livello. Il suo lavoro unisce competenze
+        ingegneristiche, attenzione alla ricerca applicata e interesse per
+        l'uso dell'intelligenza artificiale come strumento di supporto alla
+        conoscenza, alla decisione e alla tutela della persona.
+      </p>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-xl font-bold text-white mb-3">Contatto stampa</h2>
+      <p class="text-navy-200 leading-relaxed">
+        <a href="mailto:scaplab@sherlockpolizze.it" class="text-gold-400 hover:text-gold-300 font-semibold">
+          scaplab@sherlockpolizze.it
+        </a>
+      </p>
+    </section>
+
+    <div class="text-xs text-navy-500 leading-relaxed border-t border-navy-800 pt-6">
+      Pagina riservata alla stampa. I contenuti sono in aggiornamento; per
+      dettagli non ancora presenti in pagina, si prega di contattare
+      l'indirizzo sopra indicato.
+    </div>
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>

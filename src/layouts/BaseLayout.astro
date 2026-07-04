@@ -10,6 +10,7 @@ export interface Props {
   type?: 'website' | 'article';
   canonical?: string;
   jsonLd?: Record<string, any>[];
+  noindex?: boolean;
 }
 
 const {
@@ -19,6 +20,7 @@ const {
   type = 'website',
   canonical,
   jsonLd = [],
+  noindex = false,
 } = Astro.props;
 
 const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
@@ -79,7 +81,7 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonicalURL} />
-  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="robots" content={noindex ? 'noindex,nofollow' : 'index,follow,max-image-preview:large'} />
 
   {/* Search Console: placeholder — imposta PUBLIC_GOOGLE_SITE_VERIFICATION su Vercel
       con il token fornito da https://search.google.com/search-console. */}
@@ -331,6 +333,7 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
               href === '/reclamo-ivass' || href === '/reclamo-ivass/' ||
               href === '/reclamo-singolo' || href === '/reclamo-singolo/' ||
               href === '/sinistro-respinto' || href === '/sinistro-respinto/' ||
+              href === '/arbitro-assicurativo' || href === '/arbitro-assicurativo/' ||
               href.indexOf('/reclamo-singolo/') === 0
             ) {
               eventName = 'contact_or_report';
@@ -466,6 +469,8 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
             window.sherlockTrack('landing_view', { landing: 'sinistro-respinto' });
           } else if (path === '/reclamo-ivass') {
             window.sherlockTrack('landing_view', { landing: 'reclamo-ivass' });
+          } else if (path === '/arbitro-assicurativo') {
+            window.sherlockTrack('landing_view', { landing: 'arbitro-assicurativo' });
           } else if (path === '/esempio-report') {
             window.sherlockTrack('example_report_view', {});
           } else if (path === '/esempio-lettera') {
@@ -508,6 +513,8 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
               window.sherlockTrack('landing_click', { landing: 'sinistro-respinto', from_path: from });
             } else if (href === '/reclamo-ivass' || href.endsWith('/reclamo-ivass')) {
               window.sherlockTrack('landing_click', { landing: 'reclamo-ivass', from_path: from });
+            } else if (href === '/arbitro-assicurativo' || href.endsWith('/arbitro-assicurativo')) {
+              window.sherlockTrack('landing_click', { landing: 'arbitro-assicurativo', from_path: from });
             } else if (href.startsWith('/guide/')) {
               const slug = href.replace('/guide/', '').replace(/\/$/, '').split('?')[0];
               window.sherlockTrack('guide_click', { slug, from_path: from });

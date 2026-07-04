@@ -1,0 +1,576 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CTACard from '../components/CTACard.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+
+const pageUrl = 'https://www.sherlockpolizze.it/arbitro-assicurativo';
+
+// Predisposizione per pubblicare in futuro la scansione della decisione in
+// forma oscurata. Finché SHOW_ATTO === false, il blocco non viene renderizzato
+// e la pagina non fa riferimento a immagini inesistenti.
+const SHOW_ATTO = false;
+const ATTO_SRC = '/atto-oscurato.jpg';
+const ATTO_ALT = "Decisione dell'Arbitro Assicurativo, riprodotta con oscuramento dei dati identificativi";
+
+// FAQ prudenti: nessun numero non verificabile, nessuna promessa di esito.
+// Se in futuro si aggiornano soglie o termini, i valori qui vanno rivisti in
+// coppia con quelli nella guida /guide/ricorso-aas-arbitro-assicurativo-come-vincere.
+const faqs = [
+  {
+    q: "Serve un avvocato per il ricorso all'Arbitro Assicurativo?",
+    a: "No, il ricorso all'AAS può essere presentato personalmente dal consumatore. Ci si può però far assistere da un avvocato o da un'associazione dei consumatori. Trattandosi di un procedimento documentale, la qualità della memoria scritta e dei documenti prodotti pesa molto sull'esito.",
+  },
+  {
+    q: "L'AAS decide anche sulla RC auto obbligatoria?",
+    a: "Per la RC auto il limite di valore è più basso: fino a 2.500 € per l'azione diretta del danneggiato. Sopra questa soglia, o per profili che richiedono accertamenti non documentabili, restano gli strumenti ordinari (procedura di risarcimento diretto, negoziazione assistita, giudice ordinario). Per gli altri rami l'AAS decide entro le soglie stabilite dal D.M. 215/2024.",
+  },
+  {
+    q: "Prima del ricorso è obbligatorio il reclamo alla compagnia?",
+    a: "Sì. Il reclamo preventivo è condizione di ammissibilità del ricorso. La compagnia ha 45 giorni per rispondere: passato quel termine — o ricevuta una risposta insoddisfacente — il ricorso all'AAS diventa proponibile. Il reclamo è il primo passo da curare bene: molti ricorsi si giocano già lì.",
+  },
+  {
+    q: "La decisione dell'AAS è vincolante?",
+    a: "La decisione non ha efficacia di sentenza. Resta comunque la possibilità di rivolgersi al giudice ordinario, sia per il consumatore che per la compagnia. Le motivazioni possono però essere valorizzate in un successivo giudizio civile, come qualunque atto scritto proveniente da un organismo qualificato.",
+  },
+  {
+    q: "Cosa succede se il ricorso viene respinto per motivi formali?",
+    a: "Un rigetto per ragioni formali (documentazione insufficiente, quantificazione mancante, prerequisiti non rispettati) non chiude la controversia: si può ancora agire davanti al giudice ordinario. Ridurre il rischio di rigetto formale, però, significa evitare mesi di attesa e ripartire con una situazione più chiara.",
+  },
+  {
+    q: "Quanto costa presentare un ricorso all'AAS?",
+    a: "Il contributo a carico del ricorrente è modesto (indicativamente 30 €) e viene rimborsato in caso di accoglimento. I costi veri sono altri: raccolta dei documenti, eventuale perizia medico-legale o tecnica, eventuale assistenza professionale. Vale la pena stimarli prima di iniziare.",
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: "Ricorso all'Arbitro Assicurativo: la guida di chi l'ha fatto (e cosa rifarei diversamente)",
+    description: "Guida al ricorso AAS scritta da chi lo ha presentato in prima persona. Prerequisiti, requisiti formali, errori tipici, checklist pre-invio. Con caso studio documentato.",
+    author: { '@type': 'Person', name: 'Stefano Scapigliati' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Sherlock — Detective Polizze',
+      logo: { '@type': 'ImageObject', url: 'https://www.sherlockpolizze.it/icon.png' },
+    },
+    datePublished: '2026-07-04',
+    dateModified: '2026-07-04',
+    mainEntityOfPage: pageUrl,
+    inLanguage: 'it-IT',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.sherlockpolizze.it/' },
+      { '@type': 'ListItem', position: 2, name: 'Arbitro Assicurativo', item: pageUrl },
+    ],
+  },
+];
+---
+<BaseLayout
+  title="Ricorso all'Arbitro Assicurativo: la guida di chi l'ha fatto (e cosa rifarei diversamente)"
+  description="Ho presentato un ricorso all'Arbitro Assicurativo (AAS). Le motivazioni mi hanno dato ragione su quasi tutto, un punto tecnico-formale ha ribaltato il dispositivo. Questa guida esiste perché quel punto non costi il ricorso ad altri."
+  canonical={pageUrl}
+  type="article"
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <article class="px-5 py-12 max-w-4xl mx-auto">
+    <nav class="text-xs text-navy-500 mb-6">
+      <a href="/" class="hover:text-gold-300">Home</a> ·
+      <a href="/guide" class="hover:text-gold-300">Guide</a> ·
+      Arbitro Assicurativo
+    </nav>
+
+    <div class="text-xs uppercase tracking-widest text-gold-400 mb-3 font-bold">
+      Caso studio documentato · vita vissuta
+    </div>
+
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight mb-5">
+      Ricorso all'Arbitro Assicurativo:<br />
+      <span class="text-gold-400">la guida di chi l'ha fatto</span>
+      <span class="text-navy-200">(e cosa rifarei diversamente).</span>
+    </h1>
+
+    <p class="text-lg text-navy-200 leading-relaxed mb-4">
+      Ho presentato un ricorso all'Arbitro Assicurativo contro una primaria
+      compagnia assicurativa. Il dispositivo dice <em>non accoglie</em>. Le
+      motivazioni, invece, riconoscono che la compagnia aveva torto su quasi
+      tutto — salvo un punto tecnico-formale che, con la documentazione giusta,
+      sarebbe stato evitabile.
+    </p>
+    <p class="text-lg text-navy-200 leading-relaxed mb-8">
+      Questa guida esiste perché quel punto non costi il ricorso ad altri.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-3 mb-12">
+      <a
+        href="/app/"
+        class="bg-gold-400 text-navy-900 font-bold px-6 py-3.5 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/20 text-center"
+      >
+        Fai leggere polizza e diniego a Sherlock
+      </a>
+      <a
+        href="/reclamo-ivass"
+        class="border border-navy-600 text-navy-100 font-semibold px-6 py-3.5 rounded-lg hover:bg-navy-800 transition text-center"
+      >
+        Prima del ricorso viene il reclamo →
+      </a>
+    </div>
+
+    <!-- (b) COS'È L'AAS -->
+    <h2 class="text-2xl font-bold text-white mb-4">Cos'è l'Arbitro Assicurativo e quando si può ricorrere</h2>
+    <p class="text-navy-200 leading-relaxed mb-4">
+      L'Arbitro Assicurativo (AAS) è un organismo stragiudiziale di risoluzione
+      delle controversie tra consumatori e imprese assicurative, istituito con
+      il <strong class="text-white">D.M. 215/2024</strong> ed entrato in vigore
+      alla fine del 2024. Decide su controversie con soglie di valore diverse
+      a seconda del ramo: fino a <strong class="text-white">25.000 €</strong>
+      per le polizze danni, fino a <strong class="text-white">150.000 €</strong>
+      per le polizze vita (elevati a <strong class="text-white">300.000 €</strong>
+      per le coperture caso morte), fino a <strong class="text-white">2.500 €</strong>
+      per l'azione diretta del danneggiato (es. RC auto). Nessun limite di
+      valore quando il ricorso chiede solo l'accertamento di diritti, obblighi
+      o facoltà, senza domande di somme. Il procedimento è completamente
+      documentale: non ci sono udienze, non ci sono testimoni, non ci sono
+      perizie disposte d'ufficio. Tutto quello che il Collegio valuta è
+      dentro il fascicolo che produci tu.
+    </p>
+    <p class="text-navy-200 leading-relaxed mb-4">
+      Il ricorso all'AAS non è mai il primo passo. Prima serve un
+      <strong class="text-white">reclamo formale alla compagnia</strong>, e
+      solo se la risposta è insoddisfacente — o se il termine di risposta è
+      scaduto — si apre l'ammissibilità del ricorso. Il reclamo iniziale è il
+      documento su cui, mesi dopo, l'AAS misurerà cosa è stato chiesto e
+      quando.
+    </p>
+    <div class="bg-navy-900 border border-navy-700 rounded-xl p-6 mb-10">
+      <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-3">
+        Prima del ricorso: il reclamo
+      </div>
+      <p class="text-navy-200 leading-relaxed mb-3">
+        Se non hai ancora scritto alla compagnia, quello è il passo che viene
+        prima. La guida al reclamo — con struttura, PEC, riferimenti normativi
+        e passaggio successivo all'IVASS — è qui.
+      </p>
+      <a
+        href="/reclamo-ivass"
+        class="inline-block text-gold-400 hover:text-gold-300 font-semibold text-sm"
+      >
+        Vai alla guida al reclamo e all'IVASS →
+      </a>
+    </div>
+
+    <!-- (c) REQUISITI FORMALI -->
+    <h2 class="text-2xl font-bold text-white mb-4">Requisiti formali del ricorso, come checklist</h2>
+    <ul class="space-y-3 text-navy-200 mb-10">
+      <li class="flex gap-3">
+        <span class="text-gold-400 font-bold flex-shrink-0">✓</span>
+        <span>Controversia entro il valore soglia previsto per il ricorso:
+        <strong class="text-white">25.000 €</strong> per le polizze danni,
+        <strong class="text-white">150.000 €</strong> per le polizze vita
+        (<strong class="text-white">300.000 €</strong> per le coperture caso morte),
+        <strong class="text-white">2.500 €</strong> per l'azione diretta del
+        danneggiato (es. RC auto). Nessun limite di valore se il ricorso
+        chiede solo l'accertamento di diritti, obblighi o facoltà, senza
+        domande di somme.</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-gold-400 font-bold flex-shrink-0">✓</span>
+        <span>Reclamo formale alla compagnia già inviato, con prova di
+        ricezione (PEC o raccomandata). Il reclamo preventivo è condizione
+        di ammissibilità del ricorso.</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-gold-400 font-bold flex-shrink-0">✓</span>
+        <span>Termine di risposta della compagnia scaduto
+        (<strong class="text-white">45 giorni</strong> dalla ricezione del
+        reclamo) oppure risposta ricevuta e ritenuta insoddisfacente.</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-gold-400 font-bold flex-shrink-0">✓</span>
+        <span>Ricorso presentato entro <strong class="text-white">12 mesi</strong>
+        dalla presentazione del reclamo alla compagnia. Nel primo anno di
+        operatività dell'AAS vale una regola transitoria: il termine si
+        calcola a ritroso dal <strong class="text-white">15 gennaio 2026</strong>,
+        quindi sono ammissibili i ricorsi su reclami presentati dal
+        <strong class="text-white">15 gennaio 2025</strong> in poi.</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-gold-400 font-bold flex-shrink-0">✓</span>
+        <span>Domanda quantificata in modo puntuale, distinguendo l'indennizzo dovuto dagli eventuali danni ulteriori (mala gestio, spese).</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-gold-400 font-bold flex-shrink-0">✓</span>
+        <span>Copia integrale della polizza e delle condizioni generali di assicurazione.</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-gold-400 font-bold flex-shrink-0">✓</span>
+        <span>Copia della lettera di diniego o dell'offerta ricevuta.</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-gold-400 font-bold flex-shrink-0">✓</span>
+        <span>Documentazione probatoria a supporto: perizie mediche, fatture, foto, corrispondenza. Tutto quello che il Collegio dovrà leggere per decidere.</span>
+      </li>
+      <li class="flex gap-3">
+        <span class="text-gold-400 font-bold flex-shrink-0">✓</span>
+        <span>Contestazione analitica dell'offerta della compagnia, quando presente: non basta definirla inadeguata, va spiegato perché.</span>
+      </li>
+    </ul>
+
+    <!-- (d) IL CASO -->
+    <h2 class="text-3xl font-extrabold text-white mb-3">Il caso: cronologia documentata</h2>
+    <p class="text-navy-300 leading-relaxed mb-8">
+      Racconto qui il ricorso che ho presentato in prima persona. La compagnia
+      resta sempre <em>una primaria compagnia assicurativa</em>: non è il punto.
+      Nomi di parti, arbitri e liquidatori sono omessi; le citazioni testuali
+      riprodotte sotto sono tratte dalla decisione in forma oscurata.
+    </p>
+
+    <!-- CRONOLOGIA -->
+    <ol class="space-y-6 mb-10">
+      <li class="relative pl-8 border-l-2 border-navy-700">
+        <span class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-gold-400"></span>
+        <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">
+          Settembre 2024
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Stipula della polizza</h3>
+        <p class="text-navy-200 leading-relaxed">
+          Sottoscrivo una polizza infortuni con una primaria compagnia
+          assicurativa, con massimale di 20.000 € e franchigia del 3%.
+          Prima della firma avevo comunicato alla compagnia via PEC una
+          condizione di invalidità preesistente; la compagnia non ha
+          contestato ed ha emesso la polizza.
+        </p>
+      </li>
+
+      <li class="relative pl-8 border-l-2 border-navy-700">
+        <span class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-gold-400"></span>
+        <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">
+          Marzo 2025
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">L'evento coperto</h3>
+        <p class="text-navy-200 leading-relaxed">
+          Subisco un infortunio con lesione a una spalla, refertato in
+          sede sanitaria nei giorni immediatamente successivi.
+        </p>
+      </li>
+
+      <li class="relative pl-8 border-l-2 border-navy-700">
+        <span class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-red-400"></span>
+        <div class="text-xs uppercase tracking-widest text-red-300 font-bold mb-1">
+          Aprile–giugno 2025
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">La posizione della compagnia</h3>
+        <p class="text-navy-200 leading-relaxed">
+          Aperta la pratica, la compagnia oppone reticenza sulle condizioni
+          di salute al momento della stipula. Dopo il primo reclamo, la
+          contestazione rientra e la compagnia propone un'offerta di importo
+          simbolico, calcolata su una invalidità permanente riconosciuta al 5%.
+        </p>
+      </li>
+
+      <li class="relative pl-8 border-l-2 border-navy-700">
+        <span class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-gold-400"></span>
+        <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">
+          Luglio 2025
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Il reclamo formale</h3>
+        <p class="text-navy-200 leading-relaxed">
+          Invio reclamo formale via PEC contestando la quantificazione
+          dell'offerta e la gestione della pratica, e chiedendo riesame
+          con riconoscimento pieno del diritto.
+        </p>
+      </li>
+
+      <li class="relative pl-8 border-l-2 border-navy-700">
+        <span class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-gold-400"></span>
+        <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">
+          Gennaio 2026
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Il ricorso all'AAS</h3>
+        <p class="text-navy-200 leading-relaxed">
+          Presento ricorso all'Arbitro Assicurativo chiedendo il
+          riconoscimento del diritto e un indennizzo entro la soglia di
+          valore prevista per il procedimento, oltre al risarcimento del
+          danno da gestione della pratica.
+        </p>
+      </li>
+
+      <li class="relative pl-8 border-l-2 border-red-500/50">
+        <span class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-red-400"></span>
+        <div class="text-xs uppercase tracking-widest text-red-300 font-bold mb-1">
+          Primavera 2026
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">L'esito</h3>
+        <p class="text-navy-200 leading-relaxed mb-3">
+          Il Collegio non accoglie il ricorso. Ma le motivazioni, sui punti
+          di merito, danno ragione al ricorrente. La sconfitta si concentra
+          su un unico profilo: la mancata produzione, in atti, di
+          documentazione probatoria a sostegno del quantum e la mancata
+          contestazione analitica dell'offerta.
+        </p>
+      </li>
+    </ol>
+
+    <!-- CITAZIONI OSCURATE -->
+    <div class="mb-10">
+      <h3 class="text-xl font-bold text-white mb-4">Dalla decisione, in forma oscurata</h3>
+      <blockquote class="bg-navy-950 border-l-4 border-gold-400 rounded-r-xl p-5 mb-4 font-serif">
+        <p class="text-gold-100 italic leading-relaxed">
+          «[...] la domanda di accertamento sull'operatività della polizza
+          [...] pare comunque fondata, vista la documentazione prodotta in
+          atti che prova che all'impresa era nota la circostanza contestata.»
+        </p>
+      </blockquote>
+      <blockquote class="bg-navy-950 border-l-4 border-red-400 rounded-r-xl p-5 mb-4 font-serif">
+        <p class="text-red-100 italic leading-relaxed">
+          «[...] il ricorso appare privo dei necessari elementi probatori a
+          supporto della domanda formulata. Il ricorrente non ha versato in
+          atti alcuna documentazione utile alla quantificazione
+          dell'indennizzo dovuto [...] e neppure ha contestato in modo
+          rigoroso e nel merito l'offerta proposta dall'impresa.»
+        </p>
+      </blockquote>
+      <p class="text-xs text-navy-500 leading-relaxed">
+        Le citazioni riprodotte sono tratte letteralmente dalla decisione,
+        con oscuramento dei riferimenti identificativi.
+      </p>
+    </div>
+
+    {SHOW_ATTO && (
+      <figure class="bg-navy-900 border border-navy-700 rounded-xl p-6 mb-12 text-center">
+        <img
+          src={ATTO_SRC}
+          alt={ATTO_ALT}
+          loading="lazy"
+          decoding="async"
+          class="max-w-full h-auto mx-auto rounded-lg"
+        />
+        <figcaption class="text-xs text-navy-400 leading-relaxed mt-3">
+          Decisione dell'Arbitro Assicurativo, riprodotta con oscuramento dei
+          dati identificativi. Documento originale conservato dall'autore.
+        </figcaption>
+      </figure>
+    )}
+
+    <!-- (e) ERRORI FORMALI -->
+    <h2 class="text-2xl font-bold text-white mb-4">Gli errori formali che possono costare il ricorso</h2>
+    <p class="text-navy-200 leading-relaxed mb-6">
+      Il ricorso all'AAS è documentale. Non ci sono udienze in cui rimediare
+      con una parola in più. Quello che è dentro il fascicolo è quello che il
+      Collegio leggerà. La lezione del mio caso, generalizzata, si somma agli
+      errori che ricorrono con maggiore frequenza in un procedimento di questo
+      tipo.
+    </p>
+    <div class="grid md:grid-cols-2 gap-5 mb-10">
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-xs uppercase tracking-widest text-red-300 font-bold mb-2">Errore 1</div>
+        <h3 class="text-lg font-bold text-white mb-2">Quantificazione generica</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Chiedere una somma senza spiegare come ci si arriva. Se il Collegio
+          non trova nel fascicolo un criterio di calcolo verificabile, il
+          capo di domanda è a rischio.
+        </p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-xs uppercase tracking-widest text-red-300 font-bold mb-2">Errore 2</div>
+        <h3 class="text-lg font-bold text-white mb-2">Documentazione probatoria incompleta</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Perizie mediche generiche, referti mancanti, fatture non allegate.
+          È il profilo su cui è caduto il mio ricorso: ne parlo apertamente
+          nel caso studio sopra.
+        </p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-xs uppercase tracking-widest text-red-300 font-bold mb-2">Errore 3</div>
+        <h3 class="text-lg font-bold text-white mb-2">Contestazione dell'offerta solo qualitativa</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Definire l'offerta della compagnia <em>irrisoria</em> o
+          <em>inadeguata</em> non basta. Serve un calcolo alternativo,
+          voce per voce, con base probatoria.
+        </p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-xs uppercase tracking-widest text-red-300 font-bold mb-2">Errore 4</div>
+        <h3 class="text-lg font-bold text-white mb-2">Reclamo iniziale poco strutturato</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Se la mala gestio o la contestazione di un profilo specifico non
+          compaiono nel reclamo, la loro ammissibilità in sede di ricorso
+          può essere messa in discussione.
+        </p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-xs uppercase tracking-widest text-red-300 font-bold mb-2">Errore 5</div>
+        <h3 class="text-lg font-bold text-white mb-2">Prerequisiti mancati</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Reclamo mai inviato, prova di invio non conservata, termine di
+          decadenza superato. Sono vizi che il Collegio rileva
+          preliminarmente, prima ancora di leggere il merito.
+        </p>
+      </div>
+      <div class="bg-navy-900 border border-navy-800 rounded-xl p-5">
+        <div class="text-xs uppercase tracking-widest text-red-300 font-bold mb-2">Errore 6</div>
+        <h3 class="text-lg font-bold text-white mb-2">Formulazione ambigua della domanda</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Riserve di agire in altra sede, importi indicati come <em>acconto</em>,
+          domande cumulative senza distinzione tra capi. Sono ambiguità che
+          possono aprire eccezioni della controparte.
+        </p>
+      </div>
+    </div>
+
+    <!-- (f) CHECKLIST FINALE -->
+    <div class="bg-navy-900 border border-gold-400/40 rounded-2xl p-7 mb-12">
+      <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-3">
+        Checklist pre-invio
+      </div>
+      <h2 class="text-2xl font-extrabold text-white mb-5">
+        Prima di premere <em>invia</em>, controlla queste cose.
+      </h2>
+      <ul class="space-y-3 text-navy-200">
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Prerequisito reclamo" />
+          <span>Il reclamo alla compagnia è stato inviato e la prova di ricezione è nel fascicolo.</span>
+        </li>
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Termini rispettati" />
+          <span>Il termine di risposta della compagnia è scaduto o la risposta è agli atti, e sono nei termini per presentare il ricorso.</span>
+        </li>
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Valore soglia" />
+          <span>La domanda rientra nel valore soglia previsto per la controversia.</span>
+        </li>
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Polizza integrale" />
+          <span>Polizza integrale e condizioni generali di assicurazione sono allegate.</span>
+        </li>
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Diniego offerta" />
+          <span>Copia della lettera di diniego o dell'offerta è allegata.</span>
+        </li>
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Perizia" />
+          <span>Se il caso lo richiede, la perizia medico-legale o tecnica è agli atti, con conclusioni chiare e quantificate.</span>
+        </li>
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Quantum" />
+          <span>Il quantum richiesto è argomentato voce per voce, con criterio di calcolo verificabile.</span>
+        </li>
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Contestazione offerta" />
+          <span>L'offerta della compagnia, se presente, è contestata analiticamente: non solo definita inadeguata, ma spiegata perché.</span>
+        </li>
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Mala gestio" />
+          <span>Le eventuali domande di mala gestio sono già presenti nel reclamo originario, non introdotte per la prima volta nel ricorso.</span>
+        </li>
+        <li class="flex gap-3">
+          <input type="checkbox" class="mt-1.5 flex-shrink-0" aria-label="Coerenza formulazione" />
+          <span>La formulazione della domanda è chiara, senza riserve ambigue né formule tipo <em>acconto con riserva di agire</em>.</span>
+        </li>
+      </ul>
+      <p class="text-xs text-navy-500 mt-5 leading-relaxed">
+        Elenco condivisibile. Nessun dato del ricorso viene inviato: le
+        caselle vivono nel tuo browser.
+      </p>
+    </div>
+
+    <!-- (g) CTA FUNNEL -->
+    <CTACard
+      title="Prima del ricorso viene il reclamo."
+      body="Sherlock analizza polizza o diniego e prepara le basi del reclamo PEC o dell'esposto IVASS. Meno probabile arrivare all'AAS con una posizione fragile."
+    />
+
+    <div class="grid sm:grid-cols-2 gap-3 mb-12">
+      <a
+        href="/app/"
+        class="block bg-navy-900 border border-navy-700 rounded-xl p-5 hover:border-gold-400/40 transition group"
+      >
+        <div class="text-gold-400 font-bold mb-1 group-hover:text-gold-300 transition">
+          Analizza polizza o diniego →
+        </div>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Prima analisi gratis. Documenti letti in memoria, non conservati.
+        </p>
+      </a>
+      <a
+        href="/reclamo-ivass"
+        class="block bg-navy-900 border border-navy-700 rounded-xl p-5 hover:border-gold-400/40 transition group"
+      >
+        <div class="text-gold-400 font-bold mb-1 group-hover:text-gold-300 transition">
+          Guida al reclamo e all'IVASS →
+        </div>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Prerequisito del ricorso AAS. Struttura, PEC, riferimenti.
+        </p>
+      </a>
+    </div>
+
+    <!-- APPROFONDIMENTO GUIDA TECNICA -->
+    <div class="bg-navy-900 border border-navy-800 rounded-xl p-6 mb-12">
+      <div class="text-xs uppercase tracking-widest text-navy-500 mb-2">Approfondimento</div>
+      <h3 class="text-lg font-bold text-white mb-2">
+        La guida tecnica al ricorso AAS
+      </h3>
+      <p class="text-navy-300 text-sm leading-relaxed mb-3">
+        Struttura del ricorso passo per passo, come organizzare la
+        documentazione probatoria, i cinque errori più comuni analizzati
+        singolarmente, cosa succede dopo la decisione.
+      </p>
+      <a
+        href="/guide/ricorso-aas-arbitro-assicurativo-come-vincere"
+        class="text-sm text-gold-400 hover:text-gold-300 font-semibold"
+      >
+        Vai alla guida tecnica →
+      </a>
+    </div>
+
+    <!-- FAQ SEZIONE VISIBILE (JSON-LD già emesso in head) -->
+    <h2 class="text-2xl font-bold text-white mb-4">Domande ricorrenti</h2>
+    <div class="space-y-4 mb-12">
+      {faqs.map((f) => (
+        <details class="bg-navy-900 border border-navy-800 rounded-xl p-5 group">
+          <summary class="cursor-pointer text-navy-100 font-semibold list-none flex justify-between items-start gap-4">
+            <span>{f.q}</span>
+            <span class="text-gold-400 flex-shrink-0 transition group-open:rotate-45 text-xl leading-none">+</span>
+          </summary>
+          <p class="text-navy-300 text-sm leading-relaxed mt-3">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <ShareButtons
+      title="Ricorso all'Arbitro Assicurativo — la guida di chi l'ha fatto"
+      path="/arbitro-assicurativo"
+      variant="storia"
+    />
+
+    <!-- (h) DISCLAIMER -->
+    <div class="mt-12 text-sm text-navy-400 leading-relaxed border-t border-navy-800 pt-6">
+      <strong class="text-navy-200">Nota importante.</strong> Questa pagina
+      raccoglie l'esperienza personale del sottoscritto e informazioni di
+      carattere generale sull'Arbitro Assicurativo. Non costituisce
+      consulenza legale né sostituisce l'assistenza di un avvocato o di un
+      consulente qualificato. Ogni controversia ha caratteristiche proprie
+      e va valutata nel merito con un professionista.
+    </div>
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>
