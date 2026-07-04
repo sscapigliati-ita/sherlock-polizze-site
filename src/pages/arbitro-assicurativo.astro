@@ -36,8 +36,8 @@ const faqs = [
     a: "La decisione non ha efficacia di sentenza. Resta comunque la possibilità di rivolgersi al giudice ordinario, sia per il consumatore che per la compagnia. Le motivazioni possono però essere valorizzate in un successivo giudizio civile, come qualunque atto scritto proveniente da un organismo qualificato.",
   },
   {
-    q: "Cosa succede se il ricorso viene respinto per motivi formali?",
-    a: "Un rigetto per ragioni formali (documentazione insufficiente, quantificazione mancante, prerequisiti non rispettati) non chiude la controversia: si può ancora agire davanti al giudice ordinario. Ridurre il rischio di rigetto formale, però, significa evitare mesi di attesa e ripartire con una situazione più chiara.",
+    q: "Il ricorso può essere respinto per un vizio di forma o nel merito: che differenza c'è?",
+    a: "Sono due cose diverse. Un ricorso è inammissibile per ragioni formali quando mancano i prerequisiti procedurali: reclamo preventivo non presentato, termine di decadenza superato, domanda oltre la soglia di valore. In questi casi il Collegio non entra nel merito. Diverso è il rigetto nel merito: il Collegio esamina la controversia ma conclude che la domanda non è provata, per esempio perché manca la documentazione a sostegno del danno o la quantificazione non è dimostrata. È il caso raccontato in questa guida: il ricorso non è stato respinto per un vizio di forma, ma perché non avevo provato in atti il quantum. In entrambi i casi la decisione dell'AAS non è vincolante e resta possibile rivolgersi al giudice ordinario, ma le due situazioni richiedono correzioni diverse: la prima si evita rispettando i requisiti procedurali, la seconda costruendo un fascicolo probatorio solido.",
   },
   {
     q: "Quanto costa presentare un ricorso all'AAS?",
@@ -83,7 +83,7 @@ const jsonLd = [
 ---
 <BaseLayout
   title="Ricorso all'Arbitro Assicurativo: la guida di chi l'ha fatto (e cosa rifarei diversamente)"
-  description="Ho presentato un ricorso all'Arbitro Assicurativo (AAS). Le motivazioni mi hanno dato ragione su quasi tutto, un punto tecnico-formale ha ribaltato il dispositivo. Questa guida esiste perché quel punto non costi il ricorso ad altri."
+  description="Ho presentato un ricorso all'Arbitro Assicurativo (AAS). Nel merito la mia posizione è stata riconosciuta fondata, ma il ricorso non è stato accolto perché non avevo provato in atti il quantum del danno: onere della prova, non vizio di forma. Questa guida esiste perché lo stesso passo non costi il ricorso ad altri."
   canonical={pageUrl}
   type="article"
   jsonLd={jsonLd}
@@ -110,12 +110,14 @@ const jsonLd = [
     <p class="text-lg text-navy-200 leading-relaxed mb-4">
       Ho presentato un ricorso all'Arbitro Assicurativo contro una primaria
       compagnia assicurativa. Il dispositivo dice <em>non accoglie</em>. Le
-      motivazioni, invece, riconoscono che la compagnia aveva torto su quasi
-      tutto — salvo un punto tecnico-formale che, con la documentazione giusta,
-      sarebbe stato evitabile.
+      motivazioni, invece, riconoscono che nel merito la mia posizione era
+      fondata — la compagnia aveva torto —, ma non ho provato in atti il
+      quantum del danno, e senza prova del quantum il Collegio non può
+      liquidare. Non è un vizio di forma: è onere della prova.
     </p>
     <p class="text-lg text-navy-200 leading-relaxed mb-8">
-      Questa guida esiste perché quel punto non costi il ricorso ad altri.
+      Questa guida esiste perché lo stesso passo non costi il ricorso ad
+      altri.
     </p>
 
     <div class="flex flex-col sm:flex-row gap-3 mb-12">
@@ -369,8 +371,8 @@ const jsonLd = [
       </figure>
     )}
 
-    <!-- (e) ERRORI FORMALI -->
-    <h2 class="text-2xl font-bold text-white mb-4">Gli errori formali che possono costare il ricorso</h2>
+    <!-- (e) ERRORI CHE POSSONO COSTARE IL RICORSO -->
+    <h2 class="text-2xl font-bold text-white mb-4">Gli errori che possono costare il ricorso</h2>
     <p class="text-navy-200 leading-relaxed mb-6">
       Il ricorso all'AAS è documentale. Non ci sono udienze in cui rimediare
       con una parola in più. Quello che è dentro il fascicolo è quello che il
