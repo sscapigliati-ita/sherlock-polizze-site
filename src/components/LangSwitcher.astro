@@ -1,23 +1,75 @@
 ---
+// SVG bandiere inline: le emoji-flag ("🇮🇹" ecc.) sono Regional Indicator
+// Symbols; Windows le rende come coppie di lettere ("IT") perché Segoe UI
+// Emoji non ha i glifi bandiera. Usiamo SVG per un rendering identico su
+// tutte le piattaforme.
 const lingue = [
-  { code: 'it', google: '', flag: '🇮🇹', name: 'Italiano' },
-  { code: 'en', google: 'en', flag: '🇬🇧', name: 'English' },
-  { code: 'es', google: 'es', flag: '🇪🇸', name: 'Español' },
-  { code: 'fr', google: 'fr', flag: '🇫🇷', name: 'Français' },
-  { code: 'my', google: 'my', flag: '🇲🇲', name: 'မြန်မာ' },
-  { code: 'zh', google: 'zh-CN', flag: '🇨🇳', name: '中文' },
+  { code: 'it', google: '',      name: 'Italiano' },
+  { code: 'en', google: 'en',    name: 'English' },
+  { code: 'es', google: 'es',    name: 'Español' },
+  { code: 'fr', google: 'fr',    name: 'Français' },
+  { code: 'my', google: 'my',    name: 'မြန်မာ (Birmano)' },
+  { code: 'zh', google: 'zh-CN', name: '中文' },
 ];
 ---
 <div class="flex items-center gap-1 notranslate lang-switcher" translate="no" aria-label="Selezione lingua">
-  {lingue.map(({ code, google, flag, name }) => (
+  {lingue.map(({ code, google, name }) => (
     <button
       type="button"
       data-lang={code}
       data-google={google}
       title={name}
       aria-label={name}
-      class="text-lg leading-none px-1.5 py-1 rounded opacity-50 hover:opacity-100 transition border border-transparent"
-    >{flag}</button>
+      class="leading-none p-1 rounded opacity-55 hover:opacity-100 transition border border-transparent"
+    >
+      {code === 'it' && (
+        <svg viewBox="0 0 24 16" width="24" height="16" class="block rounded-[2px] shadow-sm ring-1 ring-black/20" aria-hidden="true">
+          <rect width="8" height="16" fill="#009246"/>
+          <rect x="8" width="8" height="16" fill="#fff"/>
+          <rect x="16" width="8" height="16" fill="#ce2b37"/>
+        </svg>
+      )}
+      {code === 'en' && (
+        <svg viewBox="0 0 60 40" width="24" height="16" class="block rounded-[2px] shadow-sm ring-1 ring-black/20" aria-hidden="true">
+          <rect width="60" height="40" fill="#012169"/>
+          <path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/>
+          <path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="3"/>
+          <path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/>
+          <path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="5"/>
+        </svg>
+      )}
+      {code === 'es' && (
+        <svg viewBox="0 0 24 16" width="24" height="16" class="block rounded-[2px] shadow-sm ring-1 ring-black/20" aria-hidden="true">
+          <rect width="24" height="16" fill="#AA151B"/>
+          <rect y="4" width="24" height="8" fill="#F1BF00"/>
+        </svg>
+      )}
+      {code === 'fr' && (
+        <svg viewBox="0 0 24 16" width="24" height="16" class="block rounded-[2px] shadow-sm ring-1 ring-black/20" aria-hidden="true">
+          <rect width="8" height="16" fill="#002395"/>
+          <rect x="8" width="8" height="16" fill="#fff"/>
+          <rect x="16" width="8" height="16" fill="#ED2939"/>
+        </svg>
+      )}
+      {code === 'my' && (
+        <svg viewBox="0 0 24 16" width="24" height="16" class="block rounded-[2px] shadow-sm ring-1 ring-black/20" aria-hidden="true">
+          <rect width="24" height="5.33" fill="#FECB00"/>
+          <rect y="5.33" width="24" height="5.34" fill="#34B233"/>
+          <rect y="10.67" width="24" height="5.33" fill="#EA2839"/>
+          <polygon points="12,3.5 12.94,6.4 15.99,6.4 13.52,8.18 14.47,11.08 12,9.3 9.53,11.08 10.48,8.18 8.01,6.4 11.06,6.4" fill="#fff"/>
+        </svg>
+      )}
+      {code === 'zh' && (
+        <svg viewBox="0 0 24 16" width="24" height="16" class="block rounded-[2px] shadow-sm ring-1 ring-black/20" aria-hidden="true">
+          <rect width="24" height="16" fill="#EE1C25"/>
+          <polygon fill="#FFFF00" points="4,2 4.72,4.22 7.05,4.22 5.17,5.6 5.89,7.82 4,6.44 2.11,7.82 2.83,5.6 0.95,4.22 3.28,4.22"/>
+          <polygon fill="#FFFF00" points="8.5,1.3 8.83,1.85 9.47,1.72 9.05,2.22 9.31,2.8 8.7,2.56 8.24,3 8.29,2.35 7.72,2.05 8.34,1.88"/>
+          <polygon fill="#FFFF00" points="10.4,2.9 10.53,3.51 11.14,3.6 10.6,3.9 10.75,4.51 10.28,4.11 9.75,4.42 9.98,3.85 9.53,3.42 10.16,3.4"/>
+          <polygon fill="#FFFF00" points="10.4,5.2 10.63,5.77 11.24,5.72 10.79,6.14 11.04,6.7 10.5,6.38 9.99,6.75 10.15,6.15 9.65,5.79 10.27,5.74"/>
+          <polygon fill="#FFFF00" points="8.5,6.75 8.94,7.19 9.55,7.02 9.22,7.57 9.62,8.05 8.99,7.97 8.66,8.51 8.5,7.9 7.9,7.75 8.44,7.42"/>
+        </svg>
+      )}
+    </button>
   ))}
 </div>
 
