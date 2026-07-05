@@ -43,17 +43,50 @@ input,textarea,button{font-family:inherit;}
 ::-webkit-scrollbar{width:0;height:0;}
 p{line-height:1.7;color:var(--text2);font-size:.92rem;}
 
+/* Sfondo scenografico per desktop (visibile solo su viewport ampi, dietro al "frame" mobile) */
+body{
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(251,191,36,.08) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 80% 80%, rgba(99,102,241,.08) 0%, transparent 60%),
+    linear-gradient(180deg,#050813 0%,#070b18 50%,#050813 100%);
+}
+
 #app{position:fixed;inset:0;display:flex;flex-direction:column;background:
   radial-gradient(ellipse 90% 60% at 50% -10%, rgba(251,191,36,.09) 0%, transparent 60%),
   radial-gradient(ellipse 80% 50% at 50% 110%, rgba(99,102,241,.06) 0%, transparent 60%),
   var(--bg);}
 
+/* --- LAYOUT DESKTOP / WEB (browser wide) ---
+   Su schermi larghi (tipicamente desktop o iPad landscape), l'app resta "phone-shaped"
+   centrata con ombra e bordi arrotondati anziché occupare 100% dello schermo,
+   che sarebbe innaturale per un'app pensata mobile-first. */
+@media (min-width: 720px) and (min-height: 640px) {
+  html, body { overflow: auto; }
+  #app {
+    position: relative;
+    inset: auto;
+    margin: 24px auto;
+    width: 100%;
+    max-width: 440px;
+    height: min(920px, calc(100vh - 48px));
+    border-radius: 32px;
+    border: 1px solid var(--border2);
+    box-shadow: 0 40px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(251,191,36,.06);
+    overflow: hidden;
+  }
+  /* Placa qualche browser wrapper che potrebbe voler resettare */
+  body { min-height: 100vh; display: flex; flex-direction: column; }
+}
+
+/* Safe-area iOS: se installata come PWA con status bar translucida, spingere
+   header sotto il notch e nav bottom sopra l'home indicator. Non tocca desktop
+   perché env() torna 0 quando non c'è safe area. */
 .screen{display:none;flex:1;flex-direction:column;overflow:hidden;}
 .screen.active{display:flex;animation:fadein .38s ease;}
 @keyframes fadein{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-.scr-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 18px 100px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
-.scr-hdr{display:flex;align-items:center;gap:14px;padding:18px 20px 16px;background:linear-gradient(180deg,rgba(14,20,38,.95),rgba(14,20,38,.5));border-bottom:1px solid var(--border);flex-shrink:0;position:relative;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+.scr-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 18px calc(100px + env(safe-area-inset-bottom,0px));-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.scr-hdr{display:flex;align-items:center;gap:14px;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 16px;background:linear-gradient(180deg,rgba(14,20,38,.95),rgba(14,20,38,.5));border-bottom:1px solid var(--border);flex-shrink:0;position:relative;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
 .scr-hdr::after{content:'';position:absolute;bottom:-1px;left:24px;right:24px;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.6),transparent);}
 .scr-hdr h2{flex:1;font-size:1.1rem;letter-spacing:-.005em;color:var(--text);font-weight:700;}
 
@@ -86,7 +119,7 @@ p{line-height:1.7;color:var(--text2);font-size:.92rem;}
 .divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
 
 /* BOTTOM NAV - glass */
-#bnav{display:flex;background:rgba(7,11,24,.86);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-top:1px solid var(--border2);flex-shrink:0;padding:10px 0 8px;position:relative;}
+#bnav{display:flex;background:rgba(7,11,24,.86);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-top:1px solid var(--border2);flex-shrink:0;padding:10px 0 calc(8px + env(safe-area-inset-bottom,0px));position:relative;}
 #bnav::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:55%;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);opacity:.55;}
 #bnav .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;cursor:pointer;gap:4px;transition:transform .15s;}
 #bnav .tab:active{transform:scale(.92);}
@@ -171,7 +204,7 @@ p{line-height:1.7;color:var(--text2);font-size:.92rem;}
 .ob-footer{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg2);}
 
 /* HOME */
-.home-hdr{padding:18px 20px;background:linear-gradient(180deg,var(--bg2),transparent);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.home-hdr{padding:calc(18px + env(safe-area-inset-top,0px)) 20px 18px;background:linear-gradient(180deg,var(--bg2),transparent);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .logo-row{display:flex;align-items:center;gap:11px;}
 .logo{font-size:1.4rem;letter-spacing:.09em;color:var(--amber);font-weight:900;}
 .dog-mini{width:40px;height:40px;border-radius:12px;object-fit:cover;border:1.5px solid var(--amber);box-shadow:0 6px 16px rgba(251,191,36,.32);}
@@ -277,6 +310,16 @@ p{line-height:1.7;color:var(--text2);font-size:.92rem;}
 .price-p{font-size:.92rem;color:var(--text2);margin-top:8px;position:relative;font-weight:500;}
 .price-s{font-size:.8rem;color:var(--ok2);margin-top:6px;position:relative;font-weight:600;}
 .pp-logo{font-size:.74rem;letter-spacing:.24em;color:#5ba8e8;font-weight:800;margin-top:8px;position:relative;}
+
+/* Card piano nel paywall — Founder / Singola / Abbonamento */
+.pw-plan{background:var(--surf);border:1px solid var(--border2);border-radius:16px;padding:16px 16px 18px;margin-bottom:12px;position:relative;}
+.pw-plan-primary{background:linear-gradient(160deg,rgba(251,191,36,.10),rgba(251,191,36,.02));border-color:var(--amber);box-shadow:0 8px 28px rgba(251,191,36,.15);}
+.pw-plan-head{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+.pw-plan-badge{font-size:.62rem;letter-spacing:.14em;font-weight:800;text-transform:uppercase;background:var(--amber);color:#1a1100;padding:3px 8px;border-radius:6px;order:-1;flex-basis:100%;display:inline-block;width:fit-content;}
+.pw-plan-name{font-size:.98rem;font-weight:700;color:var(--text);flex:1;}
+.pw-plan-price{font-size:1.05rem;font-weight:800;color:var(--amber);white-space:nowrap;}
+.pw-plan-price small{font-weight:500;color:var(--text3);font-size:.72rem;letter-spacing:.02em;}
+.pw-plan-body{font-size:.82rem;color:var(--text2);line-height:1.55;margin:8px 0 12px;}
 
 .code-div{display:flex;align-items:center;gap:12px;margin:18px 0 14px;}
 .code-div::before,.code-div::after{content:"";flex:1;height:1px;background:var(--border);}
@@ -437,7 +480,7 @@ p{line-height:1.7;color:var(--text2);font-size:.92rem;}
       <div class="ob-slide">
         <img class="ob-dog" src="img/dog_medium.png" alt="Sherlock">
         <div class="ob-title">1 analisi gratis completa, Pro per il resto</div>
-        <div class="ob-desc">Con il piano gratuito analizzi 5 polizze con report completo. Sherlock Pro trasforma le criticita trovate in reclami, ricorsi IVASS e diffide pronte da inviare.</div>
+        <div class="ob-desc">Con il piano gratuito analizzi una polizza con report completo. Poi passi a Sherlock Pro, oppure prendi la Lettera Singola una-tantum o il Pass Founder a vita: reclami, ricorsi IVASS e diffide pronte da inviare.</div>
       </div>
     </div>
   </div>
@@ -495,7 +538,7 @@ p{line-height:1.7;color:var(--text2);font-size:.92rem;}
     </div>
     <div id="scan-free-info" class="card2 hide">
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:5px">&#128273; Piano gratuito</div>
-      <div style="font-size:.76rem;color:var(--text3);line-height:1.6">Stai usando una delle tue <strong style="color:var(--gold)" id="scans-left-text">5</strong> analisi gratuite. Report completo sempre incluso. Per trasformare questa analisi in una lettera pronta serve Sherlock Pro.</div>
+      <div style="font-size:.76rem;color:var(--text3);line-height:1.6">Stai usando la tua <strong style="color:var(--gold)" id="scans-left-text">1</strong> analisi di prova completa. Report incluso. Per una seconda analisi o per generare la lettera pronta serve Sherlock Pro, Lettera Singola o Pass Founder.</div>
     </div>
     <div style="font-size:.74rem;color:var(--text3);text-align:center;padding:10px 0;border-top:1px solid var(--border)">Includi frontespizio e condizioni generali per massima accuratezza</div>
   </div>
@@ -567,7 +610,7 @@ p{line-height:1.7;color:var(--text2);font-size:.92rem;}
       <div class="cmp-row" style="font-size:.67rem;color:var(--text3);letter-spacing:.08em;font-weight:bold">
         <span class="cmp-f"></span><span class="cmp-a">GRATIS</span><span class="cmp-b" style="color:var(--gold)">PRO</span>
       </div>
-      <div class="cmp-row"><span class="cmp-f">Analisi polizza - report completo</span><span class="cmp-a" style="font-size:.75rem">5 totali</span><span class="cmp-b text-gold">&#8734;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Analisi polizza - report completo</span><span class="cmp-a" style="font-size:.75rem">1 sola</span><span class="cmp-b text-gold">&#8734;</span></div>
       <div class="cmp-row"><span class="cmp-f">Livello di rischio (ALTO / CRITICO)</span><span class="cmp-a">&#10003;</span><span class="cmp-b">&#10003;</span></div>
       <div class="cmp-row"><span class="cmp-f">Esclusioni e clausole rischiose</span><span class="cmp-a">&#10003;</span><span class="cmp-b">&#10003;</span></div>
       <div class="cmp-row"><span class="cmp-f">Base legale contestabile</span><span class="cmp-a">&#10003;</span><span class="cmp-b">&#10003;</span></div>
@@ -577,14 +620,44 @@ p{line-height:1.7;color:var(--text2);font-size:.92rem;}
       <div class="cmp-row"><span class="cmp-f">Diffida formale stragiudiziale</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
     </div>
     <div class="price-box">
-      <div class="price-n">Pro</div>
-      <div class="price-p">analisi illimitate + lettere pronte</div>
-      <div class="price-s">Da 2,99 euro/mese. Nessun rinnovo automatico.</div>
+      <div class="price-n">Scegli come sbloccare</div>
+      <div class="price-p">tre opzioni chiare, nessun rinnovo automatico</div>
       <div style="font-size:.7rem;color:var(--text3);margin-top:10px">Pagamento sicuro via</div>
       <div class="pp-logo">PAYPAL</div>
     </div>
-    <button class="btn btn-outline btn-full mb12" id="btn-view-example">&#128196; Vedi un esempio reale di lettera Pro</button>
-    <button class="btn btn-gold btn-full" id="btn-subscribe" data-i18n="activate_pro">&#128274; Sblocca Sherlock Pro</button>
+
+    <!-- Piano Founder: lifetime, in evidenza -->
+    <div class="pw-plan pw-plan-primary" id="pw-plan-founder">
+      <div class="pw-plan-head">
+        <div class="pw-plan-badge">Consigliato</div>
+        <div class="pw-plan-name">Pass Pro Founder</div>
+        <div class="pw-plan-price">19,90 &euro; <small>una tantum</small></div>
+      </div>
+      <div class="pw-plan-body">Accesso Pro <b>a vita</b>. Analisi illimitate, tutte le lettere (Reclamo, IVASS, Diffida). Solo i primi 50 iscritti.</div>
+      <button class="btn btn-gold btn-full" id="btn-cta-founder">&#127775; Prendi il Pass Founder</button>
+    </div>
+
+    <!-- Prova Singola: pay-per-use -->
+    <div class="pw-plan" id="pw-plan-singola">
+      <div class="pw-plan-head">
+        <div class="pw-plan-name">Lettera Singola</div>
+        <div class="pw-plan-price">3,99 &euro; <small>una tantum</small></div>
+      </div>
+      <div class="pw-plan-body">Codice usa-e-getta per generare <b>1 lettera</b> (Reclamo, IVASS o Diffida). Zero abbonamento, valido 30 giorni.</div>
+      <button class="btn btn-outline btn-full" id="btn-cta-singola">&#128231; Compra la lettera singola</button>
+    </div>
+
+    <!-- Abbonamento Pro classico -->
+    <div class="pw-plan" id="pw-plan-abbonamento">
+      <div class="pw-plan-head">
+        <div class="pw-plan-name">Pass Pro mensile / annuale</div>
+        <div class="pw-plan-price">da 2,99 &euro; <small>/ mese</small></div>
+      </div>
+      <div class="pw-plan-body">Analisi illimitate + lettere Pro. Mensile, semestrale o annuale (14,99 &euro; = 1,25 &euro;/mese). Nessun rinnovo automatico.</div>
+      <button class="btn btn-outline btn-full" id="btn-subscribe" data-i18n="activate_pro">&#128274; Vedi i piani Pro</button>
+    </div>
+
+    <button class="btn btn-ghost btn-full mt12 mb12" id="btn-view-example">&#128196; Vedi un esempio reale di lettera Pro</button>
     <div class="mt12 tc"><small style="color:var(--text3);line-height:1.8">Il pagamento si apre nel flusso sicuro Sherlock/PayPal.<br>Usa la stessa email anche nell'app.</small></div>
     <div class="code-div"><span>ho gia pagato</span></div>
     <label class="lbl">La tua email del pagamento</label>
@@ -957,18 +1030,30 @@ document.addEventListener('click', function(e){
   try { saved = localStorage.getItem('sherlockLang') || 'it'; } catch(e){}
   applyLang(saved);
 })();
-var APP_BUILD=50; // versionCode — bumpare quando si vuole resettare freeUsed
+var APP_BUILD=51; // versionCode — bumpare quando serve invalidare cache non-freeUsed
 var S={analyses:[],isPro:false,proCode:null,onboardingDone:false,freeUsed:0,curA:null,curLetter:"",curLType:"reclamo",devOpen:false,build:0};
 function load(){try{var r=localStorage.getItem("shk2");if(r)Object.assign(S,JSON.parse(r));}catch(e){}
-  // Migration: alla nuova versione resetta le analisi gratuite consumate per dare 5/5 a tutti
-  if(S.build!==APP_BUILD){S.freeUsed=0;S.build=APP_BUILD;save();}
+  // Traccia il build senza resettare freeUsed: la prova gratuita è UNA per browser/dispositivo,
+  // altrimenti bumpare l'app regalerebbe una prova nuova a ogni utente esistente.
+  if(S.build!==APP_BUILD){S.build=APP_BUILD;save();}
 }
 function save(){try{localStorage.setItem("shk2",JSON.stringify(S));}catch(e){}}
-function canScan(){return S.isPro||S.freeUsed<MAX_TOTAL;}
-function isPreviewMode(){return !S.isPro && S.freeUsed>=MAX_FREE;}
+var Br={a:(typeof Android!=="undefined"),url:function(u){this.a?Android.openURL(u):window.open(u,"_blank");},toast:function(m){this.a?Android.showToast(m):console.log(m);},share:function(t){this.a?Android.shareText(t,"Sherlock"):(navigator.clipboard&&navigator.clipboard.writeText(t));},vibe:function(){this.a?Android.vibrate():(navigator.vibrate&&navigator.vibrate(50));}};
+// Su web/iOS (PWA fuori dalla WebView Android) il limite è UNA sola analisi completa,
+// poi paywall diretto — niente "modalità anteprima" a soft-lock. Su Android WebView si
+// mantiene la logica storica: MAX_FREE completa, poi preview fino a MAX_TOTAL.
+function canScan(){
+  if(S.isPro) return true;
+  if(!Br.a) return S.freeUsed < MAX_FREE;
+  return S.freeUsed < MAX_TOTAL;
+}
+function isPreviewMode(){
+  if(S.isPro) return false;
+  if(!Br.a) return false; // web/iOS: mai preview, si passa dritto al paywall
+  return S.freeUsed >= MAX_FREE;
+}
 function freeLeft(){return Math.max(0,MAX_FREE-S.freeUsed);}
 function totalLeft(){return Math.max(0,MAX_TOTAL-S.freeUsed);}
-var Br={a:(typeof Android!=="undefined"),url:function(u){this.a?Android.openURL(u):window.open(u,"_blank");},toast:function(m){this.a?Android.showToast(m):console.log(m);},share:function(t){this.a?Android.shareText(t,"Sherlock"):(navigator.clipboard&&navigator.clipboard.writeText(t));},vibe:function(){this.a?Android.vibrate():(navigator.vibrate&&navigator.vibrate(50));}};
 var _cn=0,_cb={};
 window._apiReady=function(k){var r=Br.a?Android.getResult(k):"";var id=k.replace("cb_","");if(!_cb[id])return;var c=_cb[id];delete _cb[id];if(!r||r.indexOf("__ERR__")===0){c.rej(new Error(r?r.slice(7):"Errore"));return;}try{c.res(JSON.parse(atob(r)));}catch(e){c.res(r);}};
 function apicall(url,method,headers,body){return new Promise(function(res,rej){var id=String(++_cn);_cb[id]={res:res,rej:rej};if(Br.a){Android.callAPI(url,method,JSON.stringify(headers),body||"",id);}else{fetch(url,{method:method,headers:headers,body:body}).then(function(r){return r.json();}).then(function(d){var c=_cb[id];delete _cb[id];c.res(d);}).catch(function(e){var c=_cb[id];delete _cb[id];c.rej(e);});}});}
@@ -1265,7 +1350,9 @@ function init(){
     });
     on("btn-copy-lt","click",function(){if(navigator.clipboard)navigator.clipboard.writeText(S.curLetter).then(function(){Br.toast("Copiato!");});else Br.toast("Seleziona e copia manualmente.");});
     on("btn-share-lt","click",function(){Br.share(S.curLetter);});
-    on("btn-subscribe","click",function(){track('subscribe_external_click',{from:'paywall'});Br.url(PP);});
+    on("btn-subscribe","click",function(){track('subscribe_external_click',{from:'paywall',plan:'abbonamento'});Br.url(SITE_URL+"abbonati");});
+    on("btn-cta-founder","click",function(){track('subscribe_external_click',{from:'paywall',plan:'founder'});Br.url(SITE_URL+"abbonati#founder");});
+    on("btn-cta-singola","click",function(){track('subscribe_external_click',{from:'paywall',plan:'singola'});Br.url(SITE_URL+"reclamo-singolo");});
     on("btn-activate","click",function(){
       var c=document.getElementById("pw-code").value;
       var err=document.getElementById("pw-err"),ok=document.getElementById("pw-ok"),em=document.getElementById("pw-err-msg");

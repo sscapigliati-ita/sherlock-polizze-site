@@ -308,6 +308,92 @@ const jsonLd = [
     </div>
   </section>
 
+  {/* Riquadro storia — origine del nome Sherlock */}
+  <section class="px-5 py-16 max-w-6xl mx-auto">
+    <div class="relative overflow-hidden rounded-3xl border border-gold-400/30 bg-gradient-to-br from-navy-900 via-navy-950 to-navy-900 shadow-2xl shadow-black/40">
+      {/* Glow decorativo di sfondo */}
+      <div aria-hidden="true" class="pointer-events-none absolute -top-32 -right-32 w-96 h-96 rounded-full bg-gold-400/10 blur-3xl"></div>
+      <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-emerald-400/5 blur-3xl"></div>
+
+      <div class="relative grid md:grid-cols-5 gap-0 items-stretch">
+        {/* Foto */}
+        <div class="md:col-span-2 relative min-h-[280px] md:min-h-[420px]">
+          <img
+            src="/sherlock-cane.jpg"
+            alt="Sherlock, il nostro cane trovato in una scatola davanti al cancello"
+            width="1200"
+            height="800"
+            loading="lazy"
+            decoding="async"
+            class="absolute inset-0 w-full h-full object-cover"
+          />
+          {/* Sfumatura verso destra per fondersi con il testo su desktop */}
+          <div aria-hidden="true" class="hidden md:block absolute inset-y-0 right-0 w-24 bg-gradient-to-r from-transparent to-navy-900/95"></div>
+          {/* Sfumatura verso il basso su mobile */}
+          <div aria-hidden="true" class="md:hidden absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-navy-900"></div>
+        </div>
+
+        {/* Storia */}
+        <div class="md:col-span-3 p-7 md:p-10 flex flex-col justify-center">
+          <div class="inline-flex items-center gap-2 self-start bg-gold-400/10 border border-gold-400/40 px-3 py-1 rounded-full text-xs text-gold-300 font-semibold mb-5">
+            <span aria-hidden="true">🐾</span>
+            La storia dietro il nome
+          </div>
+
+          <h2 class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
+            Sherlock non è solo un detective.<br />
+            <span class="text-gold-400">È anche il nostro cane.</span>
+          </h2>
+
+          <div class="space-y-3 text-navy-200 leading-relaxed">
+            <p>
+              Una mattina l'abbiamo trovato in una scatola di cartone, fuori dal cancello.
+              Piccolo, spaventato, con quegli occhi che chiedevano solo una cosa: fidati di me,
+              io mi fiderò di te. L'abbiamo chiamato <strong class="text-white">Sherlock</strong>
+              — come il detective — perché aveva subito quello sguardo che <em>vede tutto</em>.
+            </p>
+            <p>
+              Da allora non ci ha più lasciati soli. È stato con noi <strong class="text-white">nei momenti difficili</strong>,
+              nelle notti storte, nei giorni in cui non c'era niente da dire. Non ha mai chiesto niente
+              in cambio — solo di esserci. È il suo modo di amare: <strong class="text-white">viscerale, totale,
+              senza calcoli</strong>. Sta lì, ti guarda, e tu sai che <em>non sei solo</em>.
+            </p>
+            <p>
+              E poi c'è il suo talento: Sherlock è un <strong class="text-white">cercatore di tartufi</strong>.
+              Naso a terra, passo dopo passo, tira fuori dai boschi quello che nessuno vedrebbe — cose preziose,
+              sepolte sotto la terra, coperte di foglie. Non le trova per fortuna. Le <em>fiuta</em>.
+            </p>
+            <p class="text-navy-100">
+              Abbiamo dato il suo nome a questa app per quello: un'app che scava nei
+              <strong class="text-gold-300">meandri della polizza</strong>, fiuta i cavilli e le clausole
+              che le compagnie nascondono ad arte tra le righe, e riporta alla luce
+              <strong class="text-white">quello che loro sperano tu non veda mai</strong>. Come Sherlock col tartufo:
+              ti sta accanto, cerca, e non molla finché non trova.
+            </p>
+          </div>
+
+          <div class="mt-7 flex flex-col sm:flex-row gap-3">
+            <a
+              href="/app/"
+              data-track="storia_cane_cta_prova_click"
+              class="inline-flex items-center justify-center gap-2 bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20"
+            >
+              Prova Sherlock gratis
+              <span aria-hidden="true">→</span>
+            </a>
+            <a
+              href="/storia-sherlock"
+              data-track="storia_cane_cta_leggi_click"
+              class="inline-flex items-center justify-center gap-2 border border-navy-600 text-navy-100 font-semibold px-6 py-3 rounded-lg hover:bg-navy-800 transition"
+            >
+              Leggi la storia completa
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="bg-navy-900 border-y border-navy-800 px-5 py-16">
     <div class="max-w-6xl mx-auto">
       <h2 class="text-3xl lg:text-4xl font-extrabold text-white text-center mb-3">5 frasi della polizza da controllare subito</h2>

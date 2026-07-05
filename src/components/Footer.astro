@@ -43,19 +43,47 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
 
     <div>
       <div class="text-xs uppercase tracking-widest text-navy-500 mb-3">Prova Sherlock</div>
-      <ul class="space-y-2 text-sm text-navy-300">
+      <ul class="space-y-2 text-sm text-navy-300 mb-4">
         <li>
           <a href="/app/" class="hover:text-white">
             Apri dal browser (Web/iPhone) →
           </a>
         </li>
-        <li>
-          <a href={playStoreUrl} target="_blank" rel="noopener" class="hover:text-white">
-            Scarica gratis su Google Play →
-          </a>
-        </li>
-        <li class="text-navy-500 text-xs pt-2">it.sherlock.polizze</li>
       </ul>
+      <div class="flex flex-col sm:flex-row md:flex-col gap-3">
+        <a
+          href={playStoreUrl}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-3 bg-black hover:bg-navy-800 border border-navy-700 rounded-xl px-4 py-2.5 transition-colors"
+          aria-label="Scarica Sherlock su Google Play"
+        >
+          <svg viewBox="0 0 512 512" class="w-8 h-8 flex-shrink-0" aria-hidden="true">
+            <path fill="#EA4335" d="M89 483.9c-9.6-4.6-16.6-13.4-19.1-24.1L285 256 69.9 52.2c2.5-10.7 9.5-19.5 19.1-24.1L338 256z"/>
+            <path fill="#FBBC04" d="M338 256l70.5-70.5c15.1 8.4 15.1 30.6 0 39l-70.5 40Z"/>
+            <path fill="#4285F4" d="M285 256 69.9 52.2C74.5 50 79.7 48.8 85 48.8c5.7 0 11.6 1.4 17 4.4l236 133.3z"/>
+            <path fill="#34A853" d="M338 325.5 102 458.8c-5.4 3-11.3 4.4-17 4.4-5.3 0-10.5-1.2-15.1-3.4L285 256z"/>
+          </svg>
+          <div class="text-left leading-tight">
+            <div class="text-[10px] uppercase tracking-wider text-navy-300">Scarica su</div>
+            <div class="text-base font-semibold text-white">Google Play</div>
+          </div>
+        </a>
+        <a
+          href="/ios"
+          class="inline-flex items-center gap-3 bg-black hover:bg-navy-800 border border-navy-700 rounded-xl px-4 py-2.5 transition-colors"
+          aria-label="Istruzioni per installare Sherlock su iPhone"
+        >
+          <svg viewBox="0 0 384 512" class="w-7 h-8 flex-shrink-0" aria-hidden="true">
+            <path fill="#ffffff" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+          </svg>
+          <div class="text-left leading-tight">
+            <div class="text-[10px] uppercase tracking-wider text-navy-300">Installa su</div>
+            <div class="text-base font-semibold text-white">iPhone</div>
+          </div>
+        </a>
+      </div>
+      <div class="text-navy-500 text-xs pt-3">it.sherlock.polizze</div>
     </div>
   </div>
 
