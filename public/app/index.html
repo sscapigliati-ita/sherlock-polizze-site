@@ -840,7 +840,13 @@ var TERMS_URL="https://sherlock-polizze-site-five.vercel.app/privacy";
 var SITE_URL="https://sherlock-polizze-site-five.vercel.app/";
 var GUIDES_URL="https://sherlock-polizze-site-five.vercel.app/guide";
 var EXAMPLE_REPORT_URL="https://sherlock-polizze-site-five.vercel.app/esempio-report";
-var BE_BASE="https://sherlock-polizze-site-five.vercel.app";
+// Backend URL: su Android WebView serve URL assoluto (l'oggetto Android è il consumer);
+// su web/PWA usiamo same-origin per evitare CORS (il preflight OPTIONS non è gestito
+// dagli endpoint serverless, quindi qualsiasi chiamata cross-origin fallirebbe con
+// "Failed to fetch" nel browser).
+var BE_BASE=(typeof Android!=="undefined")
+  ? "https://www.sherlockpolizze.it"
+  : (typeof location!=="undefined" ? location.origin : "");
 var ENDP_ANALIZZA=BE_BASE+"/api/analizza";
 var ENDP_LETTERA=BE_BASE+"/api/lettera";
 var ENDP_ATTIVA=BE_BASE+"/api/attiva-pro";
