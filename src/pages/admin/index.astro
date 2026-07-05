@@ -4,27 +4,38 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { leggiStats } from '../../lib/log';
 import { leggiAbbonati } from '../../lib/storage';
 import { leggiUltimiEventi } from '../../lib/log';
-import { leggiStabilitaApp, leggiUsoApp, invalidaCachePlay } from '../../lib/play';
+import { leggiStabilitaApp, invalidaCachePlay } from '../../lib/play';
+import { leggiAnalyticsProperty, invalidaCacheGa4, type AnalyticsResult } from '../../lib/ga4-data';
 
 // /admin?refresh=play forza il refresh della cache Play (bypass 6h TTL).
 if (Astro.url.searchParams.get('refresh') === 'play') {
   await invalidaCachePlay();
 }
+// /admin?refresh=ga4 forza il refresh delle metriche GA4.
+if (Astro.url.searchParams.get('refresh') === 'ga4') {
+  await invalidaCacheGa4();
+}
 
-// Le chiamate Play possono fallire (SA non configurato, bucket non
-// accessibile): le gestisco con allSettled per non rompere la dashboard.
-const [stats, abb, eventi, stabRes, usoRes] = await Promise.all([
+// Le chiamate esterne possono fallire (SA non configurato, permessi mancanti,
+// quote): allSettled/catch per non rompere la dashboard.
+const [stats, abb, eventi, stabRes, ga4Ads, ga4Firebase] = await Promise.all([
   leggiStats(),
   leggiAbbonati(),
   leggiUltimiEventi(50),
   leggiStabilitaApp().catch((e: any) => ({ errore: String(e?.message ?? e) }) as any),
-  leggiUsoApp().catch((e: any) => ({ errore: String(e?.message ?? e), installazioniPerGiorno: [], acquisizioni28gg: 0, mau: null, primeAperture28gg: null, ultimoGiorno: null, giorniRitardo: null }) as any),
+  leggiAnalyticsProperty('GA4_PROPERTY_ID_ADS'),
+  leggiAnalyticsProperty('GA4_PROPERTY_ID_FIREBASE'),
 ]);
 const stab = ('crashRate28gg' in stabRes ? stabRes : null) as Awaited<ReturnType<typeof leggiStabilitaApp>> | null;
 const stabError = (stabRes as any).errore as string | undefined;
-const uso = usoRes as Awaited<ReturnType<typeof leggiUsoApp>>;
-const maxInst = Math.max(1, ...uso.installazioniPerGiorno.map((g) => g.nuove));
 const fmtPct = (n: number | null) => n === null ? '—' : `${n.toFixed(2)} %`;
+const fmtNum = (n: number) => new Intl.NumberFormat('it-IT').format(n);
+
+// Helper per iterare le due property nella stessa struttura
+const profili: Array<{ titolo: string; codice: string; res: AnalyticsResult }> = [
+  { titolo: 'sherlock polizze web', codice: 'G-21MQHMK771', res: ga4Ads },
+  { titolo: 'sherlock-6f88c (Firebase)', codice: 'G-VVW7CNHTYJ', res: ga4Firebase },
+];
 
 const adminEmail = Astro.locals.adminEmail ?? '';
 const ricavoEuro = (abb.ricavoEuroCent / 100).toFixed(2).replace('.', ',');
@@ -47,13 +58,6 @@ const bloccatiPreSplit = Math.max(
   0,
   stats.bloccatiTotali - stats.bloccatiAnalizzaTotali - stats.bloccatiLetteraTotali - stats.bloccatiComparaTotali,
 );
-
-// Considero "stale" il dato Play se il più recente è > 3 giorni fa: il batch
-// Play di solito ha 1-2 giorni di ritardo, oltre i 3 c'è qualcosa che non gira
-// (bucket non aggiornato, SA che ha perso i permessi, ecc.).
-const playStale = (uso.giorniRitardo ?? 0) > 3;
-const fmtDataIt = (g: string) =>
-  new Date(`${g}T12:00:00Z`).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
 
 // Vercel functions girano in UTC; forzo Europe/Rome così la dashboard mostra
 // orari coerenti col fuso italiano (CEST in estate, CET in inverno).
@@ -153,13 +157,7 @@ const fmtSoloData = (iso: string) =>
         </div>
       )}
 
-      {playStale && uso.ultimoGiorno && (
-        <div class="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 mb-3 text-xs text-amber-200">
-          <span class="font-bold">Pipeline CSV Play fermo dal {fmtDataIt(uso.ultimoGiorno)}</span> (<span class="font-mono">{uso.giorniRitardo}</span> giorni fa). Il blocco è <strong>upstream lato Google</strong>: anche il download manuale CSV da Play Console mostra la stessa data limite. Vitals (crash/ANR) e dati live di Play Console sono invece aggiornati via Reporting API. I valori &quot;28gg&quot; qui sotto coprono solo la finestra di dati ricevuti. Azioni: apri ticket Play Console support, oppure controlla <a href="/admin/play-diag" class="underline hover:text-gold-300">diagnostica</a> · <a href="/admin?refresh=play" class="underline hover:text-gold-300">forza refresh</a>.
-        </div>
-      )}
-
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+      <div class="grid grid-cols-2 gap-3 mb-3">
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">Crash rate (28gg)</div>
           <div class={`text-3xl font-extrabold mt-1 ${stab && stab.crashRate28gg !== null && stab.crashRate28gg > 1 ? 'text-red-400' : 'text-emerald-400'}`}>
@@ -174,46 +172,110 @@ const fmtSoloData = (iso: string) =>
           </div>
           <div class="text-[10px] text-navy-500 mt-1">ultimo: {stab ? fmtPct(stab.anrRateOggi) : '—'}</div>
         </div>
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Installazioni nette {uso.ultimoGiorno ? `(fino al ${fmtDataIt(uso.ultimoGiorno)})` : '(28gg)'}</div>
-          <div class="text-3xl font-extrabold text-white mt-1">{uso.acquisizioni28gg}</div>
-          <div class="text-[10px] text-navy-500 mt-1">install &minus; disinstall · finestra {uso.installazioniPerGiorno.length} gg</div>
-        </div>
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Disinstall. {uso.ultimoGiorno ? `(fino al ${fmtDataIt(uso.ultimoGiorno)})` : '(28gg)'}</div>
-          <div class="text-3xl font-extrabold text-amber-300 mt-1">
-            {uso.installazioniPerGiorno.reduce((s, g) => s + g.disinstall, 0)}
-          </div>
-          <div class="text-[10px] text-navy-500 mt-1">finestra {uso.installazioniPerGiorno.length} gg</div>
-        </div>
+      </div>
+      <div class="text-[11px] text-navy-500">
+        Fonte: Play Developer Reporting API (installazioni e disinstall dal bucket CSV rimossi: il pipeline è fermo <strong>upstream lato Google</strong> dal 21 giu 2026 e non è risolvibile da noi. Cronologia in <a href="/admin/play-diag" class="underline hover:text-gold-300">diagnostica</a>).
+      </div>
+    </section>
+
+    <section class="mb-6">
+      <div class="flex items-baseline justify-between mb-3">
+        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Analytics web — 7 giorni</div>
+        <div class="text-[10px] text-navy-500">Cache 1h · <a href="/admin?refresh=ga4" class="underline hover:text-gold-300">forza refresh</a> · <a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener" class="underline hover:text-gold-300">apri GA4</a></div>
       </div>
 
-      {uso.errore ? (
-        <div class="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-200">
-          Statistiche installazioni non ancora disponibili: <span class="font-mono">{uso.errore}</span>.
-          I permessi sul bucket Play possono impiegare fino a 24h per propagarsi.
-        </div>
-      ) : uso.installazioniPerGiorno.length === 0 ? (
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-5 text-xs text-navy-400">
-          Nessun dato di installazioni disponibile ancora.
-        </div>
-      ) : (
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-5">
-          <div class="text-xs text-navy-200 font-bold mb-3">Installazioni per giorno — ultimi {uso.installazioniPerGiorno.length} giorni</div>
-          <div class="flex gap-1 items-end" style="min-height:120px">
-            {uso.installazioniPerGiorno.map((g) => {
-              const h = Math.round((g.nuove / maxInst) * 100);
-              return (
-                <div class="flex-1 flex flex-col items-center gap-1" title={`${g.giorno}: +${g.nuove} install, -${g.disinstall} disinstall`}>
-                  <div class="text-[9px] text-navy-400 font-semibold">{g.nuove}</div>
-                  <div class="w-full rounded-t bg-gradient-to-t from-emerald-500 to-emerald-300" style={`height:${Math.max(h, 2)}px`}></div>
+      <div class="grid md:grid-cols-2 gap-4">
+        {profili.map(({ titolo, codice, res }) => {
+          const ok = 'utenti7gg' in res ? res : null;
+          const err = 'errore' in res ? res.errore : undefined;
+          const maxU = ok ? Math.max(1, ...ok.serieUtenti.map((g) => g.utenti)) : 1;
+          return (
+            <div class="rounded-xl border border-navy-700 bg-navy-900 p-5">
+              <div class="flex items-baseline justify-between mb-3">
+                <div>
+                  <div class="text-sm font-bold text-white">{titolo}</div>
+                  <div class="text-[10px] text-navy-500 font-mono">{codice}{ok ? ` · property ${ok.propertyId}` : ''}</div>
                 </div>
-              );
-            })}
-          </div>
-          <div class="text-[10px] text-navy-500 mt-2 text-right">primo: {uso.installazioniPerGiorno[0]?.giorno} · ultimo: {uso.installazioniPerGiorno.at(-1)?.giorno}</div>
-        </div>
-      )}
+                {ok && <div class="text-[10px] text-emerald-400">● live</div>}
+              </div>
+
+              {err ? (
+                <div class="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-200 leading-relaxed">
+                  <span class="font-bold">Non disponibile.</span><br />
+                  <span class="font-mono text-[10px]">{err}</span>
+                </div>
+              ) : ok && (
+                <>
+                  <div class="grid grid-cols-4 gap-2 mb-4">
+                    <div>
+                      <div class="text-[10px] text-navy-400 uppercase tracking-wider">Utenti oggi</div>
+                      <div class="text-xl font-extrabold text-emerald-400">{fmtNum(ok.utentiOggi)}</div>
+                    </div>
+                    <div>
+                      <div class="text-[10px] text-navy-400 uppercase tracking-wider">Utenti 7gg</div>
+                      <div class="text-xl font-extrabold text-white">{fmtNum(ok.utenti7gg)}</div>
+                    </div>
+                    <div>
+                      <div class="text-[10px] text-navy-400 uppercase tracking-wider">Pageviews</div>
+                      <div class="text-xl font-extrabold text-white">{fmtNum(ok.pageviews7gg)}</div>
+                    </div>
+                    <div>
+                      <div class="text-[10px] text-navy-400 uppercase tracking-wider">Sessioni</div>
+                      <div class="text-xl font-extrabold text-white">{fmtNum(ok.sessioni7gg)}</div>
+                    </div>
+                  </div>
+
+                  {ok.serieUtenti.length > 0 && (
+                    <div class="mb-4">
+                      <div class="text-[10px] text-navy-500 mb-2">utenti attivi per giorno</div>
+                      <div class="flex gap-1 items-end" style="min-height:60px">
+                        {ok.serieUtenti.map((g) => {
+                          const h = Math.round((g.utenti / maxU) * 100);
+                          return (
+                            <div class="flex-1 flex flex-col items-center gap-0.5" title={`${g.giorno}: ${g.utenti} utenti, ${g.pageviews} pageviews`}>
+                              <div class="text-[8px] text-navy-500 font-mono">{g.utenti}</div>
+                              <div class="w-full rounded-t bg-gradient-to-t from-gold-500 to-gold-300" style={`height:${Math.max(h, 2)}px`}></div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <div class="grid grid-cols-1 gap-3">
+                    {ok.topPagine.length > 0 && (
+                      <div>
+                        <div class="text-[10px] text-navy-500 uppercase tracking-wider mb-1">Top pagine</div>
+                        <ul class="space-y-0.5 text-[11px] font-mono">
+                          {ok.topPagine.slice(0, 5).map((p) => (
+                            <li class="flex justify-between gap-2">
+                              <span class="text-navy-200 truncate">{p.path || '/'}</span>
+                              <span class="text-white flex-shrink-0">{fmtNum(p.views)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {ok.topEventi.length > 0 && (
+                      <div>
+                        <div class="text-[10px] text-navy-500 uppercase tracking-wider mb-1">Top eventi</div>
+                        <ul class="space-y-0.5 text-[11px] font-mono">
+                          {ok.topEventi.slice(0, 5).map((ev) => (
+                            <li class="flex justify-between gap-2">
+                              <span class="text-navy-200 truncate">{ev.nome}</span>
+                              <span class="text-white flex-shrink-0">{fmtNum(ev.occorrenze)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </section>
 
     <section class="mb-6">
