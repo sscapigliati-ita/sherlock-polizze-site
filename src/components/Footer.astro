@@ -98,8 +98,9 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
       <div class="mt-6 pt-6 border-t border-navy-800">
         <div class="text-xs uppercase tracking-widest text-navy-500 mb-3">Supporto</div>
         <a
-          href="mailto:scaplab@sherlockpolizze.it"
-          class="inline-flex items-center gap-3 bg-black hover:bg-navy-800 border border-navy-700 rounded-xl px-4 py-2.5 transition-colors w-full sm:w-auto md:w-full"
+          href="mailto:scaplab@sherlockpolizze.it?subject=Supporto%20Sherlock"
+          data-support-mail="scaplab@sherlockpolizze.it"
+          class="group relative inline-flex items-center gap-3 bg-black hover:bg-navy-800 border border-navy-700 rounded-xl px-4 py-2.5 transition-colors w-full sm:w-auto md:w-full"
           aria-label="Scrivici a scaplab@sherlockpolizze.it"
         >
           <svg viewBox="0 0 24 24" class="w-8 h-8 flex-shrink-0" fill="none" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -111,6 +112,29 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
             <div class="text-sm font-semibold text-white notranslate truncate" translate="no">scaplab@sherlockpolizze.it</div>
           </div>
         </a>
+        <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-navy-500 mt-2">
+          <span>oppure:</span>
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=scaplab@sherlockpolizze.it&su=Supporto%20Sherlock"
+            target="_blank"
+            rel="noopener"
+            class="text-navy-300 hover:text-gold-300 underline underline-offset-2"
+          >apri con Gmail</a>
+          <button
+            type="button"
+            data-copy-mail="scaplab@sherlockpolizze.it"
+            class="text-navy-300 hover:text-gold-300 underline underline-offset-2 bg-transparent border-0 p-0 cursor-pointer"
+          >copia indirizzo</button>
+        </div>
+        <div
+          id="sherlock-mail-copied"
+          role="status"
+          aria-live="polite"
+          hidden
+          class="text-[11px] text-emerald-300 mt-1 transition-opacity"
+        >
+          ✓ Indirizzo copiato negli appunti
+        </div>
       </div>
     </div>
   </div>
@@ -120,3 +144,36 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
     <div>Sviluppato in Italia 🇮🇹</div>
   </div>
 </footer>
+
+<script>
+  // Copia l'indirizzo di supporto negli appunti quando l'utente non ha un
+  // mail client configurato o preferisce copiarlo manualmente.
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-mail]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const mail = btn.dataset.copyMail || '';
+      const toast = document.getElementById('sherlock-mail-copied');
+      try {
+        await navigator.clipboard.writeText(mail);
+      } catch {
+        // Fallback: seleziona un textarea temporaneo (browser vecchi)
+        const ta = document.createElement('textarea');
+        ta.value = mail;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'absolute';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch { /* nothing else to do */ }
+        document.body.removeChild(ta);
+      }
+      if (toast) {
+        toast.hidden = false;
+        toast.style.opacity = '1';
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => { toast.hidden = true; }, 300);
+        }, 2400);
+      }
+    });
+  });
+</script>
