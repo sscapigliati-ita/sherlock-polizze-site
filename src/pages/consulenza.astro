@@ -1,0 +1,430 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<BaseLayout
+  title="Consulenza singola — Usa il tuo codice sul sito | Sherlock"
+  description="Hai acquistato una consulenza singola? Inserisci il codice, carica la polizza e ottieni analisi + lettera direttamente dal sito, senza scaricare l'app."
+>
+  <Header slot="header" />
+
+  <section class="px-5 pt-10 pb-6 max-w-3xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-4">
+      Consulenza singola · direttamente da web
+    </div>
+    <h1 class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-3">
+      Usa la tua <span class="text-gold-400">consulenza singola</span>
+    </h1>
+    <p class="text-navy-300 max-w-xl mx-auto">
+      Inserisci il codice ricevuto via email, carica la polizza e genera l'analisi
+      + la lettera direttamente dal browser. Nessuna installazione richiesta.
+    </p>
+    <p class="text-xs text-navy-500 mt-2">
+      Non hai ancora il codice? <a href="/reclamo-singolo" class="text-gold-400 hover:text-gold-300 font-semibold">Acquistalo a 3,99€ →</a>
+    </p>
+  </section>
+
+  <section class="px-5 pb-16 max-w-3xl mx-auto">
+    <ol class="flex items-center justify-center gap-2 mb-6 text-xs uppercase tracking-widest font-bold">
+      <li id="step-i-1" class="px-3 py-1.5 rounded-full border border-gold-400 bg-gold-400/10 text-gold-400">1. Codice</li>
+      <li class="text-navy-600">·</li>
+      <li id="step-i-2" class="px-3 py-1.5 rounded-full border border-navy-700 text-navy-500">2. Polizza</li>
+      <li class="text-navy-600">·</li>
+      <li id="step-i-3" class="px-3 py-1.5 rounded-full border border-navy-700 text-navy-500">3. Analisi</li>
+      <li class="text-navy-600">·</li>
+      <li id="step-i-4" class="px-3 py-1.5 rounded-full border border-navy-700 text-navy-500">4. Lettera</li>
+    </ol>
+
+    <!-- STEP 1: CODICE -->
+    <div id="step-1" class="rounded-xl border border-gold-400/30 bg-navy-900 p-6">
+      <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">Step 1</div>
+      <h2 class="text-2xl font-extrabold text-white mb-3">Il tuo codice consulenza</h2>
+      <p class="text-sm text-navy-300 mb-4">
+        Il codice ha formato <code class="text-gold-300 font-mono">SHK-XXXX-XXXX</code>
+        e ti è stato inviato all'email che hai usato per il pagamento PayPal.
+      </p>
+      <form id="form-codice" class="space-y-3">
+        <label class="block">
+          <span class="text-xs uppercase tracking-widest text-navy-400 font-bold">Codice</span>
+          <input
+            id="input-codice"
+            type="text"
+            name="codice"
+            required
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="SHK-XXXX-XXXX"
+            class="mt-1 w-full bg-navy-950 border border-navy-700 rounded-lg px-4 py-3 text-white uppercase tracking-widest placeholder-navy-600 focus:border-gold-400 focus:outline-none font-mono"
+          />
+        </label>
+        <p id="err-codice" class="hidden text-sm text-red-300 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3"></p>
+        <button type="submit" id="btn-codice" class="w-full bg-gold-400 text-navy-900 font-bold rounded-lg px-6 py-3 hover:bg-gold-300 transition">
+          Continua →
+        </button>
+      </form>
+      <div class="mt-5 pt-4 border-t border-navy-800 text-xs text-navy-400">
+        Non hai il codice? <a href="/reclamo-singolo" class="text-gold-400 hover:text-gold-300 font-semibold">Acquistalo a 3,99€</a> ·
+        Codice smarrito? Scrivi a <a href="mailto:scaplab@sherlockpolizze.it" class="text-gold-400 hover:text-gold-300 font-semibold">scaplab@sherlockpolizze.it</a>
+      </div>
+    </div>
+
+    <!-- STEP 2: UPLOAD POLIZZA -->
+    <div id="step-2" hidden class="rounded-xl border border-gold-400/30 bg-navy-900 p-6">
+      <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">Step 2</div>
+      <h2 class="text-2xl font-extrabold text-white mb-3">Carica la polizza</h2>
+      <p class="text-sm text-navy-300 mb-4">
+        Formati accettati: <strong class="text-white">PDF</strong> (preferito),
+        JPG, PNG. Il documento resta in memoria solo per la durata dell'analisi.
+      </p>
+      <form id="form-analisi" class="space-y-4">
+        <label class="block">
+          <span class="text-xs uppercase tracking-widest text-navy-400 font-bold">File polizza</span>
+          <input
+            id="input-file"
+            type="file"
+            name="file"
+            required
+            accept="application/pdf,image/jpeg,image/png,image/jpg"
+            class="mt-1 block w-full text-sm text-navy-200 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-gold-400 file:text-navy-900 hover:file:bg-gold-300 cursor-pointer"
+          />
+          <p class="text-xs text-navy-500 mt-1">Peso massimo consigliato: 15 MB.</p>
+        </label>
+        <label class="block">
+          <span class="text-xs uppercase tracking-widest text-navy-400 font-bold">Descrivi il sinistro (opzionale)</span>
+          <textarea
+            id="input-sinistro"
+            name="sinistro"
+            rows="3"
+            maxlength="3000"
+            placeholder="Es. il 12/03/2026 ho avuto un tamponamento in autostrada, la compagnia ha respinto il rimborso perché..."
+            class="mt-1 w-full bg-navy-950 border border-navy-700 rounded-lg px-4 py-3 text-white placeholder-navy-500 focus:border-gold-400 focus:outline-none resize-none"
+          ></textarea>
+          <p class="text-xs text-navy-500 mt-1">Se compili, Sherlock valuta se il sinistro è coperto.</p>
+        </label>
+        <p id="err-analisi" class="hidden text-sm text-red-300 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3"></p>
+        <div class="flex gap-3">
+          <button type="button" id="btn-indietro-2" class="flex-none bg-navy-800 text-navy-200 font-semibold rounded-lg px-4 py-3 hover:bg-navy-700 transition">
+            ← Indietro
+          </button>
+          <button type="submit" id="btn-analizza" class="flex-1 bg-gold-400 text-navy-900 font-bold rounded-lg px-6 py-3 hover:bg-gold-300 transition disabled:opacity-50">
+            Avvia analisi →
+          </button>
+        </div>
+        <p class="text-xs text-navy-500">
+          L'analisi impiega tipicamente 10-30 secondi. Non chiudere la pagina.
+        </p>
+      </form>
+    </div>
+
+    <!-- STEP 3: RISULTATO ANALISI -->
+    <div id="step-3" hidden class="space-y-5">
+      <div class="rounded-xl border border-gold-400/30 bg-navy-900 p-6">
+        <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">Step 3</div>
+        <h2 class="text-2xl font-extrabold text-white mb-3">Analisi della polizza</h2>
+        <div id="report-container" class="text-navy-100 space-y-6"></div>
+      </div>
+
+      <div class="rounded-xl border border-gold-400/40 bg-gradient-to-br from-navy-900 to-navy-800 p-6">
+        <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">Genera la lettera</div>
+        <h3 class="text-xl font-extrabold text-white mb-3">Quale tipo di lettera vuoi?</h3>
+        <p class="text-sm text-navy-300 mb-4">
+          <strong class="text-white">Attenzione:</strong> il codice viene consumato
+          alla generazione. Scegli con cura il tipo.
+        </p>
+        <form id="form-lettera" class="space-y-4">
+          <div class="grid sm:grid-cols-3 gap-3">
+            <label class="tipo-radio block rounded-lg border border-navy-700 bg-navy-950 p-4 cursor-pointer hover:border-gold-400/60 transition">
+              <input type="radio" name="tipo" value="reclamo" class="hidden peer" checked />
+              <div class="text-sm font-bold text-white peer-checked:text-gold-300">Reclamo PEC</div>
+              <div class="text-xs text-navy-400 mt-1">Alla compagnia, formale, con riferimenti normativi.</div>
+            </label>
+            <label class="tipo-radio block rounded-lg border border-navy-700 bg-navy-950 p-4 cursor-pointer hover:border-gold-400/60 transition">
+              <input type="radio" name="tipo" value="ivass" class="hidden peer" />
+              <div class="text-sm font-bold text-white peer-checked:text-gold-300">Esposto IVASS</div>
+              <div class="text-xs text-navy-400 mt-1">Ricorso all'autorità di vigilanza.</div>
+            </label>
+            <label class="tipo-radio block rounded-lg border border-navy-700 bg-navy-950 p-4 cursor-pointer hover:border-gold-400/60 transition">
+              <input type="radio" name="tipo" value="diffida" class="hidden peer" />
+              <div class="text-sm font-bold text-white peer-checked:text-gold-300">Diffida</div>
+              <div class="text-xs text-navy-400 mt-1">Stragiudiziale, termine 15 giorni.</div>
+            </label>
+          </div>
+          <label class="block">
+            <span class="text-xs uppercase tracking-widest text-navy-400 font-bold">Note aggiuntive (opzionale)</span>
+            <textarea
+              id="input-extra"
+              name="extra"
+              rows="2"
+              maxlength="1000"
+              placeholder="Elementi specifici da inserire nella lettera..."
+              class="mt-1 w-full bg-navy-950 border border-navy-700 rounded-lg px-4 py-2.5 text-white placeholder-navy-500 focus:border-gold-400 focus:outline-none resize-none text-sm"
+            ></textarea>
+          </label>
+          <p id="err-lettera" class="hidden text-sm text-red-300 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3"></p>
+          <button type="submit" id="btn-genera-lettera" class="w-full bg-gold-400 text-navy-900 font-bold rounded-lg px-6 py-3 hover:bg-gold-300 transition disabled:opacity-50">
+            Genera lettera (consuma il codice) →
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- STEP 4: LETTERA -->
+    <div id="step-4" hidden class="rounded-xl border border-emerald-500/30 bg-navy-900 p-6">
+      <div class="text-xs uppercase tracking-widest text-emerald-400 font-bold mb-1">Fatto</div>
+      <h2 class="text-2xl font-extrabold text-white mb-3">La tua lettera è pronta</h2>
+      <p class="text-sm text-navy-300 mb-4">
+        Copia il testo qui sotto e inseriscilo nel tuo client email/PEC.
+        Puoi anche scaricarlo come <code class="text-gold-300">.txt</code>.
+      </p>
+      <div class="flex flex-wrap gap-2 mb-3">
+        <button type="button" id="btn-copia" class="bg-gold-400 text-navy-900 font-bold rounded-lg px-4 py-2 text-sm hover:bg-gold-300 transition">
+          Copia negli appunti
+        </button>
+        <button type="button" id="btn-download" class="bg-navy-800 border border-navy-700 text-navy-100 font-semibold rounded-lg px-4 py-2 text-sm hover:bg-navy-700 transition">
+          Scarica .txt
+        </button>
+        <a href="/abbonati" class="ml-auto text-xs text-gold-400 hover:text-gold-300 font-bold self-center">Passa a Pro per analisi illimitate →</a>
+      </div>
+      <textarea id="output-lettera" readonly rows="18" class="w-full bg-navy-950 border border-navy-700 rounded-lg px-4 py-3 text-navy-100 font-mono text-sm focus:outline-none"></textarea>
+      <p class="text-xs text-navy-500 mt-3">
+        Il codice di consulenza è stato consumato. Se ti serve un'altra pratica,
+        puoi <a href="/reclamo-singolo" class="text-gold-400 hover:text-gold-300 font-semibold">acquistarne un'altra a 3,99€</a>
+        oppure <a href="/abbonati" class="text-gold-400 hover:text-gold-300 font-semibold">passare a Pro</a>.
+      </p>
+    </div>
+
+    <!-- LEGAL FOOTER -->
+    <p class="mt-8 text-xs text-navy-500 text-center leading-relaxed">
+      Sherlock è uno strumento di analisi AI a scopo orientativo. Le lettere generate
+      non sostituiscono il parere di un avvocato o consulente assicurativo iscritto all'albo.
+    </p>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  // ---------- Utilities ----------
+  function checksumValido(codice: string): boolean {
+    const p = codice.trim().toUpperCase();
+    if (!/^SHK-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(p)) return false;
+    const payload = p.replace('SHK-', '').replace('-', '');
+    let s = 0;
+    for (let i = 0; i < payload.length; i++) s += payload.charCodeAt(i);
+    return s % 7 === 0;
+  }
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => {
+        const s = String(r.result || '');
+        const i = s.indexOf(',');
+        res(i >= 0 ? s.slice(i + 1) : s);
+      };
+      r.onerror = () => rej(new Error('Errore lettura file'));
+      r.readAsDataURL(file);
+    });
+  }
+
+  function esc(s: unknown): string {
+    return String(s ?? '').replace(/[&<>]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : '&gt;');
+  }
+
+  // ---------- State ----------
+  const state = {
+    codice: '',
+    analisi: null as any,
+  };
+
+  const stepEls = [1, 2, 3, 4].map((n) => document.getElementById('step-' + n) as HTMLElement);
+  const stepInd = [1, 2, 3, 4].map((n) => document.getElementById('step-i-' + n) as HTMLElement);
+
+  function goto(step: 1 | 2 | 3 | 4) {
+    stepEls.forEach((el, i) => { el.hidden = (i + 1) !== step; });
+    stepInd.forEach((el, i) => {
+      const active = (i + 1) === step;
+      const done = (i + 1) < step;
+      el.className = 'px-3 py-1.5 rounded-full border font-bold ' +
+        (active
+          ? 'border-gold-400 bg-gold-400/10 text-gold-400'
+          : done
+            ? 'border-emerald-400/40 bg-emerald-400/5 text-emerald-300'
+            : 'border-navy-700 text-navy-500');
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ---------- STEP 1: codice ----------
+  const formCod = document.getElementById('form-codice') as HTMLFormElement;
+  const inputCod = document.getElementById('input-codice') as HTMLInputElement;
+  const errCod = document.getElementById('err-codice') as HTMLElement;
+
+  // Precompila da querystring ?c=SHK-XXXX-XXXX (link diretto dopo pagamento)
+  try {
+    const qc = new URL(window.location.href).searchParams.get('c');
+    if (qc) inputCod.value = qc.trim().toUpperCase();
+  } catch {}
+
+  inputCod.addEventListener('input', () => {
+    inputCod.value = inputCod.value.toUpperCase();
+  });
+
+  formCod.addEventListener('submit', (e) => {
+    e.preventDefault();
+    errCod.classList.add('hidden');
+    const c = inputCod.value.trim().toUpperCase();
+    if (!checksumValido(c)) {
+      errCod.textContent = 'Formato codice non valido. Controlla di aver copiato SHK-XXXX-XXXX per intero.';
+      errCod.classList.remove('hidden');
+      return;
+    }
+    state.codice = c;
+    goto(2);
+  });
+
+  // ---------- STEP 2: upload + analizza ----------
+  const btnIndietro2 = document.getElementById('btn-indietro-2') as HTMLButtonElement;
+  btnIndietro2.addEventListener('click', () => goto(1));
+
+  const formAn = document.getElementById('form-analisi') as HTMLFormElement;
+  const inputFile = document.getElementById('input-file') as HTMLInputElement;
+  const inputSin = document.getElementById('input-sinistro') as HTMLTextAreaElement;
+  const errAn = document.getElementById('err-analisi') as HTMLElement;
+  const btnAn = document.getElementById('btn-analizza') as HTMLButtonElement;
+
+  formAn.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errAn.classList.add('hidden');
+    const file = inputFile.files?.[0];
+    if (!file) return;
+    btnAn.disabled = true;
+    btnAn.textContent = 'Sto analizzando… non chiudere la pagina';
+    try {
+      const b64 = await fileToBase64(file);
+      const r = await fetch('/api/analizza', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          documento_base64: b64,
+          mime: file.type || 'application/pdf',
+          sinistro_testo: inputSin.value.trim(),
+          lingua: 'it',
+        }),
+      });
+      const data = await r.json();
+      if (!r.ok || data.error) throw new Error(data.error || 'Errore analisi');
+      state.analisi = data;
+      renderReport(data);
+      goto(3);
+    } catch (err: any) {
+      errAn.textContent = err?.message || 'Errore inatteso';
+      errAn.classList.remove('hidden');
+    } finally {
+      btnAn.disabled = false;
+      btnAn.textContent = 'Avvia analisi →';
+    }
+  });
+
+  // ---------- STEP 3: render analisi + genera lettera ----------
+  function renderReport(a: any) {
+    const cont = document.getElementById('report-container') as HTMLElement;
+    const rischio = String(a.rischio || '—').toUpperCase();
+    const rischioClass = rischio === 'CRITICO' ? 'text-red-400' : rischio === 'ALTO' ? 'text-orange-400' : rischio === 'MEDIO' ? 'text-gold-400' : 'text-emerald-300';
+    const cop = Array.isArray(a.coperture) ? a.coperture : [];
+    const esc_ = Array.isArray(a.esclusioni_critiche) ? a.esclusioni_critiche : [];
+    const cla = Array.isArray(a.clausole_rischiose) ? a.clausole_rischiose : [];
+    const ter = Array.isArray(a.termini_decadenza) ? a.termini_decadenza : [];
+    const rac = Array.isArray(a.raccomandazioni) ? a.raccomandazioni : [];
+    const vs = a.valutazione_sinistro;
+    cont.innerHTML = `
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div><div class="text-xs uppercase tracking-widest text-navy-500">Compagnia</div><div class="font-bold text-white">${esc(a.compagnia)}</div></div>
+        <div><div class="text-xs uppercase tracking-widest text-navy-500">Tipo</div><div class="font-bold text-white">${esc(a.tipo_polizza)}</div></div>
+        <div><div class="text-xs uppercase tracking-widest text-navy-500">Polizza n°</div><div class="font-bold text-white">${esc(a.numero_polizza || '—')}</div></div>
+        <div><div class="text-xs uppercase tracking-widest text-navy-500">Rischio</div><div class="font-bold ${rischioClass}">${esc(rischio)}</div></div>
+      </div>
+      <div class="bg-navy-950 border border-navy-700 rounded-lg p-4">
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">Riepilogo</div>
+        <p class="text-navy-100 leading-relaxed text-sm">${esc(a.riepilogo)}</p>
+      </div>
+      ${vs && vs.esito ? `
+      <div class="bg-navy-950 border ${vs.esito === 'COPERTO' ? 'border-emerald-400/40' : vs.esito === 'NON_COPERTO' ? 'border-red-400/40' : 'border-gold-400/40'} rounded-lg p-4">
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">Valutazione sinistro</div>
+        <div class="font-bold text-white mb-1">Esito: ${esc(vs.esito)}</div>
+        <p class="text-sm text-navy-200 mb-2">${esc(vs.motivazione)}</p>
+        ${vs.cosa_fare ? `<p class="text-sm text-navy-200"><strong class="text-white">Cosa fare:</strong> ${esc(vs.cosa_fare)}</p>` : ''}
+      </div>` : ''}
+      ${cop.length ? `<div><h3 class="text-lg font-bold text-white mb-2">Coperture</h3><ul class="space-y-2">${cop.map((c: any) => `<li class="bg-navy-950 border border-navy-800 rounded-lg p-3"><div class="font-bold text-white text-sm">${esc(c.titolo)}</div><div class="text-navy-300 text-sm">${esc(c.descrizione)}</div>${c.massimale ? `<div class="text-xs text-navy-500">Massimale: ${esc(c.massimale)}</div>` : ''}</li>`).join('')}</ul></div>` : ''}
+      ${esc_.length ? `<div><h3 class="text-lg font-bold text-orange-400 mb-2">⚠️ Esclusioni critiche</h3><ul class="space-y-2">${esc_.map((e: any) => `<li class="bg-orange-400/5 border border-orange-400/30 rounded-lg p-3"><div class="font-bold text-white text-sm">${esc(e.titolo)}</div><div class="text-navy-200 text-sm">${esc(e.descrizione)}</div>${e.gravita ? `<div class="text-xs text-orange-300 italic mt-1">Gravità: ${esc(e.gravita)}</div>` : ''}</li>`).join('')}</ul></div>` : ''}
+      ${cla.length ? `<div><h3 class="text-lg font-bold text-red-400 mb-2">🚨 Clausole rischiose</h3><ul class="space-y-2">${cla.map((x: any) => `<li class="bg-red-400/5 border border-red-400/30 rounded-lg p-3"><div class="font-bold text-white text-sm">${esc(x.titolo)}</div>${x.testo_originale ? `<div class="text-navy-300 text-xs italic my-1">"${esc(x.testo_originale)}"</div>` : ''}<div class="text-navy-200 text-sm"><strong class="text-white">Perché rischiosa:</strong> ${esc(x.perche_rischiosa)}</div></li>`).join('')}</ul></div>` : ''}
+      ${ter.length ? `<div><h3 class="text-lg font-bold text-white mb-2">Termini di decadenza</h3><ul class="space-y-2">${ter.map((t: any) => `<li class="bg-navy-950 border border-navy-800 rounded-lg p-3 text-sm"><div class="font-bold text-white">${esc(t.evento)}</div><div class="text-navy-300">Termine: ${esc(t.termine)} — ${esc(t.conseguenza)}</div></li>`).join('')}</ul></div>` : ''}
+      ${rac.length ? `<div><h3 class="text-lg font-bold text-gold-400 mb-2">💡 Raccomandazioni</h3><ol class="space-y-2 list-decimal list-inside">${rac.map((r: string) => `<li class="bg-navy-950 border border-navy-800 rounded-lg p-3 text-sm text-navy-100">${esc(r)}</li>`).join('')}</ol></div>` : ''}
+    `;
+  }
+
+  const formLet = document.getElementById('form-lettera') as HTMLFormElement;
+  const errLet = document.getElementById('err-lettera') as HTMLElement;
+  const btnLet = document.getElementById('btn-genera-lettera') as HTMLButtonElement;
+
+  formLet.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errLet.classList.add('hidden');
+    if (!state.analisi) {
+      errLet.textContent = 'Manca l\'analisi. Torna allo step 2.';
+      errLet.classList.remove('hidden');
+      return;
+    }
+    const fd = new FormData(formLet);
+    const tipo = String(fd.get('tipo') || 'reclamo');
+    const extra = String(fd.get('extra') || '').trim();
+    btnLet.disabled = true;
+    btnLet.textContent = 'Sto generando la lettera…';
+    try {
+      const r = await fetch('/api/lettera', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-pro-code': state.codice },
+        body: JSON.stringify({ analisi: state.analisi, tipo, extra, lingua: 'it' }),
+      });
+      const data = await r.json();
+      if (!r.ok || data.error) throw new Error(data.error || 'Errore generazione lettera');
+      const out = document.getElementById('output-lettera') as HTMLTextAreaElement;
+      out.value = data.lettera || '';
+      goto(4);
+    } catch (err: any) {
+      errLet.textContent = err?.message || 'Errore inatteso';
+      errLet.classList.remove('hidden');
+    } finally {
+      btnLet.disabled = false;
+      btnLet.textContent = 'Genera lettera (consuma il codice) →';
+    }
+  });
+
+  // ---------- STEP 4: copia / download ----------
+  const btnCopia = document.getElementById('btn-copia') as HTMLButtonElement;
+  const btnDown = document.getElementById('btn-download') as HTMLButtonElement;
+  const out = document.getElementById('output-lettera') as HTMLTextAreaElement;
+
+  btnCopia.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(out.value);
+      btnCopia.textContent = 'Copiato ✓';
+      setTimeout(() => btnCopia.textContent = 'Copia negli appunti', 1500);
+    } catch {
+      out.select();
+      document.execCommand('copy');
+    }
+  });
+
+  btnDown.addEventListener('click', () => {
+    const blob = new Blob([out.value], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sherlock-lettera.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+</script>

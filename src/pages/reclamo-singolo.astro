@@ -8,8 +8,8 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: 'Sherlock — Lettera singola',
-    description: 'Codice usa-e-getta per generare una lettera di reclamo/IVASS/diffida. Nessun abbonamento.',
+    name: 'Sherlock — Consulenza singola',
+    description: 'Consulenza completa una-tantum: analisi AI della polizza + 1 lettera (PEC, esposto IVASS o diffida). Utilizzabile sia dal sito che dall\'app. Nessun abbonamento.',
     brand: { '@type': 'Brand', name: 'Sherlock' },
     offers: {
       '@type': 'Offer',
@@ -22,23 +22,25 @@ const jsonLd = [
 ];
 ---
 <BaseLayout
-  title="Reclamo singolo a 3,99€ — Sherlock"
-  description="Acquisto una-tantum: paghi 3,99€ e generi UNA lettera di reclamo (PEC, esposto IVASS o diffida) sulla tua pratica. Nessun abbonamento."
+  title="Consulenza singola a 3,99€ — Sherlock"
+  description="Consulenza completa una-tantum: analisi AI della polizza + 1 lettera (PEC, esposto IVASS o diffida) sulla tua pratica. Utilizzabile da web o app. Nessun abbonamento."
   jsonLd={jsonLd}
 >
   <Header slot="header" />
 
   <section class="px-5 pt-12 pb-6 max-w-3xl mx-auto text-center">
     <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
-      Una sola pratica · Nessun abbonamento · Pagamento sicuro PayPal
+      Una sola pratica · Nessun abbonamento · Utilizzabile web + app
     </div>
     <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
-      <span class="text-gold-400">Una lettera</span>, una sola volta.
+      <span class="text-gold-400">Consulenza singola</span>, una sola volta.
     </h1>
     <p class="text-lg text-navy-300 max-w-xl mx-auto">
-      Hai una pratica singola da chiudere? Paghi <strong class="text-white">3,99€ una volta</strong>
-      e ricevi un codice per generare <strong class="text-white">1 lettera</strong>
-      (PEC, esposto IVASS o diffida — scegli tu dall'app). Nessun abbonamento.
+      Hai una pratica da chiudere? Paghi <strong class="text-white">3,99€ una volta</strong>
+      e ricevi un codice per <strong class="text-white">1 analisi AI</strong> della polizza
+      + <strong class="text-white">1 lettera</strong> (PEC, esposto IVASS o diffida — scegli tu).
+      Codice valido sia sul <strong class="text-white">sito</strong> che sull'<strong class="text-white">app</strong>.
+      Nessun abbonamento.
     </p>
   </section>
 
@@ -46,9 +48,9 @@ const jsonLd = [
     <div class="rounded-xl border border-gold-400/40 bg-gradient-to-br from-navy-900 to-navy-800 p-6 shadow-xl shadow-gold-400/10">
       <div class="grid sm:grid-cols-[1fr_auto] gap-4 items-center mb-6">
         <div>
-          <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">Acquisto singolo</div>
-          <div class="text-2xl font-extrabold text-white">1 lettera Sherlock</div>
-          <div class="text-sm text-navy-400">Codice usa-e-getta · valido 30 giorni</div>
+          <div class="text-xs uppercase tracking-widest text-gold-400 font-bold mb-1">Consulenza singola</div>
+          <div class="text-2xl font-extrabold text-white">Analisi + 1 lettera Sherlock</div>
+          <div class="text-sm text-navy-400">Codice usa-e-getta · valido 30 giorni · sito o app</div>
         </div>
         <div class="text-right">
           <div class="text-4xl font-extrabold text-gold-400">3,99 €</div>
@@ -76,16 +78,28 @@ const jsonLd = [
         </button>
         <div id="errore" class="hidden text-sm text-red-300 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3"></div>
         <p class="text-xs text-navy-500 leading-relaxed">
-          Pagamento PayPal. Il codice arriva via email subito dopo. Lo inserisci in
-          Sherlock (Impostazioni → Inserisci codice) e generi la tua lettera.
-          Il codice si esaurisce dopo la 1ª generazione.
+          Pagamento PayPal. Il codice arriva via email subito dopo.
+          Puoi usarlo direttamente su <a href="/consulenza" class="text-gold-400 hover:text-gold-300 font-semibold">/consulenza</a>
+          dal browser, oppure inserirlo nell'app (Impostazioni → Inserisci codice).
+          Il codice si esaurisce dopo la 1ª generazione della lettera.
         </p>
       </form>
     </div>
 
-    <div class="mt-8 grid sm:grid-cols-2 gap-4 text-sm">
+    <div class="mt-6 rounded-xl border border-navy-700 bg-navy-900 p-5">
+      <div class="font-bold text-white mb-3">Cosa include la consulenza singola</div>
+      <ul class="space-y-2 text-sm text-navy-200">
+        <li class="flex gap-2"><span class="text-emerald-400">✓</span> <span><strong class="text-white">1 analisi AI completa</strong> della polizza — coperture, esclusioni critiche, clausole rischiose, termini di decadenza</span></li>
+        <li class="flex gap-2"><span class="text-emerald-400">✓</span> <span><strong class="text-white">1 lettera</strong> pronta per PEC (reclamo formale, esposto IVASS o diffida — scegli tu)</span></li>
+        <li class="flex gap-2"><span class="text-emerald-400">✓</span> <span>Valutazione del sinistro se descrivi il caso specifico</span></li>
+        <li class="flex gap-2"><span class="text-emerald-400">✓</span> <span>Utilizzabile <strong class="text-white">dal sito</strong> (pagina consulenza dedicata) oppure <strong class="text-white">dall'app Android</strong></span></li>
+        <li class="flex gap-2"><span class="text-emerald-400">✓</span> <span>Nessuna registrazione, nessun rinnovo automatico</span></li>
+      </ul>
+    </div>
+
+    <div class="mt-6 grid sm:grid-cols-2 gap-4 text-sm">
       <div class="rounded-xl border border-navy-700 bg-navy-900 p-5">
-        <div class="font-bold text-white mb-2">Quando ha senso il singolo</div>
+        <div class="font-bold text-white mb-2">Quando ha senso la singola</div>
         <ul class="space-y-1.5 text-navy-300">
           <li class="flex gap-2"><span class="text-emerald-400">✓</span> Hai 1 sola pratica aperta</li>
           <li class="flex gap-2"><span class="text-emerald-400">✓</span> Non vuoi pensare ad abbonamenti</li>
@@ -103,6 +117,14 @@ const jsonLd = [
           Vai ai piani Pro (da 2,99€/mese) →
         </a>
       </div>
+    </div>
+
+    <div class="mt-8 rounded-xl border border-navy-700 bg-navy-900 p-5 text-center">
+      <div class="text-sm text-navy-300 mb-2">Hai già acquistato e hai il codice?</div>
+      <a href="/consulenza" class="inline-block bg-navy-800 border border-gold-400/30 text-gold-400 hover:text-gold-300 hover:border-gold-400/60 font-bold rounded-lg px-5 py-3 transition">
+        Usa la consulenza sul sito →
+      </a>
+      <div class="text-xs text-navy-500 mt-2">In alternativa, apri l'app e vai su Impostazioni → Inserisci codice.</div>
     </div>
   </section>
 
@@ -137,7 +159,6 @@ const jsonLd = [
       if (!r.ok || !data.approveUrl) {
         throw new Error(data.error || 'Errore creazione ordine');
       }
-      // Track event prima del redirect
       if (typeof w.sherlockTrack === 'function') {
         w.sherlockTrack('paypal_redirect_singolo', { value: 3.99, currency: 'EUR' });
       }

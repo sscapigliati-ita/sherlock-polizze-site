@@ -8,12 +8,22 @@ import {
   type RecordPro,
 } from '../../../lib/storage';
 import { ga4TrackServer } from '../../../lib/ga4';
+import { generaCodicePro } from '../../../lib/codici';
 
 export const prerender = false;
 
-const PRODOTTI_VALIDI = new Set(['founder_lifetime']);
+// Mappa productId Play → configurazione lato server. Founder è lifetime,
+// acquisto_singolo è una-tantum (consulenza singola: analisi + 1 lettera).
+type MappaProdotto = {
+  piano: RecordPro['piano'];
+  prezzoEur: number;
+  durataMesi: number; // 1200 per lifetime
+};
+const MAPPA_PRODOTTI: Record<string, MappaProdotto> = {
+  founder_lifetime: { piano: 'founder', prezzoEur: 19.9, durataMesi: 1200 },
+  acquisto_singolo: { piano: 'singolo', prezzoEur: 3.99, durataMesi: 1 },
+};
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-// Data di scadenza "infinita" per i lifetime. Sentinella >> oraIso.
 const SCADENZA_LIFETIME = '2099-12-31T23:59:59Z';
 
 function json(body: unknown, status = 200): Response {
@@ -23,14 +33,11 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
-function generaCodicePlay(): string {
-  const bytes = new Uint8Array(4);
-  crypto.getRandomValues(bytes);
-  const hex = Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-    .toUpperCase();
-  return `PLAY-${hex}`;
+function calcolaScadenzaIso(mesi: number, daIso: string): string {
+  if (mesi >= 1200) return SCADENZA_LIFETIME;
+  const d = new Date(daIso);
+  d.setMonth(d.getMonth() + mesi);
+  return d.toISOString();
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -46,7 +53,8 @@ export const POST: APIRoute = async ({ request }) => {
   const email = (payload.email ?? '').trim().toLowerCase();
 
   if (!purchaseToken) return json({ error: 'TOKEN_REQUIRED' }, 400);
-  if (!PRODOTTI_VALIDI.has(productId)) return json({ error: 'INVALID_PRODUCT' }, 400);
+  const prodotto = MAPPA_PRODOTTI[productId];
+  if (!prodotto) return json({ error: 'INVALID_PRODUCT' }, 400);
   if (!EMAIL_RE.test(email)) return json({ error: 'EMAIL_REQUIRED' }, 400);
 
   // Idempotenza: se questo purchaseToken è già stato verificato, ritorna il
@@ -80,17 +88,19 @@ export const POST: APIRoute = async ({ request }) => {
     }
   }
 
-  // Emetti codice virtuale + salva record + indice token
-  const codice = generaCodicePlay();
+  // Emetti codice virtuale in formato SHK-XXXX-XXXX (checksum compatibile con
+  // valutaCodice/lettera.ts) + salva record + indice token per idempotenza.
+  const codice = generaCodicePro();
   const dataEmissione = new Date(
     parseInt(verify.purchaseTimeMillis, 10) || Date.now(),
   ).toISOString();
+  const dataScadenza = calcolaScadenzaIso(prodotto.durataMesi, dataEmissione);
   const record: RecordPro = {
     codice,
     email,
-    piano: 'founder',
+    piano: prodotto.piano,
     dataEmissione,
-    dataScadenza: SCADENZA_LIFETIME,
+    dataScadenza,
     fonte: 'play',
     purchaseToken,
     playOrderId: verify.orderId,
@@ -98,14 +108,18 @@ export const POST: APIRoute = async ({ request }) => {
   await salvaCodicePro(record);
   await salvaPurchaseTokenIndex(purchaseToken, codice);
 
-  // Founder venduto via Play — incrementa contatore condiviso con flusso PayPal
-  await incrementaFounderVenduti().catch(() => undefined);
+  // Founder venduto via Play — incrementa contatore condiviso con flusso PayPal.
+  // Solo per il piano 'founder': i codici singoli non toccano il counter.
+  if (prodotto.piano === 'founder') {
+    await incrementaFounderVenduti().catch(() => undefined);
+  }
 
   void ga4TrackServer('play_billing_verified', purchaseToken.slice(0, 8), {
     product: productId,
-    value: 19.9,
+    piano: prodotto.piano,
+    value: prodotto.prezzoEur,
     currency: 'EUR',
   });
 
-  return json({ codice, piano: 'founder', dataScadenza: SCADENZA_LIFETIME });
+  return json({ codice, piano: prodotto.piano, dataScadenza });
 };

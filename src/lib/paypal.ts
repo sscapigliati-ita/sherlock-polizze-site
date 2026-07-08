@@ -23,9 +23,11 @@ export const PIANI: Record<
   mensile: { nome: 'Pass Pro 1 mese', prezzo: '2.99', durataMesi: 1, tipo: 'pro' },
   semestrale: { nome: 'Pass Pro 6 mesi', prezzo: '7.99', durataMesi: 6, tipo: 'pro' },
   annuale: { nome: 'Pass Pro 12 mesi', prezzo: '14.99', durataMesi: 12, tipo: 'pro' },
-  // Acquisto una-tantum: 1 lettera, 1 sola generazione. Validità 30 giorni
-  // dall'emissione per consumare il codice.
-  singolo: { nome: 'Lettera Singola', prezzo: '3.99', durataMesi: 1, tipo: 'singolo' },
+  // Acquisto una-tantum: consulenza completa (analisi + 1 lettera generata).
+  // Il codice è usa-e-getta sulla lettera; l'analisi è comunque gratuita per
+  // definizione ma il codice funge da titolo d'accesso alla sessione completa
+  // (utilizzabile sia dall'app che da /consulenza sul web). Validità 30 giorni.
+  singolo: { nome: 'Consulenza singola', prezzo: '3.99', durataMesi: 1, tipo: 'singolo' },
   // Founder lifetime: pagamento singolo, accesso Pro "per sempre". Numero
   // limitato — vedi FOUNDER_MAX. Quando esauriti, /api/paypal/create-order
   // rifiuta nuovi acquisti founder.

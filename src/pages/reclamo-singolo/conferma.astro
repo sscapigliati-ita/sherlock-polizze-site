@@ -19,14 +19,14 @@ import Footer from '../../components/Footer.astro';
 
     <div id="stato-success" class="hidden">
       <div class="text-emerald-400 text-5xl mb-4">✓</div>
-      <h1 class="text-2xl font-extrabold text-white mb-2">Codice lettera attivato</h1>
+      <h1 class="text-2xl font-extrabold text-white mb-2">Consulenza singola attivata</h1>
       <p class="text-navy-400 mb-6">
-        Conservalo: è valido per <strong class="text-white">1 generazione di lettera</strong>.
+        Conservalo: è valido per <strong class="text-white">1 analisi + 1 generazione di lettera</strong>.
         Te l'abbiamo anche inviato via email.
       </p>
 
       <div class="bg-navy-900 border border-gold-400/40 rounded-xl p-6 mb-6">
-        <div class="text-xs uppercase tracking-widest text-gold-400 mb-2">Il tuo codice 1-lettera</div>
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-2">Il tuo codice consulenza</div>
         <div id="codice-out" class="text-3xl font-mono text-gold-400 tracking-widest"></div>
         <button
           id="btn-copia"
@@ -40,26 +40,29 @@ import Footer from '../../components/Footer.astro';
         ⚠️ L'invio della mail è fallito ma il tuo codice è valido. Salvalo subito.
       </div>
 
-      <div class="text-left bg-navy-900/50 border border-navy-800 rounded-xl p-5 text-sm text-navy-200 space-y-2">
-        <div class="font-bold text-white">Come usarlo</div>
-        <ol class="list-decimal list-inside space-y-1">
-          <li>Apri <a href="/app/" class="text-gold-400 hover:underline">Sherlock dal browser</a> o l'app Android</li>
-          <li>Vai su Impostazioni → Inserisci codice</li>
-          <li>Incolla il codice qui sopra</li>
-          <li>Apri la polizza, genera la lettera (PEC, IVASS o diffida)</li>
-        </ol>
+      <a
+        id="link-usa-web"
+        href="/consulenza"
+        class="inline-block bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20"
+      >
+        Usa la consulenza ora sul sito →
+      </a>
+
+      <div class="mt-6 text-left bg-navy-900/50 border border-navy-800 rounded-xl p-5 text-sm text-navy-200 space-y-2">
+        <div class="font-bold text-white">Come usarla</div>
+        <p class="text-navy-300">
+          <strong class="text-white">Dal browser:</strong> clicca "Usa la consulenza ora sul sito" qui sopra —
+          il codice è già precompilato, ti basta caricare la polizza.
+        </p>
+        <p class="text-navy-300">
+          <strong class="text-white">Dall'app Android:</strong> apri Sherlock, vai su Impostazioni → Inserisci codice
+          e incolla il codice qui sopra.
+        </p>
         <p class="text-xs text-navy-500 pt-2 border-t border-navy-800 mt-3">
-          ⚠️ Il codice si esaurisce alla 1ª generazione. Se vuoi rivedere o cambiare
+          ⚠️ Il codice si esaurisce alla 1ª generazione della lettera. Se vuoi rivedere o cambiare
           tipo di lettera, devi acquistarne un altro o passare a Pro.
         </p>
       </div>
-
-      <a
-        href="/app/"
-        class="inline-block mt-6 bg-gold-400 text-navy-900 font-bold px-6 py-3 rounded-lg hover:bg-gold-300 transition shadow-lg shadow-gold-400/20"
-      >
-        Apri Sherlock ora →
-      </a>
     </div>
 
     <div id="stato-errore" class="hidden">
@@ -103,6 +106,8 @@ import Footer from '../../components/Footer.astro';
       success?.classList.remove('hidden');
       if (codiceOut) codiceOut.textContent = data.codice;
       if (!data.mailInviata) warnMail?.classList.remove('hidden');
+      const linkUsaWeb = document.getElementById('link-usa-web') as HTMLAnchorElement | null;
+      if (linkUsaWeb) linkUsaWeb.href = '/consulenza?c=' + encodeURIComponent(data.codice);
       const w: any = window;
       if (typeof w.sherlockTrack === 'function') {
         w.sherlockTrack('purchase_success', { piano: 'singolo', method: 'paypal', value: 3.99, currency: 'EUR' });
