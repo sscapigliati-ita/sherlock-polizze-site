@@ -1,7 +1,7 @@
 ---
 title: "Compagnia non risponde al reclamo: cosa fare nel 2026"
 slug: compagnia-non-risponde-reclamo
-description: "Hai inviato un reclamo formale e la compagnia non risponde entro 45 giorni? Ecco i passi concreti per sbloccare la pratica: esposto IVASS, diffida, ACF. Con tempi, modelli e riferimenti normativi."
+description: "Hai inviato un reclamo formale e la compagnia non risponde entro 45 giorni? Ecco i passi concreti per sbloccare la pratica: esposto IVASS, diffida, ricorso AAS. Con tempi, modelli e riferimenti normativi."
 author: Stefano Scapigliati
 date: 2026-06-30
 keywords: compagnia non risponde reclamo, assicurazione non risponde, reclamo assicurazione senza risposta, IVASS reclamo non risposto, silenzio compagnia assicurativa
@@ -14,7 +14,7 @@ keywords: compagnia non risponde reclamo, assicurazione non risponde, reclamo as
 **Cosa imparerai:**
 - Come contare correttamente i 45 giorni
 - Cosa succede se la compagnia ti risponde con una "comunicazione interlocutoria"
-- L'ordine corretto: esposto IVASS → diffida → ACF (Arbitro Assicurativo)
+- L'ordine corretto: esposto IVASS → diffida → ricorso AAS (Arbitro Assicurativo)
 - Quando non devi più aspettare e puoi agire subito
 - I tre errori che azzerano la tua posizione
 
@@ -39,7 +39,7 @@ Attenzione: il Regolamento IVASS distingue tra reclamo "completo" e "incompleto"
 Trascorsi i 45 giorni senza risposta scritta, la compagnia è considerata **in mora reclamo**. Da questo momento:
 
 1. **Puoi presentare esposto all'IVASS** — senza dover aspettare altro
-2. **Puoi presentare istanza all'Arbitro Assicurativo (ACF)** — per controversie su prodotti vita/danni non auto
+2. **Puoi presentare ricorso all'Arbitro Assicurativo (AAS)** — per controversie danni fino a 25.000 € e vita fino a 50.000 €, con esclusione della RC auto obbligatoria
 3. **Sei legittimato all'azione giudiziale** — il passaggio "reclamo preventivo" è stato esperito
 
 Importante: una **risposta interlocutoria** del tipo "stiamo valutando, le faremo sapere" NON interrompe il termine. Solo una risposta nel merito (anche se di rigetto) chiude la pratica di reclamo.
@@ -77,16 +77,19 @@ Il tono giusto: fermo, documentato, mai aggressivo. Niente "denuncerò ovunque":
 
 ---
 
-## Mossa 3 — Arbitro Assicurativo (ACF) per controversie specifiche
+## Mossa 3 — Ricorso all'AAS (Arbitro Assicurativo) per controversie specifiche
 
-L'ACF è competente per controversie su:
-- Polizze vita
-- Polizze danni **non auto**
-- Importi fino a 500.000 €
+L'**Arbitro Assicurativo** (AAS), istituito con D.M. 215/2024 e operativo da fine 2024, è competente per controversie tra consumatori e imprese assicurative su:
+- Polizze **danni** (kasko, casa, infortuni, RC professionale, ecc.): fino a **25.000 €**
+- Polizze **vita** e prodotti di investimento assicurativi: fino a **50.000 €**
 
-**Non** è competente per RC auto (per cui c'è la negoziazione assistita obbligatoria) né per sinistri di importo superiore.
+**Non** è competente per la **RC auto obbligatoria** — per cui resta la negoziazione assistita ex L. 162/2014 art. 3 — né per controversie che richiedono accertamenti tecnico-peritali complessi non documentabili.
 
-Procedura: istanza online su `acf.consob.it`, contributo unificato 30€. La decisione ACF è vincolante per la compagnia se il consumatore l'accetta. Tempi medi 90-150 giorni.
+**Procedura**: procedimento **completamente documentale** (niente udienze, niente perizie d'ufficio, niente testimoni: tutto si gioca sui documenti prodotti). Contributo di **30 €** a carico del ricorrente, rimborsato in caso di accoglimento. Tempi medi 6-9 mesi.
+
+Attenzione: il ricorso AAS richiede che tu **abbia già presentato reclamo scritto alla compagnia** e atteso 45 giorni (condizione di procedibilità). Il ricorso deve inoltre avere sostanziale simmetria con quanto contestato nel reclamo (art. 8 c. 3 D.M. 215/2024).
+
+Per la guida operativa completa → [ricorso AAS: come prepararlo per vincere](/guide/ricorso-aas-arbitro-assicurativo-come-vincere).
 
 ---
 
@@ -105,7 +108,7 @@ In tre casi:
 - **Sinistri con responsabilità da chiarire** (es. concorso di colpa, lesioni personali)
 - **Rivalsa della compagnia** verso di te (es. ubriachezza, conducente non autorizzato)
 
-Per importi minori, esposto IVASS + diffida + ACF coprono il 90% dei casi senza spese legali.
+Per importi minori, esposto IVASS + diffida + ricorso AAS coprono il 90% dei casi senza spese legali.
 
 ---
 

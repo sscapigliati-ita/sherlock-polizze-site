@@ -9,7 +9,7 @@ keywords: disdetta polizza auto, recesso polizza auto, disdire assicurazione aut
 
 # Disdetta polizza auto 2026: regole e modello
 
-> **TL;DR:** Dal 2013 (Decreto Bersani) il **tacito rinnovo della RC auto è abolito**: la polizza scade alla data di scadenza e non si rinnova automaticamente, salvo che tu non firmi un nuovo contratto. Ci sono però casi in cui devi inviare disdetta esplicita: garanzie accessorie (kasko, furto/incendio), polizze pluriennali, vendita del veicolo, aumento del premio non motivato. Ogni caso ha la sua procedura — qui trovi quella giusta per la tua situazione, con il modello pronto.
+> **TL;DR:** Dal 2013 (art. 22 D.L. 179/2012, cd. "Decreto Crescita 2.0", conv. L. 221/2012) il **tacito rinnovo della RC auto è abolito**: la polizza scade alla data di scadenza e non si rinnova automaticamente, salvo che tu non firmi un nuovo contratto. Ci sono però casi in cui devi inviare disdetta esplicita: garanzie accessorie (kasko, furto/incendio), polizze pluriennali, vendita del veicolo, aumento del premio non motivato. Ogni caso ha la sua procedura — qui trovi quella giusta per la tua situazione, con il modello pronto.
 
 **Cosa imparerai:**
 - Quando NON serve la disdetta (RC auto pura)
@@ -77,7 +77,7 @@ Importante: l'aumento "giustificato" da peggioramento della classe di merito NON
 
 ### Caso 4 — Furto del veicolo
 
-Con la denuncia ai Carabinieri/Polizia entro 24h e la trasmissione al concessionario, puoi sospendere o disdire la polizza. Sospensione consigliata: se ritrovano l'auto, la fai ripartire senza nuovi costi di emissione.
+Con la denuncia ai Carabinieri/Polizia entro 24h e la trasmissione alla compagnia, puoi sospendere o disdire la polizza. Sospensione consigliata: se ritrovano l'auto, la fai ripartire senza nuovi costi di emissione.
 
 ---
 
