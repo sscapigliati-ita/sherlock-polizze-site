@@ -516,7 +516,7 @@ const jsonLd = [
         { n: 2, t: 'Lettura una sola volta', b: 'Il documento viene letto in memoria volatile dall\'AI per generare il report.' },
         { n: 3, t: 'Nessuna archiviazione', b: 'Il PDF non viene salvato su disco né usato per training. Resta solo il tempo della richiesta.' },
         { n: 4, t: 'Report sul tuo dispositivo', b: 'Il risultato viene mostrato sul tuo browser/app. Non lo conserviamo.' },
-        { n: 5, t: 'Log tecnici anonimi', b: 'Salviamo solo timestamp, esito e tempo di risposta — mai contenuto del documento.' },
+        { n: 5, t: 'Solo metadati tecnici', b: 'Salviamo metadati pseudonimi (timestamp, esito, tempo di risposta, IP, identificativo di installazione) — mai il contenuto del documento. Dettagli nella Privacy Policy.' },
         { n: 6, t: 'Conformità GDPR', b: 'Per dettagli, base giuridica e diritti vedi la pagina Trasparenza dati.' },
       ].map(item => (
         <li class="bg-navy-900 border border-navy-800 rounded-xl p-5 list-none">
