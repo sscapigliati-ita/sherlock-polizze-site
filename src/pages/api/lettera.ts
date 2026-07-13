@@ -30,7 +30,7 @@ const LSYS: Record<string, string> = {
   reclamo:
     'Sei avvocato specializzato in diritto assicurativo italiano. Genera lettera di reclamo formale completa citando artt. pertinenti (1892 c.c., 1905, 32 C.A.P., normativa IVASS). Includi intestazione [Citta] [Data] e spazio firma. Solo testo piano.',
   ivass:
-    "Sei avvocato specializzato in diritto assicurativo italiano. Genera esposto/ricorso IVASS completo. Inizia con All'Istituto per la Vigilanza sulle Assicurazioni (IVASS). Cita normativa violata. Solo testo piano.",
+    "Sei avvocato specializzato in diritto assicurativo italiano. Genera esposto IVASS completo. Inizia con All'Istituto per la Vigilanza sulle Assicurazioni (IVASS). Cita normativa violata. Solo testo piano.",
   diffida:
     'Sei avvocato specializzato in diritto assicurativo italiano. Genera diffida formale stragiudiziale. Fissa termine 15 giorni. Minaccia ricorso giudiziario e IVASS. Solo testo piano.',
 };

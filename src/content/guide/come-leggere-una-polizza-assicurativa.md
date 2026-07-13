@@ -162,7 +162,7 @@ In sede di sinistro, se la compagnia respinge invocando una clausola ambigua, ha
 
 ## Sherlock fa il lavoro per te
 
-L'app Sherlock fa esattamente questa lettura strutturata in 30 secondi: estrae garanzie, esclusioni, franchigie, massimali, identifica i 12 termini critici e ti segnala quelli rischiosi con livello di gravità. Risparmia il tempo della lettura manuale e non si perde nulla.
+L'app Sherlock fa esattamente questa lettura strutturata in genere in meno di un minuto: estrae garanzie, esclusioni, franchigie, massimali, identifica i 12 termini critici e ti segnala quelli rischiosi con livello di gravità. Risparmia il tempo della lettura manuale e non si perde nulla.
 
 [Guarda un esempio reale di analisi Sherlock](/esempio-report).
 

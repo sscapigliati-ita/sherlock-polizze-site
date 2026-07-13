@@ -454,9 +454,9 @@ body{
     </div>
     <div class="sp-title">SHERLOCK</div>
     <div class="sp-sub" data-i18n="splash_sub">IL DETECTIVE ASSICURATIVO</div>
-    <div class="sp-tagline" data-i18n="splash_tagline">La polizza che non capisci, decifrata in 8 secondi.</div>
+    <div class="sp-tagline" data-i18n="splash_tagline">La polizza che non capisci, decifrata in modo chiaro.</div>
     <div class="sp-badges">
-      <div class="sp-badge"><span class="ic">&#9889;</span><span data-i18n="splash_badge_ai">AI 8 sec</span></div>
+      <div class="sp-badge"><span class="ic">&#9889;</span><span data-i18n="splash_badge_ai">Analisi AI</span></div>
       <div class="sp-badge"><span class="ic">&#128274;</span><span data-i18n="splash_badge_safe">Cifrato</span></div>
       <div class="sp-badge"><span class="ic">&#127760;</span><span data-i18n="splash_badge_lang">6 lingue</span></div>
     </div>
@@ -775,7 +775,7 @@ body{
       <div class="set-sec-t">Sito web e risorse</div>
       <div class="set-row" id="btn-website">
         <span class="set-row-ic">&#127760;</span>
-        <div class="set-row-c"><div class="set-row-t">Sito Sherlock</div><div class="set-row-s">sherlock-polizze-site-five.vercel.app</div></div>
+        <div class="set-row-c"><div class="set-row-t">Sito Sherlock</div><div class="set-row-s">www.sherlockpolizze.it</div></div>
         <span>&#8250;</span>
       </div>
       <div class="set-row" id="btn-guides">
@@ -833,13 +833,13 @@ body{
 "use strict";
 var MAX_FREE=1;       // 1 analisi gratis completa
 var MAX_TOTAL=10;     // tetto upload totali per non-Pro (preview o full); oltre = blocco anti-abuso
-var PP="https://sherlock-polizze-site-five.vercel.app/";
+var PP="https://www.sherlockpolizze.it/";
 var MAIL="scaplab@sherlockpolizze.it";
-var PRIVACY_URL="https://sherlock-polizze-site-five.vercel.app/privacy";
-var TERMS_URL="https://sherlock-polizze-site-five.vercel.app/privacy";
-var SITE_URL="https://sherlock-polizze-site-five.vercel.app/";
-var GUIDES_URL="https://sherlock-polizze-site-five.vercel.app/guide";
-var EXAMPLE_REPORT_URL="https://sherlock-polizze-site-five.vercel.app/esempio-report";
+var PRIVACY_URL="https://www.sherlockpolizze.it/privacy";
+var TERMS_URL="https://www.sherlockpolizze.it/privacy";
+var SITE_URL="https://www.sherlockpolizze.it/";
+var GUIDES_URL="https://www.sherlockpolizze.it/guide";
+var EXAMPLE_REPORT_URL="https://www.sherlockpolizze.it/esempio-report";
 // Backend URL: su Android WebView serve URL assoluto (l'oggetto Android è il consumer);
 // su web/PWA usiamo same-origin per evitare CORS (il preflight OPTIONS non è gestito
 // dagli endpoint serverless, quindi qualsiasi chiamata cross-origin fallirebbe con
@@ -862,8 +862,8 @@ function track(name, params){
 var I18N = {
   it: {
     splash_sub: 'DETECTIVE POLIZZE',
-    splash_tagline: 'La polizza che non capisci, decifrata in 8 secondi.',
-    splash_badge_ai: 'AI 8 sec',
+    splash_tagline: 'La polizza che non capisci, decifrata in modo chiaro.',
+    splash_badge_ai: 'Analisi AI',
     splash_badge_safe: 'Cifrato',
     splash_badge_lang: '6 lingue',
     nav_home: 'Home',
@@ -896,8 +896,8 @@ var I18N = {
   },
   en: {
     splash_sub: 'INSURANCE DETECTIVE',
-    splash_tagline: 'The policy you don’t understand, decoded in 8 seconds.',
-    splash_badge_ai: 'AI 8 sec',
+    splash_tagline: 'The policy you don’t understand, decoded clearly.',
+    splash_badge_ai: 'AI-powered',
     splash_badge_safe: 'Encrypted',
     splash_badge_lang: '6 languages',
     nav_home: 'Home', nav_scan: 'Analyze', nav_settings: 'Settings',
@@ -916,8 +916,8 @@ var I18N = {
   },
   es: {
     splash_sub: 'DETECTIVE DE PÓLIZAS',
-    splash_tagline: 'La póliza que no entiendes, descifrada en 8 segundos.',
-    splash_badge_ai: 'IA 8 seg',
+    splash_tagline: 'La póliza que no entiendes, descifrada con claridad.',
+    splash_badge_ai: 'Con IA',
     splash_badge_safe: 'Cifrado',
     splash_badge_lang: '6 idiomas',
     nav_home: 'Inicio', nav_scan: 'Analizar', nav_settings: 'Ajustes',
@@ -936,8 +936,8 @@ var I18N = {
   },
   fr: {
     splash_sub: 'DÉTECTIVE DES POLICES',
-    splash_tagline: 'La police que vous ne comprenez pas, décryptée en 8 secondes.',
-    splash_badge_ai: 'IA 8 sec',
+    splash_tagline: 'La police que vous ne comprenez pas, décryptée clairement.',
+    splash_badge_ai: 'Avec IA',
     splash_badge_safe: 'Chiffré',
     splash_badge_lang: '6 langues',
     nav_home: 'Accueil', nav_scan: 'Analyser', nav_settings: 'Paramètres',
@@ -979,8 +979,8 @@ var I18N = {
   },
   zh: {
     splash_sub: '保单侦探',
-    splash_tagline: '听不懂的保单，8秒内为您解读。',
-    splash_badge_ai: 'AI 8秒',
+    splash_tagline: '听不懂的保单，为您清晰解读。',
+    splash_badge_ai: 'AI 分析',
     splash_badge_safe: '加密',
     splash_badge_lang: '6种语言',
     nav_home: '首页', nav_scan: '分析', nav_settings: '设置',

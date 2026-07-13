@@ -258,7 +258,7 @@ Un modello prefabbricato è un buon punto di partenza, ma per essere realmente e
 
 > 💡 **Vuoi un esposto personalizzato sulla TUA polizza?**
 >
-> Carica polizza e documentazione su **Sherlock — Detective Polizze**: l'app analizza il tutto e genera l'esposto strutturato con le citazioni corrette per il tuo caso. In 30 secondi. La prima analisi è gratuita.
+> Carica polizza e documentazione su **Sherlock — Detective Polizze**: l'app analizza il tutto e genera l'esposto strutturato con le citazioni corrette per il tuo caso. In genere in meno di un minuto. La prima analisi è gratuita.
 >
 > [Scarica Sherlock gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
 
@@ -301,7 +301,7 @@ L'esposto IVASS è uno **strumento sottoutilizzato** dai consumatori italiani. �
 
 Per la massima efficacia: presenta esposto IVASS **insieme** a una diffida formale alla compagnia. Le due strade lavorano in parallelo.
 
-Se non vuoi gestire la parte tecnica del documento, [Sherlock](https://play.google.com/store/apps/details?id=it.sherlock.polizze) lo genera per te in 30 secondi, sulla base della tua polizza specifica.
+Se non vuoi gestire la parte tecnica del documento, [Sherlock](https://play.google.com/store/apps/details?id=it.sherlock.polizze) lo genera per te in genere in meno di un minuto, sulla base della tua polizza specifica.
 
 ---
 

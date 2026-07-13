@@ -208,7 +208,7 @@ Un modello prefabbricato copre il 70% dei casi. Per il restante 30% (clausole sp
 
 > 💡 **Vuoi una diffida personalizzata sui dati reali della TUA polizza, con il calcolo dell'importo esatto basato sulle clausole specifiche?**
 >
-> Carica polizza e documentazione su **Sherlock — Detective Polizze**: l'app genera la diffida con tutte le citazioni normative giuste e l'importo calcolato sulla tua situazione, in 30 secondi.
+> Carica polizza e documentazione su **Sherlock — Detective Polizze**: l'app genera la diffida con tutte le citazioni normative giuste e l'importo calcolato sulla tua situazione, in genere in meno di un minuto.
 >
 > [Scarica Sherlock gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
 
@@ -298,7 +298,7 @@ I rischi da evitare sono due:
 
 Se la causa è economicamente rilevante (>10.000€), spendere 200€ in revisione legale è denaro speso bene.
 
-Per generare automaticamente una diffida personalizzata sui tuoi dati specifici, [Sherlock](https://play.google.com/store/apps/details?id=it.sherlock.polizze) la produce in 30 secondi.
+Per generare automaticamente una diffida personalizzata sui tuoi dati specifici, [Sherlock](https://play.google.com/store/apps/details?id=it.sherlock.polizze) la produce in genere in meno di un minuto.
 
 ---
 

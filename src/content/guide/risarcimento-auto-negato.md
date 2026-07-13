@@ -278,7 +278,7 @@ Un risarcimento negato non è un risarcimento **perso**. Nel 68% dei casi, un re
 
 Il resto sono passaggi successivi (IVASS, Arbitro, causa) che si attivano se il primo non funziona.
 
-Se vuoi farti generare automaticamente il reclamo personalizzato sui dati specifici del TUO sinistro: [Sherlock](https://play.google.com/store/apps/details?id=it.sherlock.polizze) lo fa in 30 secondi, con la prima analisi gratis.
+Se vuoi farti generare automaticamente il reclamo personalizzato sui dati specifici del TUO sinistro: [Sherlock](https://play.google.com/store/apps/details?id=it.sherlock.polizze) lo fa in genere in meno di un minuto, con la prima analisi gratis.
 
 ---
 

@@ -9,12 +9,12 @@ keywords: reclamo assicurazione auto, reclamo compagnia assicurativa, rimborso n
 
 # Come fare reclamo all'assicurazione auto nel 2026
 
-> **TL;DR:** Il 68% dei reclami assicurativi viene respinto al primo tentativo, ma quasi mai per mancanza di diritto: è il **come** viene scritto il reclamo a fare la differenza. In questa guida vediamo a chi inviarlo, cosa scrivere e in che ordine seguire i 3 livelli di tutela (compagnia → IVASS → Arbitro). In fondo trovi un modello PDF gratuito e un'opzione per generare il reclamo personalizzato in 30 secondi.
+> **TL;DR:** Il 68% dei reclami assicurativi viene respinto al primo tentativo, ma quasi mai per mancanza di diritto: è il **come** viene scritto il reclamo a fare la differenza. In questa guida vediamo a chi inviarlo, cosa scrivere e in che ordine seguire i 3 livelli di tutela (compagnia → IVASS → Arbitro). In fondo trovi un modello PDF gratuito e un'opzione per generare il reclamo personalizzato in genere in meno di un minuto.
 
 **Cosa imparerai:**
 - Quando puoi (e devi) fare reclamo all'assicurazione auto
 - I tre livelli a cui puoi rivolgerti, dalla compagnia all'Arbitro
-- Come scrivere il reclamo con i riferimenti normativi corretti
+- Come scrivere il reclamo con i riferimenti normativi pertinenti
 - I tempi di legge che non puoi perdere
 - Cosa fare se la compagnia ignora il reclamo
 - Un modello PDF aggiornato 2026 da scaricare
@@ -70,7 +70,7 @@ Per controversie fino a **150.000 euro**, dal 2024 esiste l'**Arbitro Assicurati
 - **Costo:** 20€
 - **Forma:** ricorso online sul portale dell'Arbitro
 
-> 💡 **Con Sherlock genero automaticamente** lettere strutturate per tutti e tre i livelli, con i riferimenti normativi corretti, sulla base della tua polizza specifica. [Provala gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
+> 💡 **Con Sherlock genero automaticamente** lettere strutturate per tutti e tre i livelli, con i riferimenti normativi pertinenti, sulla base della tua polizza specifica. [Provala gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
 
 ---
 
@@ -189,9 +189,9 @@ Ti metto a disposizione un modello PDF aggiornato 2026 da personalizzare con i t
 2. Alla **dinamica esatta** del tuo sinistro
 3. Alle **norme effettivamente applicabili** al tuo caso
 
-> 💡 **Vuoi che il reclamo sia generato automaticamente sulla TUA polizza specifica, con i riferimenti normativi corretti per la TUA situazione?**
+> 💡 **Vuoi che il reclamo sia generato automaticamente sulla TUA polizza specifica, con i riferimenti normativi pertinenti per la TUA situazione?**
 >
-> Carica la polizza su **Sherlock — Detective Polizze**: l'app legge il documento, identifica le criticità e genera il reclamo personalizzato in 30 secondi. La prima analisi è gratuita, senza carta richiesta.
+> Carica la polizza su **Sherlock — Detective Polizze**: l'app legge il documento, identifica le criticità e genera il reclamo personalizzato in genere in meno di un minuto. La prima analisi è gratuita, senza carta richiesta.
 >
 > [Scarica Sherlock gratis →](https://play.google.com/store/apps/details?id=it.sherlock.polizze)
 
@@ -209,7 +209,7 @@ L'esposto IVASS è **completamente gratuito**. IVASS è finanziata dai contribut
 
 ### Devo avere un avvocato per scrivere il reclamo?
 
-No, il reclamo può essere scritto in proprio. Però è importante che contenga i riferimenti normativi corretti: senza, la compagnia può ignorarlo o trattarlo come "richiesta generica" senza far decorrere i termini. È esattamente per evitare questo problema che Sherlock genera il testo già con tutto al posto giusto.
+No, il reclamo può essere scritto in proprio. Però è importante che contenga i riferimenti normativi pertinenti: senza, la compagnia può ignorarlo o trattarlo come "richiesta generica" senza far decorrere i termini. È esattamente per evitare questo problema che Sherlock genera il testo già con tutto al posto giusto.
 
 ### Cosa succede se la compagnia non risponde entro 60 giorni?
 
