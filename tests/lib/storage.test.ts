@@ -238,17 +238,59 @@ describe('R3-TEST-5: ga4 context conservato tra create-order e capture-order', (
   });
 });
 
-describe('R3-TEST-10: PayPal-Request-Id stabile sui retry', () => {
-  it('paypalRequestId deterministico per (orderId, operazione)', async () => {
+describe('R4-TEST-1..6: PayPal-Request-Id UUID v5 (max 38 char)', () => {
+  it('R4-TEST-1: lunghezza <= 38 (limite PayPal)', async () => {
     const { paypalRequestId } = await import('../../src/lib/paypal');
-    const a = await paypalRequestId('ORDER-XYZ', 'capture');
-    const b = await paypalRequestId('ORDER-XYZ', 'capture');
-    expect(a).toBe(b); // stessa firma → PayPal capture idempotente
-    expect(a).toHaveLength(64); // SHA-256 hex = 64 char
-    expect(/^[0-9a-f]{64}$/.test(a)).toBe(true);
+    const id = await paypalRequestId('ORDER-XYZ', 'capture');
+    expect(id.length).toBeLessThanOrEqual(38);
+    // UUID v5 canonico = 36 char esatti
+    expect(id).toHaveLength(36);
+  });
 
-    const diverso = await paypalRequestId('ORDER-ABC', 'capture');
-    expect(diverso).not.toBe(a); // orderId diverso → firma diversa
+  it('R4-TEST-2: stesso input → stesso valore (deterministico)', async () => {
+    const { paypalRequestId } = await import('../../src/lib/paypal');
+    const a = await paypalRequestId('ORDER-DET-1', 'capture');
+    const b = await paypalRequestId('ORDER-DET-1', 'capture');
+    const c = await paypalRequestId('ORDER-DET-1', 'capture');
+    expect(a).toBe(b);
+    expect(b).toBe(c);
+  });
+
+  it('R4-TEST-3: operation diversa → valore diverso', async () => {
+    const { paypalRequestId } = await import('../../src/lib/paypal');
+    const capture = await paypalRequestId('ORDER-OP', 'capture');
+    const create = await paypalRequestId('ORDER-OP', 'create');
+    const refund = await paypalRequestId('ORDER-OP', 'refund');
+    expect(capture).not.toBe(create);
+    expect(capture).not.toBe(refund);
+    expect(create).not.toBe(refund);
+  });
+
+  it('R4-TEST-4: orderId diverso → valore diverso', async () => {
+    const { paypalRequestId } = await import('../../src/lib/paypal');
+    const a = await paypalRequestId('ORDER-A', 'capture');
+    const b = await paypalRequestId('ORDER-B', 'capture');
+    expect(a).not.toBe(b);
+  });
+
+  it('R4-TEST-5: formato UUID canonico accettabile da PayPal', async () => {
+    const { paypalRequestId } = await import('../../src/lib/paypal');
+    const id = await paypalRequestId('ORDER-FMT', 'capture');
+    // Regex UUID v5: 8-4-4-4-12 con byte 6 = 5x, byte 8 = 8/9/a/b
+    // (variant RFC 4122). Formato universalmente accettato da PayPal-Request-Id.
+    expect(/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id))
+      .toBe(true);
+  });
+
+  it('R4-TEST-6: retry della capture con lo stesso header', async () => {
+    const { paypalRequestId } = await import('../../src/lib/paypal');
+    // Simulazione retry: 5 chiamate successive con stesso (orderId, operazione)
+    const ids: string[] = [];
+    for (let i = 0; i < 5; i++) {
+      ids.push(await paypalRequestId('ORDER-RETRY', 'capture'));
+    }
+    // Tutti identici — PayPal idempotency guarantee sfruttata correttamente
+    expect(new Set(ids).size).toBe(1);
   });
 });
 

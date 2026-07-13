@@ -139,18 +139,66 @@ export type CaptureResult = {
   captureId?: string; // ID univoco della capture PayPal (per idempotenza e reconciliation)
 };
 
+// Namespace UUID stabile per Sherlock (RFC 4122 § 4.3). Serve come radice
+// deterministica per generare UUID v5 relativi a operazioni PayPal. Non è un
+// secret: è pubblico by design ed è ciò che permette a due retry di produrre
+// lo stesso UUID senza dover coordinare stato tra invocazioni serverless.
+// Valore scelto a partire dal DNS namespace RFC 4122 (unmodified — è convenzionale).
+const SHERLOCK_PP_NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+
+// Parsing UUID "8-4-4-4-12" in 16 byte binari.
+function parseUuidToBytes(uuid: string): Uint8Array {
+  const hex = uuid.replace(/-/g, '');
+  if (hex.length !== 32) throw new Error('UUID non valido');
+  const out = new Uint8Array(16);
+  for (let i = 0; i < 16; i++) {
+    out[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+  return out;
+}
+
+// Formatta 16 byte come UUID canonico "8-4-4-4-12" (36 char totali).
+function bytesToUuid(bytes: Uint8Array): string {
+  const hex: string[] = [];
+  for (let i = 0; i < 16; i++) hex.push(bytes[i].toString(16).padStart(2, '0'));
+  return (
+    hex.slice(0, 4).join('') + '-' +
+    hex.slice(4, 6).join('') + '-' +
+    hex.slice(6, 8).join('') + '-' +
+    hex.slice(8, 10).join('') + '-' +
+    hex.slice(10, 16).join('')
+  );
+}
+
+// UUID v5 deterministic: SHA-1(namespace_bytes || name_bytes), primi 16 byte,
+// con version=5 (byte 6) e variant=10 (byte 8) impostati secondo RFC 4122 § 4.3.
+async function uuidV5(name: string, namespace: string): Promise<string> {
+  const ns = parseUuidToBytes(namespace);
+  const nm = new TextEncoder().encode(name);
+  const buf = new Uint8Array(ns.length + nm.length);
+  buf.set(ns, 0);
+  buf.set(nm, ns.length);
+  const hash = await crypto.subtle.digest('SHA-1', buf);
+  const b = new Uint8Array(hash).slice(0, 16);
+  // Version bits (byte 6): 0101_xxxx → 5
+  b[6] = (b[6] & 0x0f) | 0x50;
+  // Variant bits (byte 8): 10_xxxxxx → RFC 4122 variant
+  b[8] = (b[8] & 0x3f) | 0x80;
+  return bytesToUuid(b);
+}
+
 // Genera un PayPal-Request-Id deterministico per una specifica (orderId, operazione).
-// Ogni retry dello stesso capture usa lo stesso Request-Id → PayPal restituisce
-// la stessa risposta (idempotency guarantee lato PayPal). Nuovi UUID per retry
-// causerebbero doppia capture o comportamento inconsistente.
-export async function paypalRequestId(orderId: string, operazione: 'capture'): Promise<string> {
-  const enc = new TextEncoder().encode(`${orderId}:${operazione}:sherlock-v1`);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  const arr = Array.from(new Uint8Array(buf));
-  // PayPal-Request-Id: max 128 char alfanumerici + '-'. Uso 64 hex = 256 bit di
-  // entropia derivate deterministicamente dall'orderId — non è un UUID casuale,
-  // è una funzione pura di (orderId, operazione).
-  return arr.map((b) => b.toString(16).padStart(2, '0')).join('');
+// Formato: UUID v5 canonico "xxxxxxxx-xxxx-5xxx-yxxx-xxxxxxxxxxxx" (36 char < 38
+// limite PayPal). Ogni retry dello stesso capture usa lo stesso Request-Id →
+// PayPal restituisce la stessa risposta (idempotency guarantee lato PayPal).
+//
+// Il name include un tag semantico dell'operazione (`capture`, `create`, ecc.) →
+// operazioni diverse sullo stesso orderId producono UUID diversi.
+export async function paypalRequestId(
+  orderId: string,
+  operazione: 'capture' | 'create' | 'refund',
+): Promise<string> {
+  return uuidV5(`${orderId}:${operazione}:sherlock`, SHERLOCK_PP_NAMESPACE);
 }
 
 export async function catturaOrdinePayPal(orderId: string): Promise<CaptureResult> {
