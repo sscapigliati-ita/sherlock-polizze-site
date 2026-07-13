@@ -125,3 +125,130 @@ describe('storage PayPal idempotenza (fallback in-memory)', () => {
     expect(results.filter((r) => r === false)).toHaveLength(4);
   });
 });
+
+describe('R3-TEST-7/8/9: PayPal Processing Record crash recovery', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
+  });
+
+  it('iniziaPayPalProcessing: created=true al primo, created=false ai successivi', async () => {
+    const { iniziaPayPalProcessing } = await import('../../src/lib/storage');
+    const primo = await iniziaPayPalProcessing('CRASH-1', null);
+    expect(primo.created).toBe(true);
+    expect(primo.record.status).toBe('processing');
+    expect(primo.record.codeSaved).toBe(false);
+    expect(primo.record.emailSent).toBe(false);
+    expect(primo.record.analyticsSent).toBe(false);
+
+    const secondo = await iniziaPayPalProcessing('CRASH-1', null);
+    expect(secondo.created).toBe(false);
+    // Ritorna il record esistente identico
+    expect(secondo.record.status).toBe('processing');
+    expect(secondo.record.createdAt).toBe(primo.record.createdAt);
+  });
+
+  it('aggiornaPayPalProcessing: checkpoint dopo crash sono persistenti', async () => {
+    const mod = await import('../../src/lib/storage');
+    await mod.iniziaPayPalProcessing('CRASH-2', null);
+    // Simuliamo il completamento dei checkpoint uno per uno (come farebbe
+    // il flow reale se un crash avvenisse tra ogni fase)
+    await mod.aggiornaPayPalProcessing('CRASH-2', { code: 'SHK-AAAA-BBBB', codeSaved: true });
+    let stato = await mod.leggiPayPalProcessing('CRASH-2');
+    expect(stato?.codeSaved).toBe(true);
+    expect(stato?.founderCounterUpdated).toBe(false);
+    expect(stato?.emailSent).toBe(false);
+
+    // Retry dopo crash → founder counter
+    await mod.aggiornaPayPalProcessing('CRASH-2', { founderCounterUpdated: true });
+    stato = await mod.leggiPayPalProcessing('CRASH-2');
+    expect(stato?.codeSaved).toBe(true); // preservato
+    expect(stato?.founderCounterUpdated).toBe(true);
+
+    // Retry dopo crash → email
+    await mod.aggiornaPayPalProcessing('CRASH-2', { emailSent: true });
+    stato = await mod.leggiPayPalProcessing('CRASH-2');
+    expect(stato?.codeSaved).toBe(true);
+    expect(stato?.founderCounterUpdated).toBe(true);
+    expect(stato?.emailSent).toBe(true);
+
+    // Retry dopo crash → analytics + completed
+    await mod.aggiornaPayPalProcessing('CRASH-2', { analyticsSent: true, status: 'completed' });
+    stato = await mod.leggiPayPalProcessing('CRASH-2');
+    expect(stato?.status).toBe('completed');
+    expect(stato?.analyticsSent).toBe(true);
+  });
+
+  it('R3-TEST-9: leggiPayPalProcessing ritorna record solo se realmente esistente', async () => {
+    const { leggiPayPalProcessing } = await import('../../src/lib/storage');
+    // Ordine mai iniziato: null
+    expect(await leggiPayPalProcessing('NEVER-SEEN')).toBeNull();
+  });
+
+  it('R3-TEST-11: idempotenza analyticsSent evita duplicati purchase GA4', async () => {
+    const mod = await import('../../src/lib/storage');
+    await mod.iniziaPayPalProcessing('CRASH-3', null);
+    // Primo retry marca analyticsSent
+    await mod.aggiornaPayPalProcessing('CRASH-3', { analyticsSent: true });
+    const rec = await mod.leggiPayPalProcessing('CRASH-3');
+    expect(rec?.analyticsSent).toBe(true);
+    // Il flow di completaEffetti (in capture-order.ts) NON emette purchase
+    // GA4 se analyticsSent === true. Test statico: verifichiamo il checkpoint
+    // è persistente per abilitare quel controllo.
+    const rec2 = await mod.leggiPayPalProcessing('CRASH-3');
+    expect(rec2?.analyticsSent).toBe(true); // sopravvive al retry
+  });
+});
+
+describe('R3-TEST-5: ga4 context conservato tra create-order e capture-order', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  });
+
+  it('salvaPayPalGa4Context + leggiPayPalGa4Context: round-trip completo', async () => {
+    const mod = await import('../../src/lib/storage');
+    const ctx = {
+      clientId: '1234567890.9876543210',
+      sessionId: '1720123456',
+      consent: {
+        analyticsStorage: 'granted' as const,
+        adStorage: 'denied' as const,
+        adUserData: 'granted' as const,
+        adPersonalization: 'denied' as const,
+      },
+    };
+    await mod.salvaPayPalGa4Context('PP-ORD-CTX-1', ctx);
+    const letto = await mod.leggiPayPalGa4Context('PP-ORD-CTX-1');
+    expect(letto).not.toBeNull();
+    expect(letto?.clientId).toBe('1234567890.9876543210');
+    expect(letto?.sessionId).toBe('1720123456');
+    expect(letto?.consent.analyticsStorage).toBe('granted');
+    // Il context salvato in create-order è recuperabile in capture-order
+    // → il vero client_id è conservato tra le due invocazioni HTTP.
+  });
+
+  it('leggiPayPalGa4Context ritorna null se non salvato', async () => {
+    const { leggiPayPalGa4Context } = await import('../../src/lib/storage');
+    expect(await leggiPayPalGa4Context('MAI-VISTO')).toBeNull();
+  });
+});
+
+describe('R3-TEST-10: PayPal-Request-Id stabile sui retry', () => {
+  it('paypalRequestId deterministico per (orderId, operazione)', async () => {
+    const { paypalRequestId } = await import('../../src/lib/paypal');
+    const a = await paypalRequestId('ORDER-XYZ', 'capture');
+    const b = await paypalRequestId('ORDER-XYZ', 'capture');
+    expect(a).toBe(b); // stessa firma → PayPal capture idempotente
+    expect(a).toHaveLength(64); // SHA-256 hex = 64 char
+    expect(/^[0-9a-f]{64}$/.test(a)).toBe(true);
+
+    const diverso = await paypalRequestId('ORDER-ABC', 'capture');
+    expect(diverso).not.toBe(a); // orderId diverso → firma diversa
+  });
+});
+

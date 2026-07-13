@@ -306,6 +306,62 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
             window.gtag('event', name, merged);
           };
 
+          // Recupera il vero GA4 client_id + session_id dalla sessione gtag corrente,
+          // da trasmettere al backend nelle richieste che possono emettere eventi GA4
+          // server-side (analizza, capture-order, attiva-pro). Ritorna sempre un
+          // oggetto con `consent` sanificato — se analytics_storage è denied, clientId
+          // e sessionId restano undefined e il server-side non emetterà eventi.
+          //
+          // API: `await window.sherlockGetGA4Context()` → { clientId?, sessionId?, consent }
+          window.sherlockGetGA4Context = function () {
+            return new Promise(function (resolve) {
+              var prev = null;
+              try { prev = localStorage.getItem('sherlock_gtag_consent'); } catch (e) {}
+              var granted = prev === 'granted';
+              var consent = {
+                analyticsStorage: granted ? 'granted' : 'denied',
+                adStorage: granted ? 'granted' : 'denied',
+                adUserData: granted ? 'granted' : 'denied',
+                adPersonalization: granted ? 'granted' : 'denied',
+              };
+              if (!granted || typeof window.gtag !== 'function') {
+                resolve({ consent: consent });
+                return;
+              }
+              var got = { clientId: undefined, sessionId: undefined };
+              var pending = 2;
+              var settled = false;
+              var finish = function () {
+                if (settled) return;
+                settled = true;
+                resolve({
+                  clientId: got.clientId,
+                  sessionId: got.sessionId,
+                  consent: consent,
+                });
+              };
+              var step = function () { pending -= 1; if (pending === 0) finish(); };
+              // Safety-net: se gtag non chiama i callback entro 500ms, procedi con
+              // quello che hai. Impedisce che l'utente aspetti Analytics per
+              // navigare (l'analisi/checkout non deve mai bloccarsi sul tracking).
+              setTimeout(finish, 500);
+              try {
+                window.gtag('get', ga4Id, 'client_id', function (cid) {
+                  if (typeof cid === 'string' && cid) got.clientId = cid;
+                  step();
+                });
+              } catch (e) { step(); }
+              try {
+                window.gtag('get', ga4Id, 'session_id', function (sid) {
+                  if (typeof sid === 'string' || typeof sid === 'number') {
+                    got.sessionId = String(sid);
+                  }
+                  step();
+                });
+              } catch (e) { step(); }
+            });
+          };
+
           // Click delegate per gli eventi di conversione richiesti da Ads.
           // Capture phase (true) → parte prima di qualunque handler bubble del sito.
           document.addEventListener('click', function (e) {

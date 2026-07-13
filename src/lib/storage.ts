@@ -1,4 +1,5 @@
 import { Redis } from '@upstash/redis';
+import type { AnalyticsContext } from './analytics-context';
 
 function envVar(name: string): string | undefined {
   return (
@@ -204,15 +205,140 @@ export async function salvaPurchaseTokenIndex(token: string, codice: string): Pr
   await kv().set(`${PLAY_TOKEN_INDEX_PREFIX}${token}`, codice);
 }
 
-// ===== PayPal — indice secondario orderId -> codice =====
-// Permette idempotenza dell'endpoint /api/paypal/capture-order: lo stesso
-// PayPal orderId (refresh pagina di conferma, doppio clic, retry) deve
-// ritornare sempre lo stesso codice, senza:
-// - ripetere la chiamata PayPal capture (già catturato)
-// - generare un nuovo codice
-// - incrementare il counter founder
-// - inviare una seconda email
-// - inviare eventi GA4 purchase duplicati
+// ===== PayPal — Processing Record persistente =====
+// Traccia lo stato completo di ogni ordine PayPal per garantire idempotenza
+// robusta anche in caso di crash. Ogni side-effect ha il suo checkpoint booleano:
+// un retry dopo crash completa solo gli effetti non ancora eseguiti.
+export type PayPalProcessingStatus = 'processing' | 'completed' | 'failed';
+
+export interface PayPalProcessingRecord {
+  orderId: string;
+  status: PayPalProcessingStatus;
+  code?: string;
+  captureId?: string;
+  plan?: string;
+  emailRef?: string; // hash SHA-256 troncato dell'email (mai in chiaro nel record)
+  codeSaved: boolean;
+  founderCounterUpdated: boolean;
+  emailSent: boolean;
+  analyticsSent: boolean;
+  ga4Context?: AnalyticsContext | null;
+  createdAt: string;
+  updatedAt: string;
+  errorReason?: string;
+}
+
+const PAYPAL_PROC_PREFIX = 'paypal_proc:';
+const _paypalProcFallback = new Map<string, PayPalProcessingRecord>();
+
+// SETNX-like: prova a creare il record di processing. Ritorna il record esistente
+// (senza modificarlo) se già presente, oppure il nuovo record se creato ora.
+// Questo garantisce che 2 chiamate concorrenti (double click, race condition tra tab)
+// vedano lo stesso record e non emettano side effect duplicati.
+export async function iniziaPayPalProcessing(
+  orderId: string,
+  ga4Context: AnalyticsContext | null,
+): Promise<{ record: PayPalProcessingRecord; created: boolean }> {
+  const oid = orderId.trim();
+  if (!oid) throw new Error('orderId richiesto');
+  const now = new Date().toISOString();
+  const iniziale: PayPalProcessingRecord = {
+    orderId: oid,
+    status: 'processing',
+    codeSaved: false,
+    founderCounterUpdated: false,
+    emailSent: false,
+    analyticsSent: false,
+    ga4Context: ga4Context ?? undefined,
+    createdAt: now,
+    updatedAt: now,
+  };
+  if (!kvConfigurato()) {
+    const esistente = _paypalProcFallback.get(oid);
+    if (esistente) return { record: esistente, created: false };
+    _paypalProcFallback.set(oid, iniziale);
+    return { record: iniziale, created: true };
+  }
+  const chiave = `${PAYPAL_PROC_PREFIX}${oid}`;
+  const res = await kv().set(chiave, iniziale, { nx: true });
+  if (res === 'OK') return { record: iniziale, created: true };
+  const esistente = await kv().get<PayPalProcessingRecord>(chiave);
+  if (esistente) return { record: esistente, created: false };
+  // Situazione anomala: set NX fallito ma get restituisce null. Riprovo un set semplice
+  // per non lasciare l'orderId senza record e restituisco quello nuovo.
+  await kv().set(chiave, iniziale);
+  return { record: iniziale, created: true };
+}
+
+export async function leggiPayPalProcessing(
+  orderId: string,
+): Promise<PayPalProcessingRecord | null> {
+  const oid = orderId.trim();
+  if (!oid) return null;
+  if (!kvConfigurato()) {
+    return _paypalProcFallback.get(oid) ?? null;
+  }
+  return (await kv().get<PayPalProcessingRecord>(`${PAYPAL_PROC_PREFIX}${oid}`)) ?? null;
+}
+
+export async function aggiornaPayPalProcessing(
+  orderId: string,
+  patch: Partial<Omit<PayPalProcessingRecord, 'orderId' | 'createdAt'>>,
+): Promise<PayPalProcessingRecord | null> {
+  const oid = orderId.trim();
+  if (!oid) return null;
+  const now = new Date().toISOString();
+  if (!kvConfigurato()) {
+    const rec = _paypalProcFallback.get(oid);
+    if (!rec) return null;
+    const merged = { ...rec, ...patch, updatedAt: now };
+    _paypalProcFallback.set(oid, merged);
+    return merged;
+  }
+  const chiave = `${PAYPAL_PROC_PREFIX}${oid}`;
+  const rec = await kv().get<PayPalProcessingRecord>(chiave);
+  if (!rec) return null;
+  const merged = { ...rec, ...patch, updatedAt: now };
+  await kv().set(chiave, merged);
+  return merged;
+}
+
+// ===== PayPal — context Analytics associato all'ordine =====
+// Salvato in create-order al momento del checkout, letto in capture-order per
+// emettere `purchase` con il vero client_id GA4 della sessione di acquisto
+// (non un identificatore inventato dal backend).
+const PAYPAL_GA4_PREFIX = 'paypal_ga4:';
+const _paypalGa4Fallback = new Map<string, AnalyticsContext>();
+
+export async function salvaPayPalGa4Context(
+  orderId: string,
+  ctx: AnalyticsContext,
+): Promise<void> {
+  const oid = orderId.trim();
+  if (!oid) return;
+  if (!kvConfigurato()) {
+    _paypalGa4Fallback.set(oid, ctx);
+    return;
+  }
+  // TTL 24h: dopo il ritorno PayPal l'utente ha 3h per completare, dopo di che
+  // l'ordine è VOIDED. 24h è margine ampio.
+  await kv().set(`${PAYPAL_GA4_PREFIX}${oid}`, ctx, { ex: 86_400 });
+}
+
+export async function leggiPayPalGa4Context(
+  orderId: string,
+): Promise<AnalyticsContext | null> {
+  const oid = orderId.trim();
+  if (!oid) return null;
+  if (!kvConfigurato()) {
+    return _paypalGa4Fallback.get(oid) ?? null;
+  }
+  return (await kv().get<AnalyticsContext>(`${PAYPAL_GA4_PREFIX}${oid}`)) ?? null;
+}
+
+// ===== PayPal — legacy indice orderId -> codice =====
+// Mantenuto per retrocompatibilità coi test esistenti e per il fallback rapido.
+// Nel nuovo flusso il source of truth è PayPalProcessingRecord.
 const PAYPAL_ORDER_INDEX_PREFIX = 'paypal_order:';
 const _paypalOrderFallback = new Map<string, string>();
 
@@ -229,9 +355,6 @@ export async function cercaPerPayPalOrderId(orderId: string): Promise<RecordPro 
   return await leggiCodicePro(codice);
 }
 
-// SETNX-like: tenta di registrare l'associazione orderId -> codice.
-// Ritorna true se è la prima registrazione (idempotenza confermata),
-// false se già esisteva (il caller DEVE usare il codice esistente).
 export async function registraPayPalOrderId(orderId: string, codice: string): Promise<boolean> {
   if (!orderId || !codice) return false;
   const oid = orderId.trim();
@@ -240,7 +363,6 @@ export async function registraPayPalOrderId(orderId: string, codice: string): Pr
     _paypalOrderFallback.set(oid, codice);
     return true;
   }
-  // Upstash Redis: set con NX ritorna 'OK' se creato, null se già esisteva.
   const res = await kv().set(`${PAYPAL_ORDER_INDEX_PREFIX}${oid}`, codice, { nx: true });
   return res === 'OK';
 }

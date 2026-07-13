@@ -136,16 +136,36 @@ export type CaptureResult = {
   email: string;
   piano: PianoId;
   ref?: string; // codice referrer, se presente nel custom_id
+  captureId?: string; // ID univoco della capture PayPal (per idempotenza e reconciliation)
 };
+
+// Genera un PayPal-Request-Id deterministico per una specifica (orderId, operazione).
+// Ogni retry dello stesso capture usa lo stesso Request-Id → PayPal restituisce
+// la stessa risposta (idempotency guarantee lato PayPal). Nuovi UUID per retry
+// causerebbero doppia capture o comportamento inconsistente.
+export async function paypalRequestId(orderId: string, operazione: 'capture'): Promise<string> {
+  const enc = new TextEncoder().encode(`${orderId}:${operazione}:sherlock-v1`);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  const arr = Array.from(new Uint8Array(buf));
+  // PayPal-Request-Id: max 128 char alfanumerici + '-'. Uso 64 hex = 256 bit di
+  // entropia derivate deterministicamente dall'orderId — non è un UUID casuale,
+  // è una funzione pura di (orderId, operazione).
+  return arr.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
 
 export async function catturaOrdinePayPal(orderId: string): Promise<CaptureResult> {
   const token = await getAccessToken();
+  const requestId = await paypalRequestId(orderId, 'capture');
 
   const r = await fetch(`${baseApi()}/v2/checkout/orders/${orderId}/capture`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
+      // Idempotency di PayPal: retry con stesso Request-Id restituisce la stessa
+      // risposta senza doppia capture. Evita doppio addebito sull'utente in
+      // scenari di rete instabile o webhook duplicati.
+      'PayPal-Request-Id': requestId,
     },
   });
 
@@ -154,6 +174,10 @@ export async function catturaOrdinePayPal(orderId: string): Promise<CaptureResul
 
   const unit = data.purchase_units?.[0];
   const piano = (unit?.reference_id ?? 'mensile') as PianoId;
+  // captureId: identificativo univoco della singola capture (diverso dall'orderId).
+  // Serve per idempotenza server-side (KV: purchase:paypal:capture:<captureId>) e
+  // per reconciliation con webhook PAYMENT.CAPTURE.COMPLETED PayPal.
+  const captureId: string | undefined = unit?.payments?.captures?.[0]?.id;
   const customIdRaw: string =
     unit?.custom_id ??
     data?.payer?.email_address ??
@@ -173,6 +197,7 @@ export async function catturaOrdinePayPal(orderId: string): Promise<CaptureResul
     email,
     piano,
     ref,
+    captureId,
   };
 }
 

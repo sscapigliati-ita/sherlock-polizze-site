@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getAnthropicKey, getModel } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
 import { ga4TrackServer } from '../../lib/ga4';
+import { sanitizeContext } from '../../lib/analytics-context';
 
 // Bucket del tempo di processing per non inviare valori grezzi (ridurrebbe la
 // cardinalità dei parametri GA4 e potrebbe rivelare pattern di infrastruttura).
@@ -162,7 +163,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'Backend non configurato (ANTHROPIC_API_KEY mancante)' }, 500);
   }
 
-  let payload: { documento_base64?: string; mime?: string; sinistro_testo?: string; lingua?: string };
+  let payload: { documento_base64?: string; mime?: string; sinistro_testo?: string; lingua?: string; _ga4Context?: unknown };
   try {
     payload = await request.json();
   } catch {
@@ -244,11 +245,14 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (toolUse?.input && typeof toolUse.input === 'object') {
     await traccia('ok');
-    // GA4 analysis_complete: scatta SOLO su completamento reale, dopo la risposta
-    // AI valida via tool_use. Nessun dato personale nei parametri (no filename,
-    // no testo documento, no sinistro_testo, no email). Il request_id è
-    // random per invocazione → non tracciabile all'utente.
-    void ga4TrackServer('analysis_complete', requestId, {
+    // GA4 analysis_complete: scatta SOLO su completamento reale (tool_use riuscito).
+    // Il context arriva dal frontend con il vero GA4 client_id + session_id (mai
+    // il requestId né altro identificatore inventato). Se il context è assente o
+    // il consenso è denied, ga4TrackServer diventa no-op silenziosamente.
+    // Nessun dato personale nei parametri (no filename, no testo documento, no
+    // sinistro_testo, no email, no numero polizza, no report generato).
+    const ga4Ctx = sanitizeContext(payload._ga4Context);
+    void ga4TrackServer('analysis_complete', ga4Ctx, {
       analysis_type: sinistroTesto ? 'with_incident' : 'basic',
       document_type: isPDF ? 'pdf' : 'image',
       processing_time_bucket: processingBucket(Date.now() - t0),

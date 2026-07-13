@@ -368,10 +368,26 @@ const jsonLd = [
     try {
       const wRef: any = window;
       const ref = typeof wRef.sherlockRef === 'function' ? wRef.sherlockRef() : null;
+      // Recupero contesto Analytics reale (vero GA4 client_id + session_id via
+      // gtag('get', ID, 'client_id', ...)) SOLO dopo consenso. Se il consenso è
+      // denied o gtag non è pronto entro 500ms, sherlockGetGA4Context ritorna
+      // { consent: {...denied} } senza clientId e il backend non emetterà eventi
+      // GA4 duplicati/inventati.
+      let ga4Context: unknown = undefined;
+      try {
+        if (typeof wRef.sherlockGetGA4Context === 'function') {
+          ga4Context = await wRef.sherlockGetGA4Context();
+        }
+      } catch { /* non bloccare il checkout se GA4 non risponde */ }
       const r = await fetch('/api/paypal/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ piano, email, ...(ref ? { ref } : {}) }),
+        body: JSON.stringify({
+          piano,
+          email,
+          ...(ref ? { ref } : {}),
+          ...(ga4Context ? { _ga4Context: ga4Context } : {}),
+        }),
       });
       const data = await r.json();
       if (!r.ok || !data.approveUrl) throw new Error(data.error ?? 'Errore inatteso');

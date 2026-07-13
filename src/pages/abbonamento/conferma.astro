@@ -81,10 +81,23 @@ import Footer from '../../components/Footer.astro';
     }
 
     try {
+      // Rileggo il vero GA4 client_id/session_id: il context è stato salvato in
+      // create-order al momento del checkout, ma se il KV non ha risposto o la
+      // sessione è nuova, ritrasmetto quello attuale come fallback.
+      const w: any = window;
+      let ga4Context: unknown = undefined;
+      try {
+        if (typeof w.sherlockGetGA4Context === 'function') {
+          ga4Context = await w.sherlockGetGA4Context();
+        }
+      } catch { /* no-op */ }
       const r = await fetch('/api/paypal/capture-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId }),
+        body: JSON.stringify({
+          orderId,
+          ...(ga4Context ? { _ga4Context: ga4Context } : {}),
+        }),
       });
       const data = await r.json();
       if (!r.ok || !data.codice) {
@@ -95,15 +108,18 @@ import Footer from '../../components/Footer.astro';
       if (codiceOut) codiceOut.textContent = data.codice;
       if (!data.mailInviata) warnMail?.classList.remove('hidden');
       sessionStorage.removeItem('sherlock_pending');
-      // Firebase Analytics: purchase_success client-side (oltre al server-side da capture-order)
-      const w: any = window;
-      if (typeof w.sherlockTrack === 'function') {
-        w.sherlockTrack('purchase_success', { piano: data.piano || 'unknown', method: 'paypal' });
-      }
+      // NB: rimosso sherlockTrack('purchase_success') client-side. La property
+      // Firebase riceveva l'evento 2 volte (client `purchase_success` + server
+      // `purchase` da capture-order → duplicazione stessa property). Adesso
+      // solo l'evento `purchase` server-side (verificato) rappresenta la
+      // conversione. Vedi report R3 §5.
     } catch (e: any) {
       loading?.classList.add('hidden');
       errore?.classList.remove('hidden');
       if (errMsg) errMsg.textContent = e?.message ?? 'Errore sconosciuto';
+      // purchase_failed client-side mantenuto come evento diagnostico:
+      // scatta solo su errore (non duplica il `purchase` server-side che
+      // scatta solo su successo).
       const w: any = window;
       if (typeof w.sherlockTrack === 'function') {
         w.sherlockTrack('purchase_failed', { error: String(e?.message || e).slice(0, 100) });

@@ -114,7 +114,13 @@ export const POST: APIRoute = async ({ request }) => {
     await incrementaFounderVenduti().catch(() => undefined);
   }
 
-  void ga4TrackServer('play_billing_verified', purchaseToken.slice(0, 8), {
+  // GA4 play_billing_verified: no-op finché l'app Android non trasmette un
+  // context Analytics reale (Firebase app_instance_id via bridge). Il vecchio
+  // codice usava purchaseToken.slice(0,8) come client_id — inventato dal
+  // backend, semanticamente errato. Vedi report R3 §D per il piano di
+  // migrazione. L'evento Play Billing lato app è comunque emesso via Firebase
+  // Analytics client-side (SDK Firebase nativa Android).
+  void ga4TrackServer('play_billing_verified', null, {
     product: productId,
     piano: prodotto.piano,
     value: prodotto.prezzoEur,

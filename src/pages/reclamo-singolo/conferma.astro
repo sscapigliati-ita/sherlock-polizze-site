@@ -96,10 +96,20 @@ import Footer from '../../components/Footer.astro';
       return;
     }
     try {
+      const w: any = window;
+      let ga4Context: unknown = undefined;
+      try {
+        if (typeof w.sherlockGetGA4Context === 'function') {
+          ga4Context = await w.sherlockGetGA4Context();
+        }
+      } catch { /* no-op */ }
       const r = await fetch('/api/paypal/capture-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId }),
+        body: JSON.stringify({
+          orderId,
+          ...(ga4Context ? { _ga4Context: ga4Context } : {}),
+        }),
       });
       const data = await r.json();
       if (!r.ok || !data.codice) throw new Error(data.error ?? 'Errore cattura pagamento');
@@ -109,10 +119,9 @@ import Footer from '../../components/Footer.astro';
       if (!data.mailInviata) warnMail?.classList.remove('hidden');
       const linkUsaWeb = document.getElementById('link-usa-web') as HTMLAnchorElement | null;
       if (linkUsaWeb) linkUsaWeb.href = '/consulenza?c=' + encodeURIComponent(data.codice);
-      const w: any = window;
-      if (typeof w.sherlockTrack === 'function') {
-        w.sherlockTrack('purchase_success', { piano: 'singolo', method: 'paypal', value: 3.99, currency: 'EUR' });
-      }
+      // NB: rimosso sherlockTrack('purchase_success') client-side. La property
+      // Firebase riceveva l'evento 2 volte (client + server). Ora solo il
+      // `purchase` server-side verificato.
     } catch (e: any) {
       loading?.classList.add('hidden');
       errore?.classList.remove('hidden');

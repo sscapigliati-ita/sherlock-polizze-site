@@ -152,8 +152,8 @@ export async function leggiAnalyticsProperty(
         };
       });
 
-      const utenti7gg = serieUtenti.reduce((s: number, g) => s + g.utenti, 0);
-      const pageviews7gg = serieUtenti.reduce((s: number, g) => s + g.pageviews, 0);
+      const utenti7gg = serieUtenti.reduce((s: number, g: (typeof serieUtenti)[number]) => s + g.utenti, 0);
+      const pageviews7gg = serieUtenti.reduce((s: number, g: (typeof serieUtenti)[number]) => s + g.pageviews, 0);
       const sessioni7gg = (serieRes.rows ?? []).reduce(
         (s: number, r: any) => s + Number(r.metricValues?.[2]?.value ?? 0),
         0,
@@ -193,9 +193,17 @@ export async function leggiAnalyticsProperty(
 export async function invalidaCacheGa4(): Promise<void> {
   const r = kv();
   if (!r) return;
+  // @upstash/redis non espone scanIterator: uso scan cursor-based.
+  // Ritorna [nextCursor, keys[]] per pagina; termino quando cursor === '0'.
   const chiavi: string[] = [];
-  for await (const k of r.scanIterator({ match: 'ga4:v1:*' })) {
-    chiavi.push(k);
-  }
+  let cursor = '0';
+  do {
+    const [next, keys] = (await r.scan(cursor, { match: 'ga4:v1:*', count: 100 })) as [
+      string,
+      string[],
+    ];
+    chiavi.push(...keys);
+    cursor = next;
+  } while (cursor !== '0');
   if (chiavi.length) await r.del(...chiavi);
 }

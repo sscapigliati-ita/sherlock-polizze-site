@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
 import { creaOrdinePayPal, PIANI, FOUNDER_MAX, type PianoId } from '../../../lib/paypal';
-import { contaFounderVenduti } from '../../../lib/storage';
+import { contaFounderVenduti, salvaPayPalGa4Context } from '../../../lib/storage';
 import { ga4TrackServer } from '../../../lib/ga4';
+import { sanitizeContext } from '../../../lib/analytics-context';
 
 export const prerender = false;
 
@@ -13,7 +14,7 @@ function json(body: unknown, status = 200): Response {
 }
 
 export const POST: APIRoute = async ({ request, url }) => {
-  let payload: { piano?: string; email?: string; ref?: string };
+  let payload: { piano?: string; email?: string; ref?: string; _ga4Context?: unknown };
   try {
     payload = await request.json();
   } catch {
@@ -65,12 +66,37 @@ export const POST: APIRoute = async ({ request, url }) => {
       cancelUrl,
       ref,
     });
-    const valore = PIANI[piano]?.prezzo || 0;
-    void ga4TrackServer('paypal_redirect', orderId, { piano, value: valore, currency: 'EUR', has_ref: ref ? 1 : 0 });
-    void ga4TrackServer('checkout_started', orderId, { piano, value: valore, currency: 'EUR' });
+    // Salva il context Analytics associato all'ordine (24h TTL) per poterlo
+    // rileggere in capture-order e emettere `purchase` server-side con il vero
+    // GA4 client_id + session_id della sessione di acquisto — non un
+    // identificatore inventato dal backend.
+    const ga4Ctx = sanitizeContext(payload._ga4Context);
+    if (ga4Ctx) {
+      await salvaPayPalGa4Context(orderId, ga4Ctx).catch(() => undefined);
+    }
+    const valore = Number(PIANI[piano]?.prezzo) || 0;
+    // Eventi diagnostici emessi solo se abbiamo un context valido.
+    void ga4TrackServer('paypal_redirect', ga4Ctx, {
+      piano,
+      value: valore,
+      currency: 'EUR',
+      has_ref: ref ? 1 : 0,
+    });
+    void ga4TrackServer('checkout_started', ga4Ctx, {
+      piano,
+      value: valore,
+      currency: 'EUR',
+    });
     return json({ orderId, approveUrl, piano, email });
   } catch (e: any) {
-    void ga4TrackServer('paypal_create_error', email || 'unknown', { piano, reason: String(e?.message || 'unknown').slice(0, 100) });
+    // paypal_create_error: fallimento pre-ordine. Emesso solo se abbiamo un
+    // context valido (con consenso e clientId reale) — l'errore non deve mai
+    // creare eventi identificabili senza consenso.
+    const ga4CtxErr = sanitizeContext(payload._ga4Context);
+    void ga4TrackServer('paypal_create_error', ga4CtxErr, {
+      piano,
+      reason: String(e?.message || 'unknown').slice(0, 100),
+    });
     return json({ error: e?.message ?? 'Errore PayPal' }, 502);
   }
 };

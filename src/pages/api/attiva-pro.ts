@@ -1,23 +1,9 @@
 import type { APIRoute } from 'astro';
 import { codiciAttiviPerEmail } from '../../lib/storage';
 import { ga4TrackServer } from '../../lib/ga4';
+import { sanitizeContext } from '../../lib/analytics-context';
 
 export const prerender = false;
-
-// Genera un client_id GA4 deterministico ma non tracciabile alla persona.
-// Hash SHA-256 troncato dell'email — stesso utente per lo stesso device
-// (attribuzione coerente cross-session), ma non permette reverse-lookup
-// dell'email dal solo hash.
-async function clientIdFromEmail(email: string): Promise<string> {
-  try {
-    const enc = new TextEncoder().encode(email.toLowerCase().trim() + ':pro_act');
-    const buf = await crypto.subtle.digest('SHA-256', enc);
-    const arr = Array.from(new Uint8Array(buf));
-    return arr.slice(0, 8).map((b) => b.toString(16).padStart(2, '0')).join('');
-  } catch {
-    return 'pro_act_unknown';
-  }
-}
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -27,7 +13,7 @@ function json(body: unknown, status = 200): Response {
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  let payload: { email?: string };
+  let payload: { email?: string; _ga4Context?: unknown };
   try {
     payload = await request.json();
   } catch {
@@ -53,15 +39,25 @@ export const POST: APIRoute = async ({ request }) => {
   // Restituisce il più recente — di solito quello che l'utente vuole usare
   const r = records[0];
 
-  // GA4 pro_activation: scatta SOLO quando il backend ha effettivamente
-  // trovato e restituito un codice valido (non su email invalida ne'
-  // sul semplice tentativo). Non inviamo il codice completo ne' l'email
-  // in chiaro — solo un client_id derivato per attribuzione coerente.
-  const cid = await clientIdFromEmail(email);
-  void ga4TrackServer('pro_activation', cid, {
-    activation_type: 'email_recovery',
+  // GA4 pro_status_lookup_success (rinominato da pro_activation).
+  //
+  // SEMANTICA: questo endpoint fa un LOOKUP di codici già attivi associati a
+  // un'email, NON emette una nuova attivazione. Non è quindi una "conversione"
+  // primaria — è un evento diagnostico che dice "l'utente ha recuperato con
+  // successo il proprio codice". Usare come conversione porta a duplicati
+  // (l'utente può fare il lookup 10 volte nella stessa sessione).
+  //
+  // La vera attivazione (transizione codice→attivo) avviene:
+  // - lato server nel flow PayPal `capture-order` (evento `purchase`);
+  // - lato client nell'app quando l'utente inserisce il codice e il backend
+  //   lo valida (nessun evento server-side attualmente cablato — vedi report R3).
+  //
+  // Nessun dato personale inviato: no email, no hash email, no codice completo,
+  // no dominio email, no frammenti. Solo il piano e la fonte.
+  const ga4Ctx = sanitizeContext(payload._ga4Context);
+  void ga4TrackServer('pro_status_lookup_success', ga4Ctx, {
     plan: r.piano,
-    source: 'web',
+    source: 'web_email_recovery',
   });
 
   return json({
