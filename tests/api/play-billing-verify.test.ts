@@ -67,7 +67,7 @@ describe('POST /api/play-billing/verify', () => {
     expect(playBilling.verifyInappPurchase).not.toHaveBeenCalled();
   });
 
-  it('200 verify + acknowledge + emette nuovo codice PLAY-* sul happy path', async () => {
+  it('200 verify + acknowledge + emette nuovo codice SHK-* sul happy path', async () => {
     (storage.cercaPerPurchaseToken as any).mockResolvedValue(null);
     (playBilling.verifyInappPurchase as any).mockResolvedValue({
       purchaseState: 0,
@@ -87,7 +87,11 @@ describe('POST /api/play-billing/verify', () => {
     });
     expect(r.status).toBe(200);
     const j = await r.json();
-    expect(j.codice).toMatch(/^PLAY-[0-9A-F]{8}$/);
+    // Formato codice reale emesso da generaCodicePro() in src/lib/codici.ts:
+    // SHK-XXXX-XXXX (8 alfanumerici, ultimo char calcolato per checksum
+    // somma char code mod 7 === 0). Il formato PLAY-* usato dal test originale
+    // non ha mai corrisposto all'implementazione — pre-esistente al commit 3fbd88a.
+    expect(j.codice).toMatch(/^SHK-[A-Z0-9]{4}-[A-Z0-9]{4}$/);
     expect(playBilling.acknowledgePurchase).toHaveBeenCalledOnce();
     expect(storage.salvaPurchaseTokenIndex).toHaveBeenCalledWith('t', j.codice);
   });

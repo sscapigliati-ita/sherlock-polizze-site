@@ -7,6 +7,8 @@ import {
   leggiCodicePro,
   registraReferralAcquisto,
   estendiScadenza,
+  cercaPerPayPalOrderId,
+  registraPayPalOrderId,
 } from '../../../lib/storage';
 import { inviaMailCodice } from '../../../lib/mail';
 import { ga4TrackServer } from '../../../lib/ga4';
@@ -33,6 +35,22 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'orderId richiesto' }, 400);
   }
 
+  // ==== Idempotenza (refresh pagina conferma, doppio clic, retry) ====
+  // Se questo orderId è già stato processato, restituisci il codice esistente
+  // SENZA: (a) richiamare PayPal capture, (b) generare nuovo codice, (c)
+  // incrementare founder counter, (d) inviare mail, (e) inviare eventi GA4.
+  const esistente = await cercaPerPayPalOrderId(orderId).catch(() => null);
+  if (esistente) {
+    return json({
+      codice: esistente.codice,
+      piano: esistente.piano,
+      email: esistente.email,
+      dataScadenza: esistente.dataScadenza,
+      mailInviata: true, // se il record esiste, la prima esecuzione aveva già gestito la mail
+      idempotent: true,
+    });
+  }
+
   let cattura;
   try {
     cattura = await catturaOrdinePayPal(orderId);
@@ -47,6 +65,26 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const codice = generaCodicePro();
+
+  // Registra atomicamente l'associazione orderId->codice PRIMA di ogni side
+  // effect (mail, founder counter, GA4). Se un'altra invocazione parallela
+  // ha già registrato l'orderId, restituiamo il codice esistente invece di
+  // generarne uno secondo. In pratica gestisce race condition tra capture
+  // PayPal simultanea da 2 tab / doppio clic.
+  const registrato = await registraPayPalOrderId(orderId, codice).catch(() => true);
+  if (!registrato) {
+    const gia = await cercaPerPayPalOrderId(orderId).catch(() => null);
+    if (gia) {
+      return json({
+        codice: gia.codice,
+        piano: gia.piano,
+        email: gia.email,
+        dataScadenza: gia.dataScadenza,
+        mailInviata: true,
+        idempotent: true,
+      });
+    }
+  }
   const dataEmissione = new Date().toISOString();
   const dataScadenza = calcolaScadenza(cattura.piano, new Date(dataEmissione));
   const isSingolo = cattura.piano === 'singolo';
@@ -102,14 +140,27 @@ export const POST: APIRoute = async ({ request }) => {
     tipo: PIANI[cattura.piano].tipo,
   });
 
-  void ga4TrackServer('purchase', orderId, {
-    transaction_id: orderId,
-    value: PIANI[cattura.piano]?.prezzo || 0,
-    currency: 'EUR',
-    items: JSON.stringify([{ item_id: cattura.piano, item_name: PIANI[cattura.piano]?.nome || cattura.piano }]).slice(0, 100),
-    piano: cattura.piano,
-    mail_sent: mail.ok ? 1 : 0,
-  });
+  void ga4TrackServer(
+    'purchase',
+    orderId,
+    {
+      transaction_id: orderId,
+      value: Number(PIANI[cattura.piano]?.prezzo) || 0,
+      currency: 'EUR',
+      piano: cattura.piano,
+      mail_sent: mail.ok ? 1 : 0,
+    },
+    [
+      {
+        item_id: cattura.piano,
+        item_name: PIANI[cattura.piano]?.nome || cattura.piano,
+        item_category: cattura.piano === 'singolo' ? 'consulenza' : 'abbonamento',
+        price: Number(PIANI[cattura.piano]?.prezzo) || 0,
+        quantity: 1,
+        currency: 'EUR',
+      },
+    ],
+  );
   void ga4TrackServer('paypal_success', orderId, { piano: cattura.piano });
   void ga4TrackServer('payment_completed', orderId, {
     piano: cattura.piano,

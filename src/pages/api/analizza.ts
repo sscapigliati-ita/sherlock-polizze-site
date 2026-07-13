@@ -1,6 +1,17 @@
 import type { APIRoute } from 'astro';
 import { getAnthropicKey, getModel } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
+import { ga4TrackServer } from '../../lib/ga4';
+
+// Bucket del tempo di processing per non inviare valori grezzi (ridurrebbe la
+// cardinalità dei parametri GA4 e potrebbe rivelare pattern di infrastruttura).
+function processingBucket(ms: number): string {
+  if (ms < 5_000) return '0-5s';
+  if (ms < 15_000) return '5-15s';
+  if (ms < 30_000) return '15-30s';
+  if (ms < 60_000) return '30-60s';
+  return '60s+';
+}
 
 export const prerender = false;
 // Cap massimo Hobby+Fluid Compute. Il modello Haiku 4.5 normalmente sta sotto i
@@ -233,6 +244,16 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (toolUse?.input && typeof toolUse.input === 'object') {
     await traccia('ok');
+    // GA4 analysis_complete: scatta SOLO su completamento reale, dopo la risposta
+    // AI valida via tool_use. Nessun dato personale nei parametri (no filename,
+    // no testo documento, no sinistro_testo, no email). Il request_id è
+    // random per invocazione → non tracciabile all'utente.
+    void ga4TrackServer('analysis_complete', requestId, {
+      analysis_type: sinistroTesto ? 'with_incident' : 'basic',
+      document_type: isPDF ? 'pdf' : 'image',
+      processing_time_bucket: processingBucket(Date.now() - t0),
+      language: lingua,
+    });
     return json(toolUse.input);
   }
 

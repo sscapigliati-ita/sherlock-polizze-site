@@ -382,16 +382,13 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
           // Pass Pro nell'header è un link a /abbonati: sarà catturato sopra
           // e riceverà cta_position = 'header' automaticamente. Nessun tag manuale.
 
-          // View-based: pagina di conferma reclamo singolo = conversione forte.
-          try {
-            var p = window.location.pathname;
-            if (p === '/reclamo-singolo/conferma' || p === '/reclamo-singolo/conferma/') {
-              window.sherlockGtag('contact_or_report', {
-                cta_position: 'confirmation',
-                stage: 'conferma_reclamo',
-              });
-            }
-          } catch (e) {}
+          // NOTE: rimosso il track view-based di contact_or_report su
+          // /reclamo-singolo/conferma. La pagina di conferma non rappresenta
+          // un "reclamo generato/inviato" — è la conferma dell'ACQUISTO della
+          // consulenza. Un evento conversione va emesso solo quando la lettera
+          // e' stata effettivamente generata (server-side, da /api/lettera
+          // dopo risposta AI riuscita), non a page-view (che si triggera
+          // anche al refresh e non implica reclamo completato).
         } catch (err) {
           // Nessuna eccezione deve mai bloccare il rendering della pagina.
         }

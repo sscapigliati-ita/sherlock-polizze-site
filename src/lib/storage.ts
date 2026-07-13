@@ -204,6 +204,47 @@ export async function salvaPurchaseTokenIndex(token: string, codice: string): Pr
   await kv().set(`${PLAY_TOKEN_INDEX_PREFIX}${token}`, codice);
 }
 
+// ===== PayPal — indice secondario orderId -> codice =====
+// Permette idempotenza dell'endpoint /api/paypal/capture-order: lo stesso
+// PayPal orderId (refresh pagina di conferma, doppio clic, retry) deve
+// ritornare sempre lo stesso codice, senza:
+// - ripetere la chiamata PayPal capture (già catturato)
+// - generare un nuovo codice
+// - incrementare il counter founder
+// - inviare una seconda email
+// - inviare eventi GA4 purchase duplicati
+const PAYPAL_ORDER_INDEX_PREFIX = 'paypal_order:';
+const _paypalOrderFallback = new Map<string, string>();
+
+export async function cercaPerPayPalOrderId(orderId: string): Promise<RecordPro | null> {
+  if (!orderId) return null;
+  const oid = orderId.trim();
+  if (!kvConfigurato()) {
+    const codice = _paypalOrderFallback.get(oid);
+    if (!codice) return null;
+    return await leggiCodicePro(codice);
+  }
+  const codice = await kv().get<string>(`${PAYPAL_ORDER_INDEX_PREFIX}${oid}`);
+  if (!codice) return null;
+  return await leggiCodicePro(codice);
+}
+
+// SETNX-like: tenta di registrare l'associazione orderId -> codice.
+// Ritorna true se è la prima registrazione (idempotenza confermata),
+// false se già esisteva (il caller DEVE usare il codice esistente).
+export async function registraPayPalOrderId(orderId: string, codice: string): Promise<boolean> {
+  if (!orderId || !codice) return false;
+  const oid = orderId.trim();
+  if (!kvConfigurato()) {
+    if (_paypalOrderFallback.has(oid)) return false;
+    _paypalOrderFallback.set(oid, codice);
+    return true;
+  }
+  // Upstash Redis: set con NX ritorna 'OK' se creato, null se già esisteva.
+  const res = await kv().set(`${PAYPAL_ORDER_INDEX_PREFIX}${oid}`, codice, { nx: true });
+  return res === 'OK';
+}
+
 export type SintesiAbbonati = {
   records: RecordPro[];
   totali: number;

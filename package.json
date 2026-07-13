@@ -25,7 +25,9 @@
     "tailwindcss": "^4.3.1"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.9",
     "pwa-asset-generator": "^7.0.0",
+    "typescript": "^7.0.2",
     "vitest": "^3.2.4"
   }
 }
