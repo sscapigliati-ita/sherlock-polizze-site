@@ -303,6 +303,88 @@ export async function aggiornaPayPalProcessing(
   return merged;
 }
 
+// ===== PayPal — aggregati processing record per dashboard admin =====
+// Scan del set paypal_proc:* per contare stati e coverage checkpoints.
+// Usato dalla dashboard admin per monitorare la salute del flusso PayPal
+// post-audit R4 (idempotenza + crash recovery).
+export type PayPalProcessingStats = {
+  total: number;
+  processing: number;
+  completed: number;
+  failed: number;
+  withCaptureId: number;
+  stuckProcessing: number; // record processing con updatedAt > 10 min fa
+  ultimoAggiornamento?: string; // ISO più recente tra tutti i record
+};
+
+export async function contaPayPalProcessing(): Promise<PayPalProcessingStats> {
+  const stats: PayPalProcessingStats = {
+    total: 0,
+    processing: 0,
+    completed: 0,
+    failed: 0,
+    withCaptureId: 0,
+    stuckProcessing: 0,
+  };
+  const dieciMinFa = Date.now() - 10 * 60 * 1000;
+
+  if (!kvConfigurato()) {
+    // Fallback in-memory
+    for (const rec of _paypalProcFallback.values()) {
+      stats.total++;
+      if (rec.status === 'processing') stats.processing++;
+      else if (rec.status === 'completed') stats.completed++;
+      else if (rec.status === 'failed') stats.failed++;
+      if (rec.captureId) stats.withCaptureId++;
+      if (rec.status === 'processing' && new Date(rec.updatedAt).getTime() < dieciMinFa) {
+        stats.stuckProcessing++;
+      }
+      if (!stats.ultimoAggiornamento || rec.updatedAt > stats.ultimoAggiornamento) {
+        stats.ultimoAggiornamento = rec.updatedAt;
+      }
+    }
+    return stats;
+  }
+
+  // KV configurato: SCAN cursor-based delle chiavi paypal_proc:*
+  const client = kv();
+  let cursor = '0';
+  const keys: string[] = [];
+  do {
+    const [next, k] = (await client.scan(cursor, {
+      match: `${PAYPAL_PROC_PREFIX}*`,
+      count: 100,
+    })) as [string, string[]];
+    keys.push(...k);
+    cursor = next;
+  } while (cursor !== '0');
+
+  if (keys.length === 0) return stats;
+
+  // MGET in batch per efficienza (fino a 500 record per batch)
+  const batchSize = 500;
+  for (let i = 0; i < keys.length; i += batchSize) {
+    const batch = keys.slice(i, i + batchSize);
+    const recs = (await client.mget<PayPalProcessingRecord[]>(...batch)) ?? [];
+    for (const rec of recs) {
+      if (!rec) continue;
+      stats.total++;
+      if (rec.status === 'processing') stats.processing++;
+      else if (rec.status === 'completed') stats.completed++;
+      else if (rec.status === 'failed') stats.failed++;
+      if (rec.captureId) stats.withCaptureId++;
+      if (rec.status === 'processing' && new Date(rec.updatedAt).getTime() < dieciMinFa) {
+        stats.stuckProcessing++;
+      }
+      if (!stats.ultimoAggiornamento || rec.updatedAt > stats.ultimoAggiornamento) {
+        stats.ultimoAggiornamento = rec.updatedAt;
+      }
+    }
+  }
+
+  return stats;
+}
+
 // ===== PayPal — context Analytics associato all'ordine =====
 // Salvato in create-order al momento del checkout, letto in capture-order per
 // emettere `purchase` con il vero client_id GA4 della sessione di acquisto

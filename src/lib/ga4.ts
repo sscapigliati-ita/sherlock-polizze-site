@@ -71,6 +71,15 @@ export function getStreamConfig(stream: GA4Stream): StreamConfig | null {
   return { measurementId, apiSecret };
 }
 
+// Helper per dashboard admin: verifica quali stream sono configurati
+// SENZA esporre i valori dei secret. Ritorna solo boolean.
+export function statoStreamGa4(): { web: boolean; firebase: boolean } {
+  return {
+    web: getStreamConfig('web') !== null,
+    firebase: getStreamConfig('firebase') !== null,
+  };
+}
+
 // Formato accettato dal MP endpoint per il consent object.
 // Ref: https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference?client_type=gtag
 function toMPConsent(v: ConsentValue): 'GRANTED' | 'DENIED' {
