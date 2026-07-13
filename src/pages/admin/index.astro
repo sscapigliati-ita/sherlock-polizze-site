@@ -52,6 +52,140 @@ const profili: Array<{ titolo: string; codice: string; res: AnalyticsResult }> =
 const adminEmail = Astro.locals.adminEmail ?? '';
 const ricavoEuro = (abb.ricavoEuroCent / 100).toFixed(2).replace('.', ',');
 
+// ==== HEALTH SCORECARD "a colpo d'occhio" ====
+// 5 dimensioni con score 0-100 e trend arrow (↗/↔/↘) rispetto ai giorni precedenti.
+// Score aggregato = media dei 5. Semaforo: >=70 verde, 40-69 ambra, <40 rosso.
+
+type Trend = 'up' | 'flat' | 'down' | 'na';
+type Health = { score: number; label: string; big: string; note: string; trend: Trend };
+
+// Confronto ultima metà (giorni 4-7) vs prima metà (giorni 1-3) di una serie di 7 valori.
+// Ritorna 'up' se ratio > 1.15, 'down' se < 0.85, altrimenti 'flat'.
+function calcolaTrend(serie: number[]): Trend {
+  if (!serie || serie.length < 4) return 'na';
+  const meta = Math.ceil(serie.length / 2);
+  const first = serie.slice(0, meta).reduce((s, v) => s + v, 0) / meta;
+  const last = serie.slice(meta).reduce((s, v) => s + v, 0) / Math.max(1, serie.length - meta);
+  if (first === 0 && last === 0) return 'flat';
+  if (first === 0) return 'up';
+  const ratio = last / first;
+  if (ratio > 1.15) return 'up';
+  if (ratio < 0.85) return 'down';
+  return 'flat';
+}
+
+// Score continuo con clamp 0-100.
+function scoreLineare(valore: number, min0: number, max100: number): number {
+  if (max100 === min0) return valore >= max100 ? 100 : 0;
+  return Math.max(0, Math.min(100, ((valore - min0) / (max100 - min0)) * 100));
+}
+// Score inverso (peggiora al crescere): 100 se v<=okSotto, 0 se v>=criticoOltre.
+function scoreInverso(valore: number | null, okSotto: number, criticoOltre: number): number {
+  if (valore === null) return 50;
+  if (valore <= okSotto) return 100;
+  if (valore >= criticoOltre) return 0;
+  return Math.max(0, Math.min(100, 100 - ((valore - okSotto) / (criticoOltre - okSotto)) * 100));
+}
+
+// FRUIZIONE — utenti attivi property Web GA4 (proxy del traffico organico sito)
+const utentiOggi = ('utentiOggi' in ga4Ads) ? ga4Ads.utentiOggi : 0;
+const utenti7gg = ('utenti7gg' in ga4Ads) ? ga4Ads.utenti7gg : 0;
+const serieUtentiGiorno = ('serieUtenti' in ga4Ads) ? ga4Ads.serieUtenti.map((g) => g.utenti) : [];
+const fruizione: Health = {
+  // 100 se utenti oggi >= media 7gg × 1.5, 0 se = 0. Scala lineare.
+  score: scoreLineare(utentiOggi, 0, Math.max(1, (utenti7gg / 7) * 1.5)),
+  label: 'Fruizione',
+  big: fmtNum(utentiOggi),
+  note: `${fmtNum(utenti7gg)} utenti 7gg`,
+  trend: calcolaTrend(serieUtentiGiorno),
+};
+
+// INSTALLAZIONE — proxy inverso: crash rate 28gg. Meno crash = utenti che restano.
+// Le installazioni CSV dal bucket Play sono ferme upstream (documentato) → uso
+// stability come proxy: se crash è alto, gli utenti disinstallano di più.
+const crashRate = stab?.crashRate28gg ?? null;
+const anrRate = stab?.anrRate28gg ?? null;
+const installazione: Health = {
+  score: crashRate === null ? 50 : scoreInverso(crashRate, 0.5, 2.5),
+  label: 'Installazione',
+  big: crashRate === null ? '—' : `${crashRate.toFixed(1)}%`,
+  note: crashRate === null ? 'Play API n/d' : 'crash rate 28gg',
+  trend: crashRate === null || stab === null
+    ? 'na'
+    : stab.crashRateOggi === null
+      ? 'flat'
+      : stab.crashRateOggi > (crashRate ?? 0) * 1.2 ? 'down'
+      : stab.crashRateOggi < (crashRate ?? 0) * 0.8 ? 'up'
+      : 'flat',
+};
+
+// UTILIZZO — analisi tentate oggi (proxy uso concreto dell'app+web)
+const serieAnalisi = stats.perGiorno.map((g) => g.analisi);
+const analisi7gg = serieAnalisi.reduce((s, v) => s + v, 0);
+const utilizzo: Health = {
+  score: scoreLineare(stats.analisiOggi, 0, Math.max(1, (analisi7gg / 7) * 1.5)),
+  label: 'Utilizzo',
+  big: fmtNum(stats.analisiOggi),
+  note: `${fmtNum(analisi7gg)} analisi 7gg`,
+  trend: calcolaTrend(serieAnalisi),
+};
+
+// UTILITÀ — quanti utenti trovano abbastanza valore da abbonarsi.
+// Score: emette 100 se abb.attivi >= 30 (tetto arbitrario configurabile).
+const utilita: Health = {
+  score: scoreLineare(abb.attivi, 0, 30),
+  label: 'Utilità',
+  big: fmtNum(abb.attivi),
+  note: `${fmtNum(abb.totali)} totali · ${ricavoEuro} €`,
+  trend: abb.totali > abb.attivi + 5 ? 'flat' : abb.attivi > 0 ? 'up' : 'na',
+};
+
+// GRADIMENTO — combinazione di ANR (utenti che si arrabbiano) e ratio abbonati/utenti
+// (se convertono, hanno gradito). Media pesata: 70% ANR inverso + 30% conversion.
+const anrScore = anrRate === null ? 50 : scoreInverso(anrRate, 0.2, 1.0);
+const conversionRate = utenti7gg > 0 ? (abb.attivi / utenti7gg) * 100 : 0;
+const conversionScore = scoreLineare(conversionRate, 0, 5); // 5% conv → 100
+const gradimento: Health = {
+  score: Math.round(anrScore * 0.7 + conversionScore * 0.3),
+  label: 'Gradimento',
+  big: anrRate === null ? '—' : `${anrRate.toFixed(2)}%`,
+  note: anrRate === null ? 'ANR n/d' : `ANR 28gg · conv ${conversionRate.toFixed(1)}%`,
+  trend: stab && stab.anrRateOggi !== null && anrRate !== null
+    ? stab.anrRateOggi > anrRate * 1.2 ? 'down'
+      : stab.anrRateOggi < anrRate * 0.8 ? 'up'
+      : 'flat'
+    : 'na',
+};
+
+const dimensioni: Health[] = [fruizione, installazione, utilizzo, utilita, gradimento];
+const scoreAggregato = Math.round(
+  dimensioni.reduce((s, d) => s + d.score, 0) / dimensioni.length,
+);
+const scoreLabel = scoreAggregato >= 70 ? 'ottimo' : scoreAggregato >= 40 ? 'da monitorare' : 'critico';
+const scoreColor = scoreAggregato >= 70 ? 'text-emerald-400' : scoreAggregato >= 40 ? 'text-amber-300' : 'text-red-400';
+const scoreRing = scoreAggregato >= 70 ? 'stroke-emerald-400' : scoreAggregato >= 40 ? 'stroke-amber-300' : 'stroke-red-400';
+const tileColor = (s: number) => s >= 70
+  ? { border: 'border-emerald-500/40', bg: 'from-emerald-500/10 to-navy-900', num: 'text-emerald-400', bar: 'bg-emerald-400' }
+  : s >= 40
+  ? { border: 'border-amber-500/40', bg: 'from-amber-500/10 to-navy-900', num: 'text-amber-300', bar: 'bg-amber-300' }
+  : { border: 'border-red-500/40', bg: 'from-red-500/10 to-navy-900', num: 'text-red-400', bar: 'bg-red-400' };
+const trendGlyph = (t: Trend) => t === 'up' ? '↗' : t === 'down' ? '↘' : t === 'flat' ? '↔' : '·';
+const trendColor = (t: Trend) => t === 'up' ? 'text-emerald-400' : t === 'down' ? 'text-red-300' : t === 'flat' ? 'text-navy-300' : 'text-navy-500';
+const dimensionIcon = (label: string) => ({
+  'Fruizione': '🌐',
+  'Installazione': '📱',
+  'Utilizzo': '🔍',
+  'Utilità': '✉️',
+  'Gradimento': '⭐',
+} as Record<string, string>)[label] ?? '•';
+// Cerchio SVG: raggio 42, circonferenza 264. Dash calcolato da score/100.
+const ringDash = (scoreAggregato / 100) * 264;
+const dataHealthNow = new Date().toLocaleString('it-IT', {
+  timeZone: 'Europe/Rome',
+  day: '2-digit', month: '2-digit', year: 'numeric',
+  hour: '2-digit', minute: '2-digit',
+});
+
 const maxAnalisi = Math.max(1, ...stats.perGiorno.map((g) => g.analisi));
 const oggiBreve = (g: string) => {
   const d = new Date(g);
@@ -102,6 +236,65 @@ const fmtSoloData = (iso: string) =>
         <p class="text-navy-400 text-xs mt-1">Sessione: <span class="text-gold-400">{adminEmail}</span> · <a href="/api/auth/logout" class="underline hover:text-gold-300">esci</a></p>
       </div>
     </header>
+
+    <section class="mb-8">
+      <div class="rounded-2xl border border-navy-700 bg-gradient-to-br from-navy-900 via-navy-950 to-navy-900 p-6 shadow-2xl">
+        <div class="flex items-start justify-between gap-6 mb-6">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Stato generale</div>
+            <div class="text-3xl font-extrabold text-white mt-1">Sherlock — polso rapido</div>
+            <div class="text-[11px] text-navy-500 mt-1">Aggiornato {dataHealthNow} · una card = un aspetto · colpo d'occhio</div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="relative w-24 h-24 flex-shrink-0">
+              <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                <circle cx="50" cy="50" r="42" stroke-width="8" fill="none" class="stroke-navy-800"></circle>
+                <circle
+                  cx="50" cy="50" r="42" stroke-width="8" fill="none"
+                  class={scoreRing}
+                  stroke-linecap="round"
+                  stroke-dasharray={`${ringDash} 264`}
+                ></circle>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <div class={`text-2xl font-extrabold ${scoreColor}`}>{scoreAggregato}</div>
+                <div class="text-[8px] uppercase tracking-widest text-navy-400">/ 100</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-[10px] uppercase tracking-widest text-navy-400">Diagnosi</div>
+              <div class={`text-lg font-extrabold uppercase ${scoreColor}`}>{scoreLabel}</div>
+              <div class="text-[10px] text-navy-500 mt-1 max-w-[140px]">media delle 5 dimensioni</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-5 gap-3">
+          {dimensioni.map((d) => {
+            const c = tileColor(d.score);
+            return (
+              <div class={`rounded-xl border ${c.border} bg-gradient-to-b ${c.bg} p-4 flex flex-col items-center text-center`}>
+                <div class="text-2xl mb-1" aria-hidden="true">{dimensionIcon(d.label)}</div>
+                <div class="text-[10px] uppercase tracking-widest text-navy-300 font-bold">{d.label}</div>
+                <div class={`text-2xl font-extrabold mt-1 ${c.num}`}>{d.big}</div>
+                <div class="text-[10px] text-navy-500 mt-0.5 leading-tight min-h-[24px]">{d.note}</div>
+                <div class="w-full h-1.5 bg-navy-800 rounded-full mt-2 overflow-hidden">
+                  <div class={`h-full ${c.bar} rounded-full transition-all`} style={`width:${d.score}%`}></div>
+                </div>
+                <div class="flex items-center justify-between w-full mt-2 text-[10px]">
+                  <span class="text-navy-500 font-mono">{d.score.toFixed(0)}</span>
+                  <span class={`font-bold text-base leading-none ${trendColor(d.trend)}`} title={d.trend === 'up' ? 'in crescita' : d.trend === 'down' ? 'in calo' : d.trend === 'flat' ? 'stabile' : 'dati insufficienti'}>{trendGlyph(d.trend)}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div class="mt-4 text-[11px] text-navy-500 leading-relaxed">
+          <strong class="text-navy-300">Come leggere</strong> — colore card = stato (verde ok, ambra da monitorare, rosso critico) · numero grande = misura primaria · barra = punteggio 0-100 · freccia = tendenza dei giorni recenti vs precedenti (↗ crescita &gt;15%, ↘ calo &gt;15%, ↔ stabile). Nessun singolo indicatore va guardato da solo: il cerchio centrale è la media.
+        </div>
+      </div>
+    </section>
 
     <section class="mb-6">
       <div class="flex items-baseline justify-between mb-3">
