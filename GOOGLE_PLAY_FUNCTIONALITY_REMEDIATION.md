@@ -34,8 +34,18 @@ Rafforzati gerarchia delle card, profondità, focus oro, stati disabilitati, spa
 - Test Android JVM: navigazione e bridge verdi.
 - Gradle `testDebugUnitTest bundleRelease`: `BUILD SUCCESSFUL`.
 - R8, lint vital e firma release completati dalla build Gradle.
+- Playwright sulla produzione: **14 test superati**, 2 acquisizioni non applicabili saltate; viewport 320×568, 412×915, 1024×768 e 1440×900.
+- Smoke test HTTP produzione: homepage e `/app/` rispondono 200; contratto di navigazione, nome accessibile Impostazioni e regione di feedback presenti.
+- Screenshot senza dati personali: `test-results/google-play/` (home, upload e paywall nei profili mobile-small e Android; output locale ignorato da Git).
 
-Non sono ancora dichiarati come eseguiti: test Play Billing reale, Pre-launch report Console e prova manuale su più dispositivi fisici. Devono essere completati sulla track di test prima della produzione.
+Non sono ancora dichiarati come eseguiti: test Play Billing reale, Pre-launch report Console e prova manuale su più dispositivi fisici. Devono essere completati sulla track di test prima della pubblicazione su Google Play.
+
+## Deploy web verificato
+
+- Produzione: `https://www.sherlockpolizze.it`
+- Deployment Vercel: `dpl_6HgY1nrwNwG1Sy8wdHQKHvXzPwW2`
+- HSTS: `max-age=63072000`
+- CSP applicata e verificata sulla risposta pubblica.
 
 ## Produzione del bundle
 

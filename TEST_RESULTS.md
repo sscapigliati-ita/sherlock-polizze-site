@@ -77,3 +77,5 @@ Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
 - Cicli rossi osservati per import Android, dominio, navigazione, bridge e accessibilità PWA.
 - `npm test`: **112/112** in 17 file.
 - Gradle `testDebugUnitTest bundleRelease`: **BUILD SUCCESSFUL**; AAB v4.6.7/vc65 firmato generato.
+- Playwright produzione: **14 superati, 2 saltati intenzionalmente** in 4 profili; navigazione, nomi accessibili, upload, retry, home e paywall verificati.
+- Smoke HTTP produzione: **200** su `/` e `/app/`; HSTS, CSP e nuovi contratti PWA presenti.

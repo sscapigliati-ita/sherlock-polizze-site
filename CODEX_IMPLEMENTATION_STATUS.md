@@ -32,7 +32,7 @@ Sono state completate le occorrenze coperte dai test, disattivata l'offerta pubb
 
 ## Limiti attuali
 
-Le credenziali reali non sono disponibili né necessarie per build e test unitari. Non sono stati eseguiti test contro PayPal, Google Play, GA4, Redis, Anthropic o Resend reali. Nessun deploy o push è stato effettuato.
+Non sono stati eseguiti pagamenti reali né test end-to-end contro PayPal, Play Billing, GA4, Redis, Anthropic o Resend. Il sito web è stato pubblicato e verificato su `www.sherlockpolizze.it`; il bundle Android è stato creato localmente ma non ancora caricato nella Play Console.
 
 ## Tranche IVASS/AAS
 
@@ -52,4 +52,4 @@ I contenuti caricati e il testo del sinistro sono marcati come dati non attendib
 
 ## Remediation Google Play
 
-Importato e sanificato il progetto Android v4.6.6. Preparata v4.6.7/versionCode 65 con dominio canonico, navigazione e tasto Indietro recuperabili, bridge/file chooser con esiti espliciti, controlli PWA accessibili e polish visivo. AAB firmato generato localmente; caricamento e test Console restano manuali.
+Importato e sanificato il progetto Android v4.6.6. Preparata v4.6.7/versionCode 65 con dominio canonico, navigazione e tasto Indietro recuperabili, bridge/file chooser con esiti espliciti, controlli PWA accessibili e polish visivo. AAB firmato generato localmente. I test browser sulla produzione sono verdi in quattro viewport; caricamento e test Console restano da eseguire.
