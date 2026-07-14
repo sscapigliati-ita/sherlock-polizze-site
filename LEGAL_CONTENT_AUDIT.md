@@ -37,4 +37,12 @@ La ricerca ampia ha evidenziato contenuti ulteriori che richiedono revisione con
 
 ## Criterio di prudenza
 
-Le correzioni automatiche non certificano la correttezza giuridica. Ogni bozza resta da controllare prima dell'invio e il prodotto non sostituisce un professionista. I residui sopra restano pubblicabili soltanto dopo revisione puntuale; fino ad allora sono classificati come rischio contenutistico aperto in `PENDING_TASKS.md`.
+Le correzioni automatiche non certificano la correttezza giuridica. Ogni bozza resta da controllare prima dell'invio e il prodotto non sostituisce un professionista.
+
+## Revisione IVASS/AAS del 14 luglio 2026
+
+Completata la tranche sui contenuti pubblici prioritari. Sono stati corretti il termine di risposta ai reclami (45 giorni), l'avvio dell'AAS (15 gennaio 2026), il costo (20 euro), il termine ordinario (180 giorni con possibile proroga fino a 90), la natura documentale e le conseguenze dell'eventuale inadempimento. Rimossi soglie generalizzate, percentuali di successo non documentate, linguaggio di “vittoria” e qualificazioni della decisione come automaticamente vincolante o esecutiva.
+
+File rivisti: mockup pubblico, guide su reclamo, esposto IVASS, diniego e mancata risposta, sinistro respinto, diffida, ricorso AAS, risarcimento auto e storia del fondatore. Riferimenti di verifica: pagine ufficiali IVASS “Reclami” e “Arbitro Assicurativo”, oltre al D.M. 215/2024.
+
+I controlli automatici ora comprendono 21 regressioni legali e coprono anche data AAS, soglie generalizzate, termini IVASS, decisione IVASS, percentuali promozionali e affermazioni assolute nella storia personale.

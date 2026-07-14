@@ -33,3 +33,7 @@ Sono state completate le occorrenze coperte dai test, disattivata l'offerta pubb
 ## Limiti attuali
 
 Le credenziali reali non sono disponibili né necessarie per build e test unitari. Non sono stati eseguiti test contro PayPal, Google Play, GA4, Redis, Anthropic o Resend reali. Nessun deploy o push è stato effettuato.
+
+## Tranche IVASS/AAS
+
+Revisione contenutistica prioritaria completata il 14 luglio 2026: fonti ufficiali verificate, guide e mockup corretti, storia del fondatore resa non assoluta e suite anti-regressione ampliata a 21 controlli legali. Questa tranche non costituisce una certificazione legale dell'intero sito.

@@ -122,8 +122,8 @@ a) violazione dell'art. 148 del Codice delle Assicurazioni
    Private (D.Lgs. 209/2005), che prevede la liquidazione del
    sinistro entro 60 giorni dalla richiesta;
 
-b) violazione dell'art. 7 del Regolamento ISVAP 24/2008,
-   relativamente alla mancata risposta al reclamo entro 60 giorni;
+b) mancata risposta al reclamo entro il termine di 45 giorni
+   previsto dalla disciplina IVASS;
 
 c) interpretazione distorta della clausola n. [X] delle Condizioni
    Generali di Assicurazione, in particolare in quanto [argomento];
@@ -213,7 +213,7 @@ Svantaggi:
 
 ## Tempi di risposta IVASS
 
-IVASS ha **45 giorni** di tempo per istruire l'esposto (Regolamento IVASS 24/2008). In pratica:
+Non esiste un termine generale di 45 giorni entro cui IVASS debba concludere la trattazione. I tempi dipendono dal contenuto del reclamo e dagli approfondimenti necessari. In pratica:
 
 - **Settimana 1-2:** IVASS protocolla l'esposto e ne valuta l'ammissibilità.
 - **Settimana 2-4:** Se ammissibile, IVASS contatta la compagnia chiedendo chiarimenti. La compagnia ha 30 giorni per rispondere.
@@ -224,7 +224,7 @@ Possibili esiti:
 2. **Apertura procedimento sanzionatorio**: IVASS ritiene che la compagnia abbia commesso violazioni. Multa.
 3. **Richiesta di integrazione**: IVASS chiede ulteriori documenti all'esponente prima di concludere la propria attività di vigilanza sul caso segnalato.
 
-> 💡 **Esperienza pratica**: nel 60-70% dei casi, la compagnia — saputo dell'esposto — riapre spontaneamente la pratica e propone una soluzione all'assicurato **prima** della decisione IVASS, per evitare la sanzione.
+> 💡 **Effetto possibile**: la richiesta di chiarimenti di IVASS può indurre la compagnia a riesaminare la pratica, ma non garantisce riapertura, accordo o indennizzo.
 
 ---
 
@@ -232,14 +232,14 @@ Possibili esiti:
 
 Dopo aver presentato esposto IVASS hai tre opzioni:
 
-### Opzione A — Attendi la decisione IVASS
+### Opzione A — Attendi la conclusione della trattazione IVASS
 Se IVASS apre procedimento sanzionatorio, la compagnia paga la multa. Tu **non** ricevi soldi direttamente: la sanzione va allo Stato. Tuttavia, la compagnia spesso ti propone un accordo separato per chiudere la pratica.
 
 ### Opzione B — Procedi parallelamente con diffida
 Mentre IVASS istruisce, puoi inviare una **diffida formale** alla compagnia (vedi [come scrivere una diffida](/guide/diffida-compagnia-assicurativa)). Le due strade sono compatibili e si rafforzano a vicenda.
 
 ### Opzione C — Adisci l'Arbitro Assicurativo o il Tribunale
-Se vuoi recuperare i tuoi soldi, devi comunque procedere in sede civile (Arbitro per controversie fino a 150.000€, Tribunale per importi superiori).
+Se cerchi una decisione sulla controversia individuale, valuta i requisiti dell'Arbitro Assicurativo, della mediazione o dell'azione giudiziale. IVASS non dispone direttamente l'indennizzo.
 
 ---
 
@@ -280,7 +280,7 @@ Sì, l'esposto IVASS è **completamente gratuito**. L'unico costo eventuale è q
 
 ### Se l'esposto viene archiviato, ho altre strade?
 **Sì.** L'archiviazione IVASS non preclude le vie giudiziali. Puoi:
-- Adire l'Arbitro Assicurativo (per controversie fino a 150.000€)
+- Presentare ricorso all'Arbitro Assicurativo, se ricorrono i requisiti applicabili
 - Promuovere causa civile presso il Tribunale competente
 - Avviare procedura di mediazione obbligatoria (in molti casi è preliminare alla causa)
 
@@ -297,7 +297,7 @@ IVASS tratta i tuoi dati ai sensi del GDPR e li conserva per la durata dell'istr
 
 ## Conclusione
 
-L'esposto IVASS è uno **strumento sottoutilizzato** dai consumatori italiani. È gratuito, accessibile, e nella stragrande maggioranza dei casi sblocca pratiche assicurative ferme. Il segreto è scriverlo nella forma corretta, con i riferimenti normativi appropriati.
+Il reclamo a IVASS è uno strumento gratuito di segnalazione e vigilanza. Una presentazione chiara e documentata facilita la trattazione, ma non garantisce la riapertura della pratica né un esito favorevole.
 
 Per la massima efficacia: presenta esposto IVASS **insieme** a una diffida formale alla compagnia. Le due strade lavorano in parallelo.
 

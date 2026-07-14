@@ -250,7 +250,7 @@ Spesso le compagnie offrono una **transazione ridotta** (es. 8.000€ contro 12.
 ### Scenario C — La compagnia respinge
 Allora hai elementi solidi per:
 1. Avviare la causa civile (tieni la diffida come prova della messa in mora)
-2. Adire l'Arbitro Assicurativo (controversie fino a 150.000€)
+2. Presentare ricorso all'Arbitro Assicurativo, se ammissibile
 3. Avviare procedura di mediazione obbligatoria
 
 ---
@@ -278,7 +278,7 @@ La diffida in sé non ha un costo (oltre alla PEC o raccomandata). Se affidata a
 ### Se la compagnia ignora la diffida, devo per forza fare causa?
 **No.** Hai altre opzioni:
 - Procedura di mediazione obbligatoria (D.Lgs. 28/2010)
-- Arbitro Assicurativo (fino a 150.000€)
+- Arbitro Assicurativo, nei limiti e alle condizioni applicabili
 - Esposto IVASS (se non già fatto)
 
 La causa civile è l'ultima opzione, non l'unica.

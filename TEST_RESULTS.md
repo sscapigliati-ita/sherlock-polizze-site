@@ -50,3 +50,9 @@ Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
 - Prima diagnostica reale: 3 errori (tipo PWA virtuale mancante e fallback PayPal admin incompleto).
 - Correzioni: riferimento tipi `vite-plugin-pwa/client` e proprietà opzionale `ultimoAggiornamento` nel fallback.
 - Verifica finale: `npm test` 67/67; `npx astro check` 0 errori e 19 hint; `npm run build` superata; `git diff --check` superato.
+
+## Tranche contenuti IVASS/AAS
+
+- Test mirato iniziale: nuove regressioni introdotte e osservate in stato rosso sui contenuti preesistenti.
+- Dopo le correzioni: `npm test -- --run tests/content/legal-regressions.test.ts` superato, **21/21 test**.
+- Verifica completa della tranche: `npm test` **74/74**; `npx astro check` **0 errori, 19 hint non bloccanti**; `npm run build` superata; `git diff --check` superato.

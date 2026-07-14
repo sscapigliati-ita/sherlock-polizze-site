@@ -9,7 +9,7 @@ keywords: compagnia non risponde reclamo, assicurazione non risponde, reclamo as
 
 # Compagnia non risponde al reclamo: cosa fare
 
-> **TL;DR:** Le compagnie hanno **45 giorni** per rispondere a un reclamo scritto (Reg. IVASS n. 24/2008). Se non rispondono, **il silenzio equivale a rigetto**: puoi presentare subito esposto IVASS (senza aspettare altro) e diffida formale. Nel 2025 IVASS ha gestito 107.460 reclami; quelli legati a "ritardo o mancata risposta della compagnia" sono al **secondo posto** per frequenza. Non sei un caso isolato — c'è una procedura precisa, e funziona.
+> **TL;DR:** Le imprese devono rispondere a un reclamo scritto entro **45 giorni**. Se non ricevi risposta entro tale termine o la risposta non è soddisfacente, puoi rivolgerti a IVASS e verificare se ricorrono i requisiti per l'Arbitro Assicurativo o altre procedure. Il silenzio non equivale automaticamente a una decisione sul merito.
 
 **Cosa imparerai:**
 - Come contare correttamente i 45 giorni
@@ -79,7 +79,7 @@ Il tono giusto: fermo, documentato, mai aggressivo. Niente "denuncerò ovunque":
 
 ## Mossa 3 — Ricorso all'AAS (Arbitro Assicurativo) per controversie specifiche
 
-L'**Arbitro Assicurativo** (AAS), istituito con D.M. 215/2024 e operativo da fine 2024, è competente per controversie tra consumatori e imprese assicurative su:
+L'**Arbitro Assicurativo** (AAS), disciplinato dal D.M. 215/2024 e operativo per la presentazione dei ricorsi dal 15 gennaio 2026, tratta controversie assicurative nei limiti e alle condizioni previste dalla disciplina applicabile.
 - Polizze **danni** (kasko, casa, infortuni, RC professionale, ecc.): fino a **25.000 €**
 - Polizze **vita** e prodotti di investimento assicurativi: fino a **50.000 €**
 
@@ -108,7 +108,7 @@ In tre casi:
 - **Sinistri con responsabilità da chiarire** (es. concorso di colpa, lesioni personali)
 - **Rivalsa della compagnia** verso di te (es. ubriachezza, conducente non autorizzato)
 
-Per importi minori, esposto IVASS + diffida + ricorso AAS coprono il 90% dei casi senza spese legali.
+Per alcune controversie può essere possibile procedere senza assistenza legale, ma scelta, ammissibilità e utilità delle diverse procedure dipendono dal caso concreto.
 
 ---
 

@@ -9,7 +9,7 @@ keywords: reclamo assicurazione auto, reclamo compagnia assicurativa, rimborso n
 
 # Come fare reclamo all'assicurazione auto nel 2026
 
-> **TL;DR:** Il 68% dei reclami assicurativi viene respinto al primo tentativo, ma quasi mai per mancanza di diritto: è il **come** viene scritto il reclamo a fare la differenza. In questa guida vediamo a chi inviarlo, cosa scrivere e in che ordine seguire i 3 livelli di tutela (compagnia → IVASS → Arbitro). In fondo trovi un modello PDF gratuito e un'opzione per generare il reclamo personalizzato in genere in meno di un minuto.
+> **TL;DR:** Un reclamo chiaro e documentato consente alla compagnia di esaminare puntualmente la contestazione. In questa guida vediamo a chi inviarlo, cosa scrivere e come valutare i successivi strumenti di tutela. In fondo trovi un modello PDF gratuito e un'opzione per generare una bozza personalizzata.
 
 **Cosa imparerai:**
 - Quando puoi (e devi) fare reclamo all'assicurazione auto
@@ -23,7 +23,7 @@ keywords: reclamo assicurazione auto, reclamo compagnia assicurativa, rimborso n
 
 ## Quando si può fare reclamo all'assicurazione auto
 
-Il reclamo formale non è solo un "lamento": è un atto giuridico che obbliga la compagnia a rispondere entro **60 giorni** (art. 7 del Regolamento ISVAP 24/2008). Va presentato in tutti i casi in cui c'è uno scollamento tra ciò che il contratto promette e ciò che la compagnia sta effettivamente facendo.
+Il reclamo formale non è solo un "lamento": la compagnia deve rispondere entro **45 giorni** dalla ricezione, secondo la disciplina IVASS sui reclami. Va presentato quando c'è uno scollamento tra ciò che il contratto promette e ciò che la compagnia sta effettivamente facendo.
 
 I casi più frequenti in cui ha senso fare reclamo:
 
@@ -48,13 +48,13 @@ Esiste una scala progressiva di azioni, sempre più formali. La maggior parte de
 
 È il **primo step obbligatorio**. Ogni compagnia assicurativa che opera in Italia ha per legge un Ufficio Reclami con propri tempi di gestione.
 
-- **Tempo di risposta:** massimo 60 giorni dalla ricezione
+- **Tempo di risposta:** massimo 45 giorni dalla ricezione
 - **Costo:** zero
 - **Forma:** PEC (consigliata) o raccomandata A/R alla sede legale
 
 ### Livello 2 — IVASS (Istituto per la Vigilanza sulle Assicurazioni)
 
-Se la compagnia non risponde entro 60 giorni o respinge il reclamo senza una motivazione convincente, puoi rivolgerti all'IVASS, l'autorità pubblica che vigila sulle compagnie.
+Se la compagnia non risponde entro 45 giorni o la risposta non è soddisfacente, puoi rivolgerti all'IVASS, l'autorità pubblica che vigila sulle compagnie.
 
 - **Tempo di risposta:** 45 giorni di istruttoria
 - **Costo:** zero
@@ -64,9 +64,9 @@ IVASS non può obbligare la compagnia a risarcirti, ma può aprire un procedimen
 
 ### Livello 3 — Arbitro Assicurativo
 
-Per controversie fino a **150.000 euro**, dal 2024 esiste l'**Arbitro Assicurativo**, un sistema di risoluzione alternativa delle controversie (ADR) gestito dalla Consap. La decisione dell'Arbitro è vincolante per la compagnia se non viene impugnata in tribunale.
+Dal 15 gennaio 2026 è operativo l'**Arbitro Assicurativo (AAS)**, sistema stragiudiziale istituito presso IVASS. L'ammissibilità dipende da materia, valore e altri requisiti indicati nel portale ufficiale; prima del ricorso occorre avere presentato alla compagnia un reclamo sugli stessi fatti.
 
-- **Tempo di risposta:** 90 giorni
+- **Termine ordinario:** 180 giorni, prorogabili una volta fino a 90 giorni nei casi complessi
 - **Costo:** 20€
 - **Forma:** ricorso online sul portale dell'Arbitro
 
@@ -152,9 +152,9 @@ Le scadenze sono il modo più comune in cui si perdono diritti che sarebbero sta
 | **2 anni** dal sinistro | Prescrizione del diritto al risarcimento (RC auto) | art. 2947 c.c. |
 | **5 anni** | Prescrizione del diritto al risarcimento (polizze diverse da RC) | art. 2952 c.c. |
 | **60 giorni** dalla richiesta | Tempo per la liquidazione del sinistro RC auto | art. 148 Cod. Ass. Private |
-| **60 giorni** dalla ricezione | Tempo per la compagnia per rispondere al reclamo | Reg. ISVAP 24/2008 |
-| **45 giorni** dalla ricezione | Tempo per IVASS per istruire il reclamo | Reg. IVASS |
-| **90 giorni** dalla ricezione | Tempo per l'Arbitro Assicurativo per decidere | Reg. Consap |
+| **45 giorni** dalla ricezione | Tempo per la compagnia per rispondere al reclamo | Disciplina reclami IVASS |
+| **Tempi variabili** | Trattazione del reclamo da parte di IVASS | In base agli approfondimenti necessari |
+| **180 giorni**, prorogabili fino a 90 | Termine ordinario della procedura AAS e possibile proroga nei casi complessi | Portale ufficiale AAS |
 
 > ⚠️ **La prescrizione si interrompe SOLO con atti formali**: PEC, raccomandata A/R o atto giudiziale. Un'email semplice o una telefonata **non interrompono nulla**.
 
@@ -174,7 +174,7 @@ Una diffida è il passaggio "pre-causa": intimi formalmente alla compagnia di ad
 
 ### Arbitro Assicurativo o causa civile
 
-L'Arbitro è gratuito (20€) e veloce (90 giorni), ed è la soluzione consigliata per controversie fino a 150.000€. La causa civile è l'ultima opzione: costosa, lenta (1-3 anni), ma necessaria per importi maggiori o casi complessi.
+Il ricorso AAS costa 20 euro e si svolge online su base documentale. Prima di sceglierlo occorre verificare requisiti, limiti e materia sul portale ufficiale; per casi complessi o non ammissibili può essere opportuno valutare assistenza legale e gli altri strumenti disponibili.
 
 ---
 
@@ -211,9 +211,9 @@ L'esposto IVASS è **completamente gratuito**. IVASS è finanziata dai contribut
 
 No, il reclamo può essere scritto in proprio. Però è importante che contenga i riferimenti normativi pertinenti: senza, la compagnia può ignorarlo o trattarlo come "richiesta generica" senza far decorrere i termini. È esattamente per evitare questo problema che Sherlock genera il testo già con tutto al posto giusto.
 
-### Cosa succede se la compagnia non risponde entro 60 giorni?
+### Cosa succede se la compagnia non risponde entro 45 giorni?
 
-Dopo 60 giorni di silenzio puoi:
+Dopo 45 giorni di silenzio puoi:
 1. Presentare esposto IVASS (gratis)
 2. Inviare diffida formale (costituzione in mora, interrompe la prescrizione)
 3. Promuovere ricorso all'Arbitro Assicurativo (20€)

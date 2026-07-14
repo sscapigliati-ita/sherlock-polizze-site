@@ -9,7 +9,7 @@ keywords: risarcimento auto negato, sinistro auto rifiutato, assicurazione non p
 
 # Risarcimento auto negato: i 5 passi per ribaltare la decisione
 
-> **TL;DR:** Il 68% dei dinieghi assicurativi viene cambiato dopo un reclamo formale. Non perché tu abbia poi più ragione di prima, ma perché un reclamo scritto bene **costringe** la compagnia a riesaminare la pratica con un livello di attenzione diverso. In questa guida vediamo i 5 step concreti, con tempi, costi e quando serve davvero l'avvocato.
+> **TL;DR:** Un reclamo formale consente di chiedere alla compagnia un riesame documentato del diniego, ma non garantisce che la decisione cambi. In questa guida vediamo i passaggi possibili, i documenti utili e quando valutare assistenza professionale.
 
 **Cosa imparerai:**
 - Le 6 motivazioni più frequenti di diniego (e quanto sono "vere")
@@ -116,7 +116,7 @@ Non c'è un termine massimo legale, ma **consigliato entro 60 giorni** dal dinie
 Vedi la [guida completa al reclamo assicurazione auto](/guide/reclamo-assicurazione-auto) per la struttura nei 9 elementi.
 
 ### Termine per la risposta
-La compagnia ha **60 giorni** per rispondere al reclamo (art. 7 Reg. ISVAP 24/2008).
+La compagnia deve rispondere al reclamo entro **45 giorni**, secondo la disciplina generale indicata da IVASS, salvo regole specifiche applicabili.
 
 ### Esiti possibili
 - **Riapertura della pratica**: la compagnia rivede e liquida (caso più frequente)
@@ -129,7 +129,7 @@ La compagnia ha **60 giorni** per rispondere al reclamo (art. 7 Reg. ISVAP 24/20
 
 ## Step 4 — Esposto IVASS
 
-Se la compagnia respinge il reclamo o tace per 60 giorni, l'esposto IVASS è il passo successivo.
+Se la compagnia respinge il reclamo o non risponde entro 45 giorni, puoi rivolgerti a IVASS.
 
 ### Quando ha senso
 - La compagnia ha respinto con motivazione che ritieni infondata
@@ -138,19 +138,19 @@ Se la compagnia respinge il reclamo o tace per 60 giorni, l'esposto IVASS è il 
 
 ### Costo e tempi
 - **Costo:** zero
-- **Tempi:** IVASS istruisce in 45 giorni
+- **Tempi:** variabili in base agli approfondimenti necessari
 
 ### Cosa fare
 Vedi la [guida completa all'esposto IVASS](/guide/esposto-ivass-modello).
 
 ### Effetto pratico
-Nel 60-70% dei casi, la compagnia — saputo dell'esposto — riapre spontaneamente la pratica per evitare la sanzione IVASS.
+La richiesta di chiarimenti di IVASS può portare la compagnia a riesaminare la pratica, ma non garantisce riapertura o indennizzo.
 
 ---
 
 ## Step 5 — Conciliazione paritetica o Arbitro Assicurativo
 
-Per controversie di valore intermedio (fino a 50.000-150.000€), prima di andare in tribunale conviene tentare la **risoluzione alternativa**.
+Prima di andare in tribunale può essere utile verificare se la controversia rientra in uno strumento di **risoluzione alternativa**.
 
 ### Conciliazione paritetica
 - Procedura gratuita gestita dalle associazioni dei consumatori in convenzione con l'Ania (associazione delle compagnie)
@@ -159,11 +159,11 @@ Per controversie di valore intermedio (fino a 50.000-150.000€), prima di andar
 - Vincolante per la compagnia se accetta la proposta
 
 ### Arbitro Assicurativo
-- Sistema ADR istituito nel 2024, gestito da Consap
-- Per controversie fino a 150.000€
+- Sistema stragiudiziale operativo dal 15 gennaio 2026 e istituito presso IVASS
+- Ammissibilità soggetta ai requisiti di materia e valore pubblicati nel portale ufficiale
 - Costo: 20€
-- Tempi: 90 giorni
-- Decisione vincolante per la compagnia, salvo impugnazione
+- Termine ordinario: 180 giorni, prorogabili fino a 90 nei casi complessi
+- L'eventuale mancato adempimento dell'impresa viene reso pubblico secondo le regole della procedura
 
 ### Quando saltare e andare diretti in causa
 Se il caso è particolarmente complesso, o se vuoi danno morale rilevante, può essere meglio andare diretti in tribunale. In questi casi, **avvocato necessario**.
@@ -204,8 +204,8 @@ L'ultima opzione, da valutare quando le altre strade sono esaurite.
 | **3 giorni** dal sinistro | Denuncia alla compagnia | Decadenza (contestabile) |
 | **30 giorni** dal sinistro | Comunicazione patente alla compagnia (RC auto) | Difficoltà istruttoria |
 | **60 giorni** dalla richiesta | Termine per liquidazione RC auto | Possibile diffida |
-| **60 giorni** dalla risposta compagnia | Reclamo formale (consigliato) | Indebolimento posizione |
-| **60 giorni** dalla ricezione | Risposta della compagnia al reclamo | Esposto IVASS |
+| Tempestivamente dopo il diniego | Reclamo formale | Conservazione ordinata delle contestazioni |
+| **45 giorni** dalla ricezione | Risposta della compagnia al reclamo | Possibile reclamo a IVASS o verifica requisiti AAS |
 | **2 anni** dal sinistro | Prescrizione del diritto al risarcimento (RC auto) | Perdita del diritto |
 | **5 anni** dal sinistro | Prescrizione altre polizze | Perdita del diritto |
 
@@ -254,12 +254,10 @@ Non c'è termine massimo legale, ma è **consigliato entro 60 giorni**. Ritardi 
 - Fuori UE: dipende dalla polizza. Verifica garanzia "assistenza estero"
 
 ### La causa civile è davvero l'ultima opzione?
-Sì. Costosa, lenta, esito incerto. Le strade precedenti (reclamo, IVASS, Arbitro) risolvono l'80% dei casi.
+Sì, ma costi, tempi ed esito dipendono dal caso. Reclamo, IVASS e Arbitro hanno funzioni diverse e non garantiscono la soluzione della controversia.
 
 ### Cosa succede se la compagnia continua a non pagare anche dopo decisione Arbitro?
-La decisione dell'Arbitro è **vincolante**. Se la compagnia non vi adempie, hai un titolo per:
-1. Avviare procedura esecutiva
-2. Segnalare a IVASS
+La decisione dell'Arbitro non equivale automaticamente a un titolo esecutivo. In caso di mancato adempimento dell'impresa, la procedura prevede la pubblicazione dell'inadempimento; resta possibile valutare gli altri strumenti di tutela con assistenza professionale.
 3. Avviare causa per la sola esecuzione (più rapida)
 
 ### Posso chiedere il danno morale nel reclamo?
@@ -269,7 +267,7 @@ Sì, ma con cautela. Il danno non patrimoniale richiede prova specifica e, in mo
 
 ## Conclusione
 
-Un risarcimento negato non è un risarcimento **perso**. Nel 68% dei casi, un reclamo ben fatto ribalta la decisione. La differenza sta in:
+Un risarcimento negato può essere riesaminato quando emergono elementi documentali pertinenti. Un reclamo chiaro dovrebbe concentrarsi su:
 
 1. **Documentazione completa**
 2. **Riferimenti normativi pertinenti**

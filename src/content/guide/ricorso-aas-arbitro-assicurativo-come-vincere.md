@@ -1,5 +1,5 @@
 ---
-title: "Ricorso AAS Arbitro Assicurativo: come prepararlo per vincere (caso reale)"
+title: "Ricorso AAS Arbitro Assicurativo: come prepararlo (caso reale)"
 slug: ricorso-aas-arbitro-assicurativo-come-vincere
 description: "Come funziona davvero un ricorso all'Arbitro Assicurativo (AAS): tempi, costi, ammissibilità per valore, documenti probatori indispensabili. Tutti i passi a partire da un caso reale di sconfitta tecnica — per evitarne le cause."
 author: Stefano Scapigliati
@@ -7,15 +7,15 @@ date: 2026-06-30
 keywords: ricorso AAS arbitro assicurativo, come fare ricorso AAS, decisione AAS impugnabile, documenti ricorso AAS, valore massimo ricorso AAS, AAS infortuni
 ---
 
-# Ricorso AAS Arbitro Assicurativo: come prepararlo per vincere
+# Ricorso AAS Arbitro Assicurativo: come prepararlo
 
-> **TL;DR:** L'Arbitro Assicurativo (AAS), istituito con D.M. 215/2024, decide controversie tra consumatori e compagnie con valore **fino a 25.000 €** (controversie da danni) e 50.000 € (controversie da vita). Procedimento **completamente documentale**: non ci sono udienze, non ci sono testimoni, non ci sono perizie disposte d'ufficio. Tutto si gioca su quello che produci con il ricorso. Significa che la sconfitta più frequente non è "torto nel merito" ma "mancata produzione probatoria" — la trappola in cui sono caduto io. Questa guida nasce dal mio caso reale (vedi [storia Sherlock](/storia-sherlock)): cosa è andato bene, cosa è andato male, cosa farei oggi.
+> **TL;DR:** L'Arbitro Assicurativo (AAS), operativo dal 15 gennaio 2026, esamina online controversie ammissibili tra clienti e imprese o intermediari. Il procedimento è documentale: non ci sono udienze e la completezza degli allegati è essenziale. Questa guida nasce dal mio caso reale (vedi [storia Sherlock](/storia-sherlock)): cosa è andato bene, cosa è andato male, cosa farei oggi.
 
 **Cosa imparerai:**
 - Quando si può fare ricorso AAS (e quando no)
 - I 4 step obbligatori prima del ricorso
 - I documenti probatori indispensabili (la lezione dolorosa)
-- Come strutturare il ricorso per vincere il quantum
+- Come strutturare e documentare la domanda economica
 - Cosa succede dopo la decisione (vincolante? appellabile?)
 - I 5 errori più comuni
 
@@ -23,16 +23,11 @@ keywords: ricorso AAS arbitro assicurativo, come fare ricorso AAS, decisione AAS
 
 ## Cos'è l'AAS e quando puoi rivolgerti
 
-L'AAS (Arbitro Assicurativo) è un sistema **stragiudiziale** di risoluzione controversie istituito dal D.M. 215/2024 ed entrato in vigore nel novembre 2024. Decide su:
+L'AAS (Arbitro Assicurativo) è un sistema **stragiudiziale** istituito dal D.M. 215/2024 e operativo dal 15 gennaio 2026. Materie, limiti di valore ed esclusioni variano in base al tipo di controversia: prima di procedere occorre verificarli sul portale ufficiale AAS.
 
-- Polizze **danni** (auto kasko, casa, infortuni, RC professionale, ecc.): fino a **25.000 €**
-- Polizze **vita** e prodotti di investimento: fino a **50.000 €**
-- **NON decide** sulla RC auto obbligatoria (per cui c'è la negoziazione assistita ex L. 162/2014 art. 3)
-- **NON decide** su questioni che richiedono accertamenti tecnico-peritali complessi non documentabili
+**Costo**: 20 € per il ricorrente; il contributo è rimborsato dall'impresa o dall'intermediario se il ricorso è accolto, anche parzialmente.
 
-**Costo**: 30 € per il ricorrente, rimborsato se vince.
-
-**Tempi medi**: 6-9 mesi dalla presentazione alla decisione.
+**Termine ordinario**: 180 giorni, con una possibile proroga fino a 90 giorni nei casi complessi.
 
 **Pro**: rapido, economico, decisione tecnicamente qualificata (Collegio composto da magistrati, esperti IVASS, rappresentanti consumatori e imprese).
 
@@ -54,9 +49,7 @@ Vedi: [PEC di reclamo alla compagnia assicurativa](/guide/pec-reclamo-assicurazi
 
 ## Step 1 — Verifica i limiti di valore
 
-Il **valore massimo** è inderogabile:
-- 25.000 € per i danni
-- 50.000 € per la vita
+I limiti di valore dipendono dalla materia e dal tipo di domanda. Verifica sempre la soglia applicabile nel portale ufficiale prima di presentare il ricorso.
 
 **Trabocchetto**: se chiedi una somma "anche quale acconto, con riserva di agire in altra sede per il maggior importo", la compagnia tenta sempre di eccepire l'inammissibilità per superamento del valore. Nel mio caso, l'Arbitro ha respinto questa eccezione:
 
@@ -191,11 +184,11 @@ Verifica che la franchigia sia specificamente sottoscritta (art. 1341 c.c.). Se 
 
 ## Cosa succede dopo la decisione
 
-### Se vinci
-La decisione è **vincolante per la compagnia** se la accetti. La compagnia deve pagare entro 90 giorni.
+### Se il ricorso è accolto
+La decisione indica il termine entro cui l'impresa o l'intermediario deve adempiere. L'eventuale inadempimento viene pubblicato secondo le regole della procedura.
 
-### Se perdi
-La decisione **NON è vincolante per te**. Puoi:
+### Se il ricorso non è accolto
+La procedura non preclude il ricorso al giudice. Puoi:
 - Fare causa civile **ex novo** (non c'è effetto preclusivo)
 - Citare le motivazioni AAS a tuo favore (anche in caso di rigetto, spesso ci sono affermazioni sostanziali a favore — vedi [storia Sherlock](/storia-sherlock))
 - Il giudice civile non è vincolato dalla decisione AAS

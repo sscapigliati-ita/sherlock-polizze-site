@@ -22,7 +22,7 @@ const ROOTS = [
   'src/content',
   'src/layouts',
   'src/components',
-  'public/app',
+  'public',
 ];
 
 function walk(dir: string, acc: string[] = []): string[] {
@@ -165,5 +165,40 @@ describe('Regressioni giuridiche R1-R6 (contenuto pubblico)', () => {
   it('nessuna promessa pubblica di analisi AI illimitate', () => {
     const hits = findMatches(/analisi\s+(AI\s+)?illimitate/i);
     expect(hits, `Uso AI illimitato senza controllo costi: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('non indica l’AAS come operativo nel 2024', () => {
+    const hits = findMatches(/AAS[^.]{0,80}(operativ[oa]|entrato in vigore)[^.]{0,30}2024|operativ[oa][^.]{0,30}2024[^.]{0,80}AAS/i);
+    expect(hits, `Data di operatività AAS errata: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('non pubblica il limite AAS di 150.000 euro', () => {
+    const hits = findMatches(/(?:AAS|Arbitro Assicurativo|Arbitro)[^.\n]{0,100}150[.\s]?000\s*€/i);
+    expect(hits, `Limite AAS non verificato: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('non indica 60 giorni come termine generale di risposta al reclamo', () => {
+    const hits = findMatches(/(?:compagnia|impresa)[^.\n]{0,80}60\s+giorni[^.\n]{0,60}(?:reclamo|rispondere)|60\s+giorni[^.\n]{0,80}(?:risposta|reclamo)/i);
+    expect(hits, `Termine reclamo errato: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('non attribuisce a IVASS un termine generale di 45 giorni', () => {
+    const hits = findMatches(/IVASS\s+(?:ha|deve|istruisce|risponde)[^.\n]{0,50}45\s+giorni|45\s+giorni[^.\n]{0,40}tempo\s+per\s+IVASS/i);
+    expect(hits, `Termine IVASS non previsto in via generale: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('non parla di decisione IVASS sulla controversia', () => {
+    const hits = findMatches(/decisione\s+IVASS|attendi\s+la\s+decisione\s+IVASS/i);
+    expect(hits, `IVASS presentato come decisore: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('non usa percentuali promozionali di successo del reclamo o esposto', () => {
+    const hits = findMatches(/(?:60\s*[-–]\s*70|68|80|90)\s*%[^.\n]{0,100}(?:casi|dinieghi|reclamo|esposto|risolv)/i);
+    expect(hits, `Percentuale di successo non documentata: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('non trasforma il caso fondatore in una vittoria certa', () => {
+    const hits = findMatches(/avrei\s+vinto|non\s+c['’]è\s+dubbio/i);
+    expect(hits, `Conclusione certa non dimostrata: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
   });
 });

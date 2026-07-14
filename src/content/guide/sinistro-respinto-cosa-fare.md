@@ -128,7 +128,7 @@ Carica il PDF della polizza e Sherlock identifica le clausole contestabili e i r
 | 3. Esposto IVASS | tempi variabili | Gratis | Sollecita vigilanza sull'impresa |
 | 4. Mediazione + Giudizio | 6-24 mesi | 40 € - migliaia | Decisione vincolante |
 
-Il 90% dei casi si risolve **entro la mossa 3**. La causa è davvero l'ultima carta.
+Non esiste una percentuale generale di soluzione valida per ogni caso. L'azione giudiziale è una possibilità da valutare dopo aver esaminato documenti, valore, costi e procedure alternative applicabili.
 
 ---
 
