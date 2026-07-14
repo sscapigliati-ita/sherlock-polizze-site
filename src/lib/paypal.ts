@@ -7,6 +7,10 @@ function getMode(): 'live' | 'sandbox' {
   return m === 'sandbox' ? 'sandbox' : 'live';
 }
 
+export function paypalEnvironment(): 'production' | 'sandbox' {
+  return getMode() === 'sandbox' ? 'sandbox' : 'production';
+}
+
 function baseApi(): string {
   return getMode() === 'sandbox'
     ? 'https://api-m.sandbox.paypal.com'
@@ -137,6 +141,7 @@ export type CaptureResult = {
   piano: PianoId;
   ref?: string; // codice referrer, se presente nel custom_id
   captureId?: string; // ID univoco della capture PayPal (per idempotenza e reconciliation)
+  paymentEnvironment: 'production' | 'sandbox';
 };
 
 // Namespace UUID stabile per Sherlock (RFC 4122 § 4.3). Serve come radice
@@ -246,6 +251,7 @@ export async function catturaOrdinePayPal(orderId: string): Promise<CaptureResul
     piano,
     ref,
     captureId,
+    paymentEnvironment: paypalEnvironment(),
   };
 }
 
