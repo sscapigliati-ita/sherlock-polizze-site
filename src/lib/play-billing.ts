@@ -12,6 +12,7 @@ export type PlayPurchase = {
   productId: string;
   purchaseToken: string;
   regionCode?: string;
+  purchaseType?: 0 | 1 | 2;
 };
 
 type ApiError = { errore: string; status?: number };
@@ -38,6 +39,7 @@ export async function verifyInappPurchase(
       productId,
       purchaseToken,
       regionCode: data.regionCode,
+      purchaseType: data.purchaseType,
     };
   } catch (e: any) {
     return { errore: e?.message ?? String(e) };

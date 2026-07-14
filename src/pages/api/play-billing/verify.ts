@@ -95,6 +95,8 @@ export const POST: APIRoute = async ({ request }) => {
     parseInt(verify.purchaseTimeMillis, 10) || Date.now(),
   ).toISOString();
   const dataScadenza = calcolaScadenzaIso(prodotto.durataMesi, dataEmissione);
+  const isTestPurchase = verify.purchaseType === 0;
+  const commercialStatus = isTestPurchase ? 'test' : 'reale';
   const record: RecordPro = {
     codice,
     email,
@@ -104,13 +106,17 @@ export const POST: APIRoute = async ({ request }) => {
     fonte: 'play',
     purchaseToken,
     playOrderId: verify.orderId,
+    commercialStatus,
+    commercialStatusReason: isTestPurchase ? 'google_play_license_test' : 'google_play_verified',
+    commercialStatusUpdatedAt: new Date().toISOString(),
+    paymentEnvironment: isTestPurchase ? 'test' : 'production',
   };
   await salvaCodicePro(record);
   await salvaPurchaseTokenIndex(purchaseToken, codice);
 
   // Founder venduto via Play — incrementa contatore condiviso con flusso PayPal.
   // Solo per il piano 'founder': i codici singoli non toccano il counter.
-  if (prodotto.piano === 'founder') {
+  if (prodotto.piano === 'founder' && commercialStatus === 'reale') {
     await incrementaFounderVenduti().catch(() => undefined);
   }
 
@@ -124,18 +130,20 @@ export const POST: APIRoute = async ({ request }) => {
   // Stream 'firebase' esplicito: se in futuro l'app trasmettesse app_instance_id
   // come clientId, questo evento andrebbe alla proprietà Firebase (non alla
   // proprietà Ads web che si aspetta client_id GA4 web).
-  void ga4TrackServer(
-    'play_billing_verified',
-    null,
-    {
-      product: productId,
-      piano: prodotto.piano,
-      value: prodotto.prezzoEur,
-      currency: 'EUR',
-    },
-    undefined,
-    'firebase',
-  );
+  if (commercialStatus === 'reale') {
+    void ga4TrackServer(
+      'play_billing_verified',
+      null,
+      {
+        product: productId,
+        piano: prodotto.piano,
+        value: prodotto.prezzoEur,
+        currency: 'EUR',
+      },
+      undefined,
+      'firebase',
+    );
+  }
 
   return json({ codice, piano: prodotto.piano, dataScadenza });
 };

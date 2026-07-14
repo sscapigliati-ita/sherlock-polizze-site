@@ -40,6 +40,10 @@ export const GET: APIRoute = async ({ url }) => {
     dataEmissione: now.toISOString(),
     dataScadenza: scad.toISOString(),
     paypalOrderId: 'MANUS-MIGRATION',
+    commercialStatus: 'amministratore',
+    commercialStatusReason: 'admin_migration',
+    commercialStatusUpdatedAt: now.toISOString(),
+    paymentEnvironment: 'unknown',
   };
 
   await salvaCodicePro(rec);
