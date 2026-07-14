@@ -3,6 +3,7 @@ import { getAnthropicKey, getModel } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
 import { ga4TrackServer } from '../../lib/ga4';
 import { sanitizeContext } from '../../lib/analytics-context';
+import { validateBase64Upload } from '../../lib/upload-validation';
 
 // Bucket del tempo di processing per non inviare valori grezzi (ridurrebbe la
 // cardinalità dei parametri GA4 e potrebbe rivelare pattern di infrastruttura).
@@ -179,7 +180,13 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'documento_base64 e mime richiesti' }, 400);
   }
 
-  const isPDF = mime === 'application/pdf';
+  const upload = validateBase64Upload({ data: documento_base64, declaredMime: mime, maxBytes: 20 * 1024 * 1024 });
+  if (!upload.ok) {
+    await traccia('bloccato', upload.code.toLowerCase());
+    return json({ error: upload.code }, upload.code === 'FILE_TOO_LARGE' ? 413 : 400);
+  }
+
+  const isPDF = upload.mime === 'application/pdf';
   const promptUtente = sinistroTesto
     ? `Analizza questa polizza chiamando il tool. L'utente ha descritto questo sinistro: "${sinistroTesto}". Compila valutazione_sinistro nel tool.`
     : 'Analizza questa polizza chiamando il tool.';
@@ -192,7 +199,7 @@ export const POST: APIRoute = async ({ request }) => {
         { type: 'text', text: promptUtente },
       ]
     : [
-        { type: 'image', source: { type: 'base64', media_type: mime, data: documento_base64 } },
+        { type: 'image', source: { type: 'base64', media_type: upload.mime, data: documento_base64 } },
         { type: 'text', text: promptUtente },
       ];
 
