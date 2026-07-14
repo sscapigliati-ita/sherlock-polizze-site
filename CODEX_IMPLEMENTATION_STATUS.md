@@ -45,3 +45,7 @@ Implementata la classificazione persistente `reale/test/rimborsato/incompleto/am
 ## Hardening del perimetro HTTP
 
 Implementati header difensivi e CSP, rate limit delle API AI/pagamenti con identità anonimizzate e verifica base64/dimensione/magic-byte degli upload. In produzione il rate limit blocca in assenza di KV invece di lasciare senza protezione le API costose.
+
+## Sicurezza dei prompt AI
+
+I contenuti caricati e il testo del sinistro sono marcati come dati non attendibili e separati dalle istruzioni di sistema. Il testo libero è limitato e serializzato. La generazione lettere accetta solo tipologie note, forza uno schema strutturato, valida l'output e restituisce una bozza con avvertenze senza consumare il codice in caso di risposta AI invalida. Il rischio intrinseco del modello resta esplicitamente residuo.

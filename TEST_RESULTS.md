@@ -66,3 +66,8 @@ Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
 
 - Cicli rossi osservati per header, firme upload e rate limiting.
 - Verifica finale: configurazione `vercel.json` valida; `npm test` **96/96** in 13 file; `npx astro check` **0 errori e 19 hint non bloccanti**; `npm run build` superata; `git diff --check` superato.
+
+## Sicurezza dei prompt AI
+
+- Cicli rossi osservati per helper di sicurezza, schema lettera e separazione del testo utente dalle istruzioni.
+- Verifica finale: `npm test` **104/104** in 15 file; `npx astro check` **0 errori e 19 hint non bloccanti**; `npm run build` superata; `git diff --check` superato.

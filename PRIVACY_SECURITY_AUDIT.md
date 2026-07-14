@@ -14,12 +14,12 @@ Data audit: 14 luglio 2026.
 - documenti inviati direttamente al provider AI senza persistenza applicativa rilevata;
 - KV usato per email/codici/acquisti; fallback in memoria limitato allo sviluppo;
 - ambienti PayPal sandbox/live configurabili.
+- istruzioni AI condivise trattano documenti e testo utente come dati non attendibili; il testo del sinistro è limitato e serializzato, mentre la lettera usa uno schema tool forzato e validato.
 
 ## Rischi alti
 
 1. Cancellazione email/codice descritta come richiesta manuale; manca endpoint autenticato di cancellazione account/pratica ed esportazione.
-2. Prompt AI ricevono contenuto documento senza mitigazione esplicita della prompt injection.
-3. Retention “fino a richiesta” per email/codice non ha scadenza automatica configurabile.
+2. Retention “fino a richiesta” per email/codice non ha scadenza automatica configurabile.
 
 ## Rischi medi
 
@@ -30,6 +30,7 @@ Data audit: 14 luglio 2026.
 - assenza di protezione CSRF esplicita sui POST basati su cookie/sessione amministrativa, da verificare con il modello auth effettivo.
 - la CSP conserva `unsafe-inline` per compatibilità con gli script attuali; nonce/hashing resta un hardening successivo;
 - magic-byte non equivale ad antivirus, OCR o verifica di leggibilità del documento.
+- le mitigazioni di prompt injection riducono il rischio ma non possono garantire che un modello ignori sempre contenuto ostile; gli output restano da presentare come bozze da verificare.
 
 ## Coerenza privacy
 
@@ -37,4 +38,4 @@ Privacy e trasparenza dichiarano che i documenti non sono conservati dall'applic
 
 ## Azioni sicure successive
 
-Il codice di attivazione è stato rimosso dai log. Rate limit, security headers e verifica contenuto upload sono ora implementati e testati. Le azioni successive sono redazione strutturata degli errori e schema AI resistente alla prompt injection. Implementare cancellazione/esportazione soltanto dopo aver definito autenticazione e proprietà dei record.
+Il codice di attivazione è stato rimosso dai log. Rate limit, security headers, verifica contenuto upload e confini di fiducia/schema AI sono implementati e testati. Le azioni successive sono redazione strutturata degli errori, retention e protezione CSRF amministrativa. Implementare cancellazione/esportazione soltanto dopo aver definito autenticazione e proprietà dei record.
