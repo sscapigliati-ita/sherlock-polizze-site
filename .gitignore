@@ -36,3 +36,9 @@ android/**/google-services.json
 android/**/*.aab
 android/**/*.apk
 artifacts/
+
+# Browser test output
+playwright-report/
+test-results/**
+!test-results/google-play/
+!test-results/google-play/.gitkeep
