@@ -57,6 +57,33 @@ describe('storage Play Billing', () => {
   });
 });
 
+describe('aggregati commerciali prudenti', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
+  });
+
+  it('esclude legacy e non reali da ricavi e conteggi commerciali', async () => {
+    const mod = await import('../../src/lib/storage');
+    const base = {
+      email: 'x@example.it', piano: 'mensile' as const,
+      dataEmissione: '2026-07-14T12:00:00.000Z', dataScadenza: '2099-01-01T00:00:00.000Z',
+    };
+    await mod.salvaCodicePro({ ...base, codice: 'LEGACY' });
+    await mod.salvaCodicePro({ ...base, codice: 'REAL', commercialStatus: 'reale' });
+    await mod.salvaCodicePro({ ...base, codice: 'ADMIN', commercialStatus: 'amministratore' });
+    await mod.salvaCodicePro({ ...base, codice: 'REFUND', commercialStatus: 'rimborsato' });
+    const result = await mod.leggiAbbonati();
+    expect(result.reali).toBe(1);
+    expect(result.attiviReali).toBe(1);
+    expect(result.ricavoEuroCent).toBe(299);
+    expect(result.perStato).toEqual({ reale: 1, test: 1, rimborsato: 1, incompleto: 0, amministratore: 1 });
+  });
+});
+
 describe('storage PayPal idempotenza (fallback in-memory)', () => {
   beforeEach(() => {
     vi.resetModules();
