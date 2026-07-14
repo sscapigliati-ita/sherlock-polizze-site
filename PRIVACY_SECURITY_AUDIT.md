@@ -7,7 +7,9 @@ Data audit: 14 luglio 2026.
 - segreti letti da variabili server-side; configurazione Firebase pubblica separata;
 - consenso analytics predefinito negato e testato;
 - idempotenza PayPal e Play Billing coperta da test;
-- limite corpo/PDF e validazione minima del MIME nelle API di analisi/confronto;
+- limite corpo/file e verifica base64, dimensione reale, MIME e magic-byte per PDF/JPEG/PNG/WebP;
+- rate limit applicativo per API AI e pagamenti, con chiavi IP anonimizzate e KV atomico;
+- CSP e header difensivi applicati dal middleware e dalla configurazione Vercel;
 - output HTML Astro e funzioni di escaping nella PWA;
 - documenti inviati direttamente al provider AI senza persistenza applicativa rilevata;
 - KV usato per email/codici/acquisti; fallback in memoria limitato allo sviluppo;
@@ -15,12 +17,9 @@ Data audit: 14 luglio 2026.
 
 ## Rischi alti
 
-1. Non è presente rate limiting applicativo verificabile per le API AI e pagamento.
-2. Non sono rilevati CSP e security headers completi in `vercel.json`.
-3. Upload singolo/base64: validazione basata sul MIME dichiarato; mancano magic-byte, PDF protetto/vuoto, scansione illeggibile, hash e deduplicazione.
-4. Cancellazione email/codice descritta come richiesta manuale; manca endpoint autenticato di cancellazione account/pratica ed esportazione.
-5. Prompt AI ricevono contenuto documento senza mitigazione esplicita della prompt injection.
-6. Retention “fino a richiesta” per email/codice non ha scadenza automatica configurabile.
+1. Cancellazione email/codice descritta come richiesta manuale; manca endpoint autenticato di cancellazione account/pratica ed esportazione.
+2. Prompt AI ricevono contenuto documento senza mitigazione esplicita della prompt injection.
+3. Retention “fino a richiesta” per email/codice non ha scadenza automatica configurabile.
 
 ## Rischi medi
 
@@ -29,6 +28,8 @@ Data audit: 14 luglio 2026.
 - nessun budget token/costo per pratica;
 - configurazione Firebase/GA4 e documenti pubblici devono essere ricontrollati dopo ogni cambio provider;
 - assenza di protezione CSRF esplicita sui POST basati su cookie/sessione amministrativa, da verificare con il modello auth effettivo.
+- la CSP conserva `unsafe-inline` per compatibilità con gli script attuali; nonce/hashing resta un hardening successivo;
+- magic-byte non equivale ad antivirus, OCR o verifica di leggibilità del documento.
 
 ## Coerenza privacy
 
@@ -36,4 +37,4 @@ Privacy e trasparenza dichiarano che i documenti non sono conservati dall'applic
 
 ## Azioni sicure successive
 
-Il codice di attivazione è stato rimosso dal warning email ed è protetto dal test `security-regressions.test.ts`. Le azioni successive sono introdurre redazione strutturata, rate limit, security headers testati, verifica contenuto upload e schema AI server-side. Implementare cancellazione/esportazione soltanto dopo aver definito autenticazione e proprietà dei record.
+Il codice di attivazione è stato rimosso dai log. Rate limit, security headers e verifica contenuto upload sono ora implementati e testati. Le azioni successive sono redazione strutturata degli errori e schema AI resistente alla prompt injection. Implementare cancellazione/esportazione soltanto dopo aver definito autenticazione e proprietà dei record.

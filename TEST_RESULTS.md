@@ -61,3 +61,8 @@ Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
 
 - Cicli rossi osservati per dominio, aggregati legacy, PayPal, Google Play, amministrazione e analytics di test.
 - Verifica finale: `npm test` **84/84** in 10 file; `npx astro check` **0 errori e 19 hint non bloccanti**; `npm run build` superata; `git diff --check` superato.
+
+## Hardening perimetro HTTP
+
+- Cicli rossi osservati per header, firme upload e rate limiting.
+- Verifica finale: configurazione `vercel.json` valida; `npm test` **96/96** in 13 file; `npx astro check` **0 errori e 19 hint non bloccanti**; `npm run build` superata; `git diff --check` superato.

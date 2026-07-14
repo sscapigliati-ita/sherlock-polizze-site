@@ -41,3 +41,7 @@ Revisione contenutistica prioritaria completata il 14 luglio 2026: fonti ufficia
 ## Classificazione acquisti
 
 Implementata la classificazione persistente `reale/test/rimborsato/incompleto/amministratore`. PayPal usa l'ambiente server; Google Play usa `purchaseType`; le migrazioni admin sono separate. Dashboard, ricavi e side effect commerciali considerano solo gli acquisti reali, mentre i record legacy restano entitlement validi ma sono classificati come test nelle viste.
+
+## Hardening del perimetro HTTP
+
+Implementati header difensivi e CSP, rate limit delle API AI/pagamenti con identità anonimizzate e verifica base64/dimensione/magic-byte degli upload. In produzione il rate limit blocca in assenza di KV invece di lasciare senza protezione le API costose.
