@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -155,7 +157,13 @@ public class MainActivity extends Activity {
                 intent.setType("*/*");
                 String[] mimes = {"application/pdf", "image/jpeg", "image/png", "image/jpg"};
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimes);
-                startActivityForResult(Intent.createChooser(intent, "Seleziona documento"), FILE_CHOOSER_REQUEST);
+                try {
+                    startActivityForResult(Intent.createChooser(intent, "Seleziona documento"), FILE_CHOOSER_REQUEST);
+                } catch (ActivityNotFoundException error) {
+                    filePathCallback.onReceiveValue(null);
+                    filePathCallback = null;
+                    Toast.makeText(MainActivity.this, "Nessun selettore file disponibile", Toast.LENGTH_SHORT).show();
+                }
                 return true;
             }
         });
@@ -289,11 +297,14 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FILE_CHOOSER_REQUEST && filePathCallback != null) {
             Uri[] results = null;
-            if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-                results = new Uri[]{data.getData()};
+            try {
+                if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+                    results = new Uri[]{data.getData()};
+                }
+                filePathCallback.onReceiveValue(results);
+            } finally {
+                filePathCallback = null;
             }
-            filePathCallback.onReceiveValue(results);
-            filePathCallback = null;
         } else if (requestCode == UPDATE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 logAnalytics("update_accepted", null);
@@ -643,7 +654,7 @@ public class MainActivity extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
             String result = null;
-            String error = null;
+            String errorCode = null;
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
                 conn.setRequestMethod(method);
@@ -675,17 +686,26 @@ public class MainActivity extends Activity {
                 br.close();
                 result = sb.toString();
 
+            } catch (SocketTimeoutException e) {
+                errorCode = "network_timeout";
+            } catch (UnknownHostException e) {
+                errorCode = "network_unavailable";
             } catch (Exception e) {
-                error = e.getMessage();
+                errorCode = "server_error";
             }
 
-            // Store result as base64 to avoid escaping issues
             String cbKey = "cb_" + callbackId;
-            if (result != null) {
-                pendingResults.put(cbKey, Base64.encodeToString(
-                        result.getBytes(Charset.forName("UTF-8")), Base64.NO_WRAP));
-            } else {
-                pendingResults.put(cbKey, "__ERR__" + (error != null ? error : "unknown"));
+            try {
+                if (result != null) {
+                    String payload = Base64.encodeToString(
+                            result.getBytes(Charset.forName("UTF-8")), Base64.NO_WRAP);
+                    pendingResults.put(cbKey, BridgeResult.success(payload).toJson());
+                } else {
+                    pendingResults.put(cbKey, BridgeResult.error(
+                            errorCode != null ? errorCode : "server_error").toJson());
+                }
+            } catch (JSONException error) {
+                pendingResults.put(cbKey, "{\"ok\":false,\"error\":\"invalid_response\"}");
             }
             final String key = cbKey;
             runOnUiThread(new Runnable() {
