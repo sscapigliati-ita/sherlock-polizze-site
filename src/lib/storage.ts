@@ -497,6 +497,7 @@ export async function leggiAbbonati(): Promise<SintesiAbbonati> {
     records = Array.from(fallback.values());
   }
 
+  records = records.map((record) => ({ ...record, ...normalizeCommercialMetadata(record) }));
   records.sort((a, b) => b.dataEmissione.localeCompare(a.dataEmissione));
   const oraIso = new Date().toISOString();
   const attivi = records.filter((r) => r.dataScadenza > oraIso).length;

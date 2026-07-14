@@ -37,3 +37,7 @@ Le credenziali reali non sono disponibili né necessarie per build e test unitar
 ## Tranche IVASS/AAS
 
 Revisione contenutistica prioritaria completata il 14 luglio 2026: fonti ufficiali verificate, guide e mockup corretti, storia del fondatore resa non assoluta e suite anti-regressione ampliata a 21 controlli legali. Questa tranche non costituisce una certificazione legale dell'intero sito.
+
+## Classificazione acquisti
+
+Implementata la classificazione persistente `reale/test/rimborsato/incompleto/amministratore`. PayPal usa l'ambiente server; Google Play usa `purchaseType`; le migrazioni admin sono separate. Dashboard, ricavi e side effect commerciali considerano solo gli acquisti reali, mentre i record legacy restano entitlement validi ma sono classificati come test nelle viste.

@@ -31,8 +31,7 @@ Non devono essere inviati nomi, email, codici fiscali, numeri polizza, testo dei
 ## Gap prioritari
 
 - nomenclatura non allineata all'elenco canonico richiesto;
-- nessuna distinzione analytics verificabile tra acquisto test e reale;
+- distinzione test/reale ora applicata nei flussi PayPal e Play: gli eventi commerciali sono emessi soltanto per acquisti `reale`; sandbox, license testing, legacy e amministrazione sono esclusi;
 - assenza di costo AI per pratica, margine e canale normalizzato;
 - eventi upload/classificazione/triage incompleti;
-- dashboard esistente non deve essere interpretata come ricavo reale.
-
+- la dashboard commerciale ora filtra i record reali, ma richiede ancora riconciliazione contabile con i provider.

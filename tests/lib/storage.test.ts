@@ -81,6 +81,9 @@ describe('aggregati commerciali prudenti', () => {
     expect(result.attiviReali).toBe(1);
     expect(result.ricavoEuroCent).toBe(299);
     expect(result.perStato).toEqual({ reale: 1, test: 1, rimborsato: 1, incompleto: 0, amministratore: 1 });
+    expect(result.records.find((r) => r.codice === 'LEGACY')).toMatchObject({
+      commercialStatus: 'test', commercialStatusReason: 'legacy_unclassified', paymentEnvironment: 'unknown',
+    });
   });
 });
 

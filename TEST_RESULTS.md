@@ -56,3 +56,8 @@ Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
 - Test mirato iniziale: nuove regressioni introdotte e osservate in stato rosso sui contenuti preesistenti.
 - Dopo le correzioni: `npm test -- --run tests/content/legal-regressions.test.ts` superato, **21/21 test**.
 - Verifica completa della tranche: `npm test` **74/74**; `npx astro check` **0 errori, 19 hint non bloccanti**; `npm run build` superata; `git diff --check` superato.
+
+## Classificazione acquisti
+
+- Cicli rossi osservati per dominio, aggregati legacy, PayPal, Google Play, amministrazione e analytics di test.
+- Verifica finale: `npm test` **84/84** in 10 file; `npx astro check` **0 errori e 19 hint non bloccanti**; `npm run build` superata; `git diff --check` superato.

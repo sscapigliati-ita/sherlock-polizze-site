@@ -23,6 +23,10 @@ Il repository contiene ancora piani mensile, semestrale, annuale e acquisto sing
 
 I record esistenti distinguono fonti come PayPal e Play, ma non espongono ancora uno stato commerciale completo con `environment`, `isTest`, `refunded`, `incomplete`, coupon/amministratore e riconciliazione. Pertanto dashboard e analytics non devono essere interpretati come ricavi reali.
 
+## Classificazione commerciale implementata
+
+Dal 14 luglio 2026 i nuovi record distinguono `reale`, `test`, `rimborsato`, `incompleto` e `amministratore`. I record storici non classificati sono letti prudenzialmente come `test`. Solo `reale` alimenta ricavi, conversioni, referral e contatore Founder; gli entitlement tecnici restano validi indipendentemente dalla classificazione. La sincronizzazione automatica dei rimborsi e la migrazione dei dati di produzione restano attività separate.
+
 Prossima tranche:
 
 1. definire schema transazione retrocompatibile;
