@@ -60,11 +60,13 @@ Il bundle viene creato in `android/app/build/outputs/bundle/release/app-release.
 
 ## Checklist Google Play Console
 
-- [ ] Creare una release nella track di test interno.
-- [ ] Caricare `Sherlock-v4.6.7-vc65.aab` e verificare package/versionCode.
+- [x] Caricare `Sherlock-v4.6.7-vc65.aab` e verificare versionCode 65/versionName 4.6.7.
+- [x] Creare e inviare la release 65 nel canale di produzione; stato Console al 14 luglio 2026: **In revisione**.
 - [ ] Eseguire Pre-launch report su telefono piccolo, medio e tablet.
 - [ ] Provare onboarding, impostazioni, upload/annullamento, link, Indietro, errore rete, errore AI, acquisto test e ripristino.
 - [ ] Allegare screenshot/video dei controlli funzionanti.
 - [ ] Inviare la risposta alla contestazione soltanto dopo il test su track.
+
+La release 64 (4.6.6) resta disponibile su Google Play durante la revisione della 65.
 
 Testo suggerito: “Abbiamo corretto la gestione dei controlli interattivi nella versione 4.6.7 (65): navigazione Indietro, link, selettore documenti, feedback di errore e stati dei pulsanti ora restituiscono sempre un esito visibile. Abbiamo inoltre aggiunto nomi accessibili, target touch adeguati e test automatici multi-livello. La release è stata verificata nella track di test prima dell'invio.”

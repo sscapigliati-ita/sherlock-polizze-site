@@ -32,7 +32,7 @@ Sono state completate le occorrenze coperte dai test, disattivata l'offerta pubb
 
 ## Limiti attuali
 
-Non sono stati eseguiti pagamenti reali né test end-to-end contro PayPal, Play Billing, GA4, Redis, Anthropic o Resend. Il sito web è stato pubblicato e verificato su `www.sherlockpolizze.it`; il bundle Android è stato creato localmente ma non ancora caricato nella Play Console.
+Non sono stati eseguiti pagamenti reali né test end-to-end contro PayPal, Play Billing, GA4, Redis, Anthropic o Resend. Il sito web è stato pubblicato e verificato su `www.sherlockpolizze.it`; il bundle Android è stato caricato nella Play Console e attende la revisione di Google.
 
 ## Tranche IVASS/AAS
 
@@ -52,4 +52,4 @@ I contenuti caricati e il testo del sinistro sono marcati come dati non attendib
 
 ## Remediation Google Play
 
-Importato e sanificato il progetto Android v4.6.6. Preparata v4.6.7/versionCode 65 con dominio canonico, navigazione e tasto Indietro recuperabili, bridge/file chooser con esiti espliciti, controlli PWA accessibili e polish visivo. AAB firmato generato localmente. I test browser sulla produzione sono verdi in quattro viewport; caricamento e test Console restano da eseguire.
+Importato e sanificato il progetto Android v4.6.6. Preparata v4.6.7/versionCode 65 con dominio canonico, navigazione e tasto Indietro recuperabili, bridge/file chooser con esiti espliciti, controlli PWA accessibili e polish visivo. AAB firmato generato localmente e inviato nel canale di produzione Google Play; la release 65 risulta **In revisione**. I test browser web sono verdi in quattro viewport; restano il Pre-launch report e le prove Play Billing/dispositivo della Console.

@@ -13,7 +13,7 @@ Ultimo aggiornamento: 14 luglio 2026.
 
 ## Fasi successive
 
-- **Urgente Google Play:** caricare vc65 nella track interna, eseguire Pre-launch report e test Play Billing con account licenza, quindi inviare la risposta alla contestazione entro il 23 luglio 2026.
+- **Urgente Google Play:** monitorare l'approvazione della release 65 già in revisione, eseguire Pre-launch report e test Play Billing con account licenza, quindi inviare la risposta alla contestazione entro il 23 luglio 2026.
 - Prova manuale su almeno un telefono fisico piccolo/medio e un tablet, con particolare attenzione a selettore file e tasto Indietro.
 - Triage gratuito e Pacchetto Sinistro con prezzi configurabili.
 - Separazione persistente tra acquisti test, reali, rimborsati e incompleti.
