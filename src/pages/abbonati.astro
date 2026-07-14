@@ -169,14 +169,14 @@ const jsonLd = [
 
         <!-- Tabella comparativa -->
         <div class="mt-6 rounded-xl border border-navy-700 bg-navy-900 overflow-hidden">
-          <div class="grid grid-cols-3 text-[11px] uppercase tracking-widest text-navy-400 font-bold p-3 border-b border-navy-800">
+          <div class="grid grid-cols-[1.4fr_1fr_1fr] gap-2 text-[10px] sm:text-[11px] uppercase tracking-widest text-navy-400 font-bold p-3 border-b border-navy-800">
             <div>Piano</div><div class="text-right">Prezzo</div><div class="text-right">Al mese</div>
           </div>
           {piani.map((p) => (
-            <div class="grid grid-cols-3 p-3 border-b border-navy-800 last:border-0 text-sm">
-              <div class="text-navy-200">{p.nome}</div>
-              <div class="text-right text-white font-bold">{p.prezzo}</div>
-              <div class="text-right text-gold-300">{p.alMese.replace('/mese', '')}</div>
+            <div class="grid grid-cols-[1.4fr_1fr_1fr] gap-2 p-3 border-b border-navy-800 last:border-0 text-xs sm:text-sm items-center">
+              <div class="text-navy-200 min-w-0 break-words leading-tight">{p.nome}</div>
+              <div class="text-right text-white font-bold min-w-0 break-words">{p.prezzo}</div>
+              <div class="text-right text-gold-300 min-w-0 break-words">{p.alMese.replace('/mese', '')}</div>
             </div>
           ))}
         </div>

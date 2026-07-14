@@ -411,7 +411,7 @@ const fmtSoloData = (iso: string) =>
                 </div>
               ) : ok && (
                 <>
-                  <div class="grid grid-cols-4 gap-2 mb-4">
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                     <div>
                       <div class="text-[10px] text-navy-400 uppercase tracking-wider">Utenti oggi</div>
                       <div class="text-xl font-extrabold text-emerald-400">{fmtNum(ok.utentiOggi)}</div>
@@ -625,16 +625,16 @@ const fmtSoloData = (iso: string) =>
       </div>
     </section>
 
-    <section class="rounded-xl border border-navy-700 bg-navy-900 p-5 mb-8">
+    <section class="rounded-xl border border-navy-700 bg-navy-900 p-3 sm:p-5 mb-8 overflow-hidden">
       <div class="text-sm text-navy-200 font-bold mb-4">Analisi per giorno — ultimi 7 giorni</div>
-      <div class="grid grid-cols-7 gap-2 items-end" style="min-height:160px">
+      <div class="grid grid-cols-7 gap-1 sm:gap-2 items-end" style="min-height:160px">
         {stats.perGiorno.map((g) => {
           const h = Math.round((g.analisi / maxAnalisi) * 130);
           return (
-            <div class="flex flex-col items-center gap-1">
-              <div class="text-[10px] text-navy-400 font-semibold">{g.analisi}</div>
+            <div class="flex flex-col items-center gap-1 min-w-0">
+              <div class="text-[9px] sm:text-[10px] text-navy-400 font-semibold">{g.analisi}</div>
               <div class="w-full rounded-t bg-gradient-to-t from-gold-400 to-amber-200" style={`height:${Math.max(h, 2)}px`} title={`${g.giorno}: ${g.analisi} analisi`}></div>
-              <div class="text-[10px] text-navy-400 mt-1">{oggiBreve(g.giorno)}</div>
+              <div class="text-[9px] sm:text-[10px] text-navy-400 mt-1 truncate max-w-full">{oggiBreve(g.giorno)}</div>
             </div>
           );
         })}
