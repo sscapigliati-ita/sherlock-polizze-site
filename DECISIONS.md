@@ -35,3 +35,9 @@ Motivo: evitare di rompere account di test e, contemporaneamente, non vendere un
 Decisione: non forzare un aggiornamento/downgrade TypeScript durante la Fase 1.
 
 Motivo: build e test sono verdi, mentre il checker dichiara un peer range incompatibile. La correzione richiede scelta puntuale della coppia di versioni e va trattata come task separato con lockfile e verifica completa.
+
+## 2026-07-14 — TypeScript fissato a 6.0.3
+
+Decisione: sostituire TypeScript 7.0.2 con la versione esatta 6.0.3, mantenendo Astro e tutte le altre dipendenze.
+
+Motivo: è l'ultima versione stabile della serie dichiarata compatibile dal checker installato. L'albero npm è ora valido e `astro check` produce e verifica diagnostiche reali.

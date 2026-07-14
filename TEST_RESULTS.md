@@ -42,3 +42,11 @@ Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
 - `npm run build`: **superata**, output server Vercel, sitemap e PWA generati.
 - `npx astro check`: **ancora bloccato** prima della diagnostica da `Cannot read properties of undefined (reading 'fileExists')`; resta confermata l'incompatibilità TypeScript 7.0.2 / `@astrojs/check` 0.9.9.
 - Warning atteso nei test storage: KV non configurato, fallback in memoria per sviluppo.
+
+## Stabilizzazione toolchain
+
+- TypeScript fissato a `6.0.3`, compatibile con il peer range di `@astrojs/check@0.9.9`.
+- `npm ls typescript @astrojs/check`: exit 0, nessuna dipendenza invalida.
+- Prima diagnostica reale: 3 errori (tipo PWA virtuale mancante e fallback PayPal admin incompleto).
+- Correzioni: riferimento tipi `vite-plugin-pwa/client` e proprietà opzionale `ultimoAggiornamento` nel fallback.
+- Verifica finale: `npm test` 67/67; `npx astro check` 0 errori e 19 hint; `npm run build` superata; `git diff --check` superato.

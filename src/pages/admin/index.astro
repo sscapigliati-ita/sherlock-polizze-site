@@ -30,6 +30,7 @@ const [stats, abb, eventi, stabRes, ga4Ads, ga4Firebase, founderVenduti, ppProc]
   contaFounderVenduti().catch(() => 0),
   contaPayPalProcessing().catch(() => ({
     total: 0, processing: 0, completed: 0, failed: 0, withCaptureId: 0, stuckProcessing: 0,
+    ultimoAggiornamento: undefined,
   })),
 ]);
 const streamsConfigurati = statoStreamGa4();

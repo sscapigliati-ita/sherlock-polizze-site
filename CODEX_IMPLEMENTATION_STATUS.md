@@ -8,7 +8,7 @@ Ultimo aggiornamento: 14 luglio 2026.
 - Specifica e piano Fase 1: approvati e committati.
 - Baseline build: superata con Astro 6.4.6 e adapter Vercel.
 - Test finali Fase 1: 67 superati su 67, inclusi 14 controlli giuridici e un controllo sui log sensibili.
-- Astro check: bloccato da incompatibilità di dipendenze tra TypeScript 7.0.2 e `@astrojs/check` 0.9.9, che dichiara supporto TypeScript 5 o 6.
+- Astro check: ripristinato con TypeScript 6.0.3; verifica finale con 0 errori e 19 suggerimenti non bloccanti.
 - Build finale Fase 1: superata.
 - Correzioni Fase 1: concluse nei limiti dichiarati; i residui sono elencati negli audit e in `PENDING_TASKS.md`.
 
