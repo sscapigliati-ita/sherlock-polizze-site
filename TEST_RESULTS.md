@@ -71,3 +71,9 @@ Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
 
 - Cicli rossi osservati per helper di sicurezza, schema lettera e separazione del testo utente dalle istruzioni.
 - Verifica finale: `npm test` **104/104** in 15 file; `npx astro check` **0 errori e 19 hint non bloccanti**; `npm run build` superata; `git diff --check` superato.
+
+## Remediation Google Play
+
+- Cicli rossi osservati per import Android, dominio, navigazione, bridge e accessibilità PWA.
+- `npm test`: **112/112** in 17 file.
+- Gradle `testDebugUnitTest bundleRelease`: **BUILD SUCCESSFUL**; AAB v4.6.7/vc65 firmato generato.

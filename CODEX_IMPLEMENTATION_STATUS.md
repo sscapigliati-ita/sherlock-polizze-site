@@ -49,3 +49,7 @@ Implementati header difensivi e CSP, rate limit delle API AI/pagamenti con ident
 ## Sicurezza dei prompt AI
 
 I contenuti caricati e il testo del sinistro sono marcati come dati non attendibili e separati dalle istruzioni di sistema. Il testo libero è limitato e serializzato. La generazione lettere accetta solo tipologie note, forza uno schema strutturato, valida l'output e restituisce una bozza con avvertenze senza consumare il codice in caso di risposta AI invalida. Il rischio intrinseco del modello resta esplicitamente residuo.
+
+## Remediation Google Play
+
+Importato e sanificato il progetto Android v4.6.6. Preparata v4.6.7/versionCode 65 con dominio canonico, navigazione e tasto Indietro recuperabili, bridge/file chooser con esiti espliciti, controlli PWA accessibili e polish visivo. AAB firmato generato localmente; caricamento e test Console restano manuali.
