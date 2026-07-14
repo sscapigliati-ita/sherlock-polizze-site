@@ -7,9 +7,10 @@ Ultimo aggiornamento: 14 luglio 2026.
 - Recupero Claude: completato e committato.
 - Specifica e piano Fase 1: approvati e committati.
 - Baseline build: superata con Astro 6.4.6 e adapter Vercel.
-- Baseline test: 59 superati, 3 falliti su contenuti giuridici già presenti.
+- Test finali Fase 1: 67 superati su 67, inclusi 14 controlli giuridici e un controllo sui log sensibili.
 - Astro check: bloccato da incompatibilità di dipendenze tra TypeScript 7.0.2 e `@astrojs/check` 0.9.9, che dichiara supporto TypeScript 5 o 6.
-- Correzioni Fase 1: in corso.
+- Build finale Fase 1: superata.
+- Correzioni Fase 1: concluse nei limiti dichiarati; i residui sono elencati negli audit e in `PENDING_TASKS.md`.
 
 ## Stack rilevato
 
@@ -27,7 +28,8 @@ Ultimo aggiornamento: 14 luglio 2026.
 
 Tutte le otto modifiche recuperate sono mantenute. Nessuna è stata annullata. Le correzioni incomplete saranno completate preservando la finalità originaria e ampliando i test.
 
+Sono state completate le occorrenze coperte dai test, disattivata l'offerta pubblica Founder lifetime, rimosse le promesse di analisi illimitate e impedita la scrittura dei codici di attivazione nei log. Le licenze Founder tecniche esistenti sono rimaste operative.
+
 ## Limiti attuali
 
 Le credenziali reali non sono disponibili né necessarie per build e test unitari. Non sono stati eseguiti test contro PayPal, Google Play, GA4, Redis, Anthropic o Resend reali. Nessun deploy o push è stato effettuato.
-

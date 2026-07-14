@@ -34,3 +34,11 @@ Esito: **superato**.
 
 Astro ha generato entrypoint server, route statiche, sitemap, service worker e output Vercel. Tempo server build riportato: 24,17 secondi. Nessun deploy è stato eseguito.
 
+## Verifica finale Fase 1
+
+Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
+
+- `npm test`: **67/67 test superati**, 7/7 file test superati.
+- `npm run build`: **superata**, output server Vercel, sitemap e PWA generati.
+- `npx astro check`: **ancora bloccato** prima della diagnostica da `Cannot read properties of undefined (reading 'fileExists')`; resta confermata l'incompatibilità TypeScript 7.0.2 / `@astrojs/check` 0.9.9.
+- Warning atteso nei test storage: KV non configurato, fallback in memoria per sviluppo.

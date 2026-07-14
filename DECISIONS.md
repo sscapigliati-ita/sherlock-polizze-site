@@ -23,3 +23,15 @@ Motivo: evitare duplicazioni e grandi modifiche non verificabili.
 Decisione: registrare i tre test giuridici falliti e l'incompatibilità di `astro check`, mantenendo distinta la build riuscita.
 
 Motivo: i failure sono evidenza utile. Le regressioni di contenuto rientrano nella Fase 1; la dipendenza incompatibile richiede una correzione puntuale e separata.
+
+## 2026-07-14 — Founder preservato ma non commercializzato
+
+Decisione: rimuovere Founder lifetime e scarsità dall'interfaccia pubblica, mantenendo schema e licenze backend esistenti.
+
+Motivo: evitare di rompere account di test e, contemporaneamente, non vendere un uso AI perpetuo o presentare disponibilità residue non supportate.
+
+## 2026-07-14 — Nessun aggiornamento dipendenze non verificato
+
+Decisione: non forzare un aggiornamento/downgrade TypeScript durante la Fase 1.
+
+Motivo: build e test sono verdi, mentre il checker dichiara un peer range incompatibile. La correzione richiede scelta puntuale della coppia di versioni e va trattata come task separato con lockfile e verifica completa.
