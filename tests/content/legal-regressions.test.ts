@@ -146,4 +146,14 @@ describe('Regressioni giuridiche R1-R6 (contenuto pubblico)', () => {
     const hits = findMatches(/(rimborso|risultato|successo|esito)\s+(garantit[oi]|certo|assicurato|sicuro)/i);
     expect(hits, `Promesse di risultato vietate: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
   });
+
+  it('nessun termine generale di otto giorni per la denuncia', () => {
+    const hits = findMatches(/(entro|termine[^.]{0,20}di)\s+(gli\s+)?(8|otto)\s+giorni/i);
+    expect(hits, `Termine generale errato per la denuncia: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('nessuna lettera dichiarata pronta da inviare senza verifica', () => {
+    const hits = findMatches(/(lettera|reclamo)\s+(già\s+)?pront[ao]\s+da\s+inviare/i);
+    expect(hits, `Bozza presentata come pronta senza verifica: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
 });

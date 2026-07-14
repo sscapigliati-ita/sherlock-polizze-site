@@ -222,7 +222,7 @@ IVASS ha **45 giorni** di tempo per istruire l'esposto (Regolamento IVASS 24/200
 Possibili esiti:
 1. **Archiviazione**: IVASS ritiene che la compagnia abbia agito legittimamente. Resta la strada civile.
 2. **Apertura procedimento sanzionatorio**: IVASS ritiene che la compagnia abbia commesso violazioni. Multa.
-3. **Richiesta di integrazione**: IVASS chiede ulteriori documenti all'esponente prima di decidere.
+3. **Richiesta di integrazione**: IVASS chiede ulteriori documenti all'esponente prima di concludere la propria attività di vigilanza sul caso segnalato.
 
 > 💡 **Esperienza pratica**: nel 60-70% dei casi, la compagnia — saputo dell'esposto — riapre spontaneamente la pratica e propone una soluzione all'assicurato **prima** della decisione IVASS, per evitare la sanzione.
 

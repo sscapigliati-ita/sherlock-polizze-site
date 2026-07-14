@@ -474,7 +474,7 @@ body{
       </div>
       <div class="ob-slide">
         <div class="ob-icon">&#128269;</div>
-        <div class="ob-title">Analisi AI in 30 secondi</div>
+        <div class="ob-title">Analisi documentale assistita</div>
         <div class="ob-desc">Carica il PDF o scatta una foto. Sherlock identifica esclusioni, clausole potenzialmente critiche e termini di decadenza indicando la pagina di riferimento per ogni rilievo. La valutazione di merito resta sempre da verificare sul caso concreto.</div>
       </div>
       <div class="ob-slide">
@@ -616,7 +616,7 @@ body{
       <div class="cmp-row"><span class="cmp-f">Base legale contestabile</span><span class="cmp-a">&#10003;</span><span class="cmp-b">&#10003;</span></div>
       <div class="cmp-row"><span class="cmp-f">Raccomandazioni personalizzate</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
       <div class="cmp-row"><span class="cmp-f">Lettera di reclamo (pronta PEC)</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
-      <div class="cmp-row"><span class="cmp-f">Ricorso IVASS</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Bozza di esposto IVASS</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
       <div class="cmp-row"><span class="cmp-f">Diffida formale stragiudiziale</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
     </div>
     <div class="price-box">
@@ -1175,10 +1175,10 @@ function viewA(a){
   h+='<div class="act-btns">';
   if(S.isPro){
     h+='<button class="btn btn-gold btn-full" id="rb1">&#128221; Genera lettera di reclamo</button>';
-    h+='<button class="btn btn-outline btn-full" id="rb2">&#127963; Genera ricorso IVASS</button>';
+    h+='<button class="btn btn-outline btn-full" id="rb2">&#127963; Genera bozza di esposto IVASS</button>';
     h+='<button class="btn btn-outline btn-full" id="rb3">&#9878; Genera diffida formale</button>';
   }else{
-    h+='<div class="card2" style="border-color:var(--gold3)"><div style="font-size:.72rem;color:var(--gold3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Sherlock Pro</div><div style="font-size:1rem;color:var(--gold);font-weight:bold;margin-bottom:6px">Vuoi trasformare questa analisi in una lettera pronta da inviare?</div><div style="font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:12px">Sherlock puo generare un reclamo, una diffida o una segnalazione IVASS basata su questa polizza.</div><div style="background:#f7f1df;color:#20160a;border-radius:10px;padding:13px;margin-bottom:10px;position:relative;overflow:hidden"><div style="font-size:.66rem;letter-spacing:.12em;color:#7b642c;font-weight:bold;margin-bottom:8px">ANTEPRIMA LETTERA</div><div style="font-weight:bold;font-size:.82rem;margin-bottom:7px">Oggetto: reclamo formale relativo alla polizza</div><div style="font-size:.76rem;line-height:1.55;color:#4a3820">Spett.le Compagnia,<br>con la presente intendo contestare la gestione della copertura assicurativa relativa a...</div><div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(13,10,7,.08);text-align:center;color:#20160a;font-size:.72rem;font-weight:bold">Sblocca la lettera completa con Pro</div></div><button class="btn btn-gold btn-full" id="btn-upgrade-res">Genera lettera con Sherlock Pro</button><div style="font-size:.68rem;color:var(--text3);text-align:center;margin-top:8px">Da 2,99 euro/mese. Pagamento sicuro via PayPal.</div></div>';
+    h+='<div class="card2" style="border-color:var(--gold3)"><div style="font-size:.72rem;color:var(--gold3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Sherlock Pro</div><div style="font-size:1rem;color:var(--gold);font-weight:bold;margin-bottom:6px">Vuoi trasformare questa analisi in una bozza personalizzabile?</div><div style="font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:12px">Sherlock puo generare una bozza di reclamo, diffida o esposto IVASS basata su questa polizza, da verificare prima dell invio.</div><div style="background:#f7f1df;color:#20160a;border-radius:10px;padding:13px;margin-bottom:10px;position:relative;overflow:hidden"><div style="font-size:.66rem;letter-spacing:.12em;color:#7b642c;font-weight:bold;margin-bottom:8px">ANTEPRIMA BOZZA</div><div style="font-weight:bold;font-size:.82rem;margin-bottom:7px">Oggetto: reclamo relativo alla polizza</div><div style="font-size:.76rem;line-height:1.55;color:#4a3820">Spett.le Compagnia,<br>con la presente chiedo di riesaminare la gestione della copertura assicurativa relativa a...</div><div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(13,10,7,.08);text-align:center;color:#20160a;font-size:.72rem;font-weight:bold">Sblocca la bozza completa con Pro</div></div><button class="btn btn-gold btn-full" id="btn-upgrade-res">Genera bozza con Sherlock Pro</button><div style="font-size:.68rem;color:var(--text3);text-align:center;margin-top:8px">Da 2,99 euro/mese. Pagamento sicuro via PayPal.</div></div>';
   }
   h+='</div>';
   // Card "Condividi risultato anonimo" — nessun dato sensibile, solo sintesi.
