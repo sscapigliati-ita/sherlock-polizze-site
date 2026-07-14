@@ -423,8 +423,20 @@ button.tab:focus-visible, button.set-row:focus-visible, button.btn-back:focus-vi
   outline: 2px solid var(--amber); outline-offset: 2px;
 }
 </style>
+<style>
+/* Remediation Google Play: controlli leggibili, tattili e sempre riconoscibili. */
+.btn,.btn-back,.btn-gear,#bnav .tab,.lt-btn,.set-row,.acc-hdr{min-height:48px;touch-action:manipulation}
+:where(button,a,input,textarea,summary,[role="button"]):focus-visible{outline:3px solid var(--amber3);outline-offset:3px}
+button:disabled{cursor:not-allowed;opacity:.55;filter:saturate(.55)}
+#app-feedback{position:fixed;z-index:4000;left:16px;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));max-width:520px;margin:auto;padding:14px 16px;border:1px solid var(--border2);border-left:4px solid var(--amber);border-radius:14px;background:rgba(14,20,38,.98);box-shadow:0 18px 50px rgba(0,0,0,.48);color:var(--text);font-size:.86rem;line-height:1.5}
+#app-feedback[hidden]{display:none}
+.card,.card2{box-shadow:0 12px 34px rgba(2,6,23,.16)}
+@media (max-width:360px){.scr-scroll{padding-left:14px;padding-right:14px}.btn{padding-left:16px;padding-right:16px}.sp-title{font-size:2.45rem}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
+<div id="app-feedback" role="alert" aria-live="assertive" aria-atomic="true" hidden></div>
 <div id="screen-intro"><img src="img/splash-intro.png" alt="Sherlock - Il detective assicurativo"></div>
 <div id="app">
 <div class="lang-bar" id="lang-bar" role="toolbar" aria-label="Lingua">
@@ -1381,6 +1393,7 @@ document.addEventListener('click', function(e){
 })();
 var APP_BUILD=50; // versionCode — bumpare quando si vuole resettare freeUsed
 var S={analyses:[],isPro:false,proCode:null,onboardingDone:false,freeUsed:0,curA:null,curLetter:"",curLType:"reclamo",devOpen:false,build:0,reviewShown:false};
+var NAV_STACK=["splash"];
 function load(){try{var r=localStorage.getItem("shk2");if(r)Object.assign(S,JSON.parse(r));}catch(e){}
   // Migration: alla nuova versione resetta le analisi gratuite consumate per dare 5/5 a tutti
   if(S.build!==APP_BUILD){S.freeUsed=0;S.build=APP_BUILD;save();}
@@ -1395,7 +1408,8 @@ var _cn=0,_cb={};
 window._apiReady=function(k){var r=Br.a?Android.getResult(k):"";var id=k.replace("cb_","");if(!_cb[id])return;var c=_cb[id];delete _cb[id];try{var out=JSON.parse(r);if(!out.ok){c.rej(new Error(out.error||"server_error"));return;}var decoded=atob(out.payload||"");try{c.res(JSON.parse(decoded));}catch(e){c.res(decoded);}}catch(e){c.rej(new Error("invalid_response"));}};
 function apicall(url,method,headers,body){return new Promise(function(res,rej){var id=String(++_cn);_cb[id]={res:res,rej:rej};if(Br.a){Android.callAPI(url,method,JSON.stringify(headers),body||"",id);}else{fetch(url,{method:method,headers:headers,body:body}).then(function(r){return r.json();}).then(function(d){var c=_cb[id];delete _cb[id];c.res(d);}).catch(function(e){var c=_cb[id];delete _cb[id];c.rej(e);});}});}
 var MAIN=["home","scanner","settings"];
-function show(id,noNav){[].forEach.call(document.querySelectorAll(".screen"),function(s){s.classList.remove("active");});var el=document.getElementById("screen-"+id);if(el)el.classList.add("active");document.getElementById("bnav").style.display=(noNav||MAIN.indexOf(id)<0)?"none":"flex";[].forEach.call(document.querySelectorAll("#bnav .tab"),function(t){t.classList.remove("active");});var m={home:"tab-home",scanner:"tab-scan",settings:"tab-set"};if(m[id]){var t=document.getElementById(m[id]);if(t)t.classList.add("active");}}
+function show(id,noNav,fromBack){[].forEach.call(document.querySelectorAll(".screen"),function(s){s.classList.remove("active");});var el=document.getElementById("screen-"+id);if(el)el.classList.add("active");document.getElementById("bnav").style.display=(noNav||MAIN.indexOf(id)<0)?"none":"flex";[].forEach.call(document.querySelectorAll("#bnav .tab"),function(t){t.classList.remove("active");});var m={home:"tab-home",scanner:"tab-scan",settings:"tab-set"};if(m[id]){var t=document.getElementById(m[id]);if(t)t.classList.add("active");}if(!fromBack&&NAV_STACK[NAV_STACK.length-1]!==id)NAV_STACK.push(id);}
+window.SherlockNavigation={canGoBack:function(){return NAV_STACK.length>1;},goBack:function(){if(!this.canGoBack())return false;NAV_STACK.pop();var previous=NAV_STACK[NAV_STACK.length-1];show(previous,MAIN.indexOf(previous)<0,true);return true;}};
 function goHome(){show("home");renderHome();}
 function goSettings(){show("settings",true);renderSettings();}
 function goPaywall(from){
@@ -1803,6 +1817,9 @@ function comparaSubmit(){
 function validCode(c){var cl=c.trim().toUpperCase();if(!/^SHK-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(cl))return false;var p=cl.replace("SHK-","").replace("-",""),s=0;for(var i=0;i<p.length;i++)s+=p.charCodeAt(i);return s%7===0;}
 function xe(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function fd(d){try{return new Date(d).toLocaleDateString("it-IT",{day:"2-digit",month:"short",year:"numeric"});}catch(e){return(d||"").slice(0,10);}}
+function showFeedback(options){var box=document.getElementById("app-feedback");if(!box)return;var o=typeof options==="string"?{message:options}:options||{};box.replaceChildren();var title=document.createElement("strong");title.textContent=o.title||"Operazione non completata";box.appendChild(title);if(o.message){var message=document.createElement("div");message.textContent=o.message;box.appendChild(message);}if(typeof o.retry==="function"){var retry=document.createElement("button");retry.type="button";retry.className="btn btn-outline btn-sm";retry.style.marginTop="10px";retry.textContent=o.retryLabel||"Riprova";retry.addEventListener("click",function(){box.hidden=true;o.retry();});box.appendChild(retry);}box.hidden=false;clearTimeout(showFeedback.timer);showFeedback.timer=setTimeout(function(){if(typeof o.retry!=="function")box.hidden=true;},6500);}
+function withUiTimeout(promise,ms){return Promise.race([promise,new Promise(function(_,reject){setTimeout(function(){reject(new Error("network_timeout"));},ms);})]);}
+function setBusy(button,busy,label){if(!button)return;if(!button.dataset.idleLabel)button.dataset.idleLabel=button.textContent;button.disabled=busy;button.setAttribute("aria-busy",String(busy));button.textContent=busy?(label||"Operazione in corso…"):button.dataset.idleLabel;}
 function on(id,ev,fn){var el=document.getElementById(id);if(el)el.addEventListener(ev,fn);}
 function init(){
   try{
