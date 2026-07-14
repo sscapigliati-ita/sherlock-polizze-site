@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { validateBase64Upload } from '../../lib/upload-validation';
+import { AI_UNTRUSTED_DATA_RULES } from '../../lib/ai-safety';
 import { getAnthropicKey, getModel, valutaCodice } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
 
@@ -236,7 +237,7 @@ export const POST: APIRoute = async ({ request }) => {
   const reqBody = {
     model: getModel(),
     max_tokens: 8000,
-    system: SYS + istruzioneLingua(lang),
+    system: SYS + AI_UNTRUSTED_DATA_RULES + istruzioneLingua(lang),
     tools: [{
       name: 'report_confronto_polizze',
       description: 'Restituisce il confronto strutturato fra le due polizze',
