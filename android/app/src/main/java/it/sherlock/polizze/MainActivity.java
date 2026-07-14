@@ -1,6 +1,7 @@
 package it.sherlock.polizze;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Insets;
@@ -61,6 +62,7 @@ public class MainActivity extends Activity {
     private static final Map<String, String> pendingResults = new HashMap<String, String>();
 
     private static final String BACKEND_URL = "https://www.sherlockpolizze.it";
+    private long lastBackPressedAt = 0L;
 
     private BillingManager billing;
     private String pendingPurchaseEmail = null;
@@ -137,12 +139,7 @@ public class MainActivity extends Activity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("http") || url.startsWith("https") || url.startsWith("mailto")) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    try { startActivity(intent); } catch (Exception e) {}
-                    return true;
-                }
-                return false;
+                return handleUrl(url);
             }
         });
 
@@ -308,11 +305,46 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack();
-        } else {
+        webView.evaluateJavascript(
+                "Boolean(window.SherlockNavigation&&window.SherlockNavigation.canGoBack())",
+                value -> {
+                    if ("true".equals(value)) {
+                        webView.evaluateJavascript("window.SherlockNavigation.goBack()", null);
+                    } else if (webView.canGoBack()) {
+                        webView.goBack();
+                    } else {
+                        handleExitConfirmation();
+                    }
+                });
+    }
+
+    private void handleExitConfirmation() {
+        long now = System.currentTimeMillis();
+        if (now - lastBackPressedAt <= 2000L) {
             super.onBackPressed();
+            return;
         }
+        lastBackPressedAt = now;
+        Toast.makeText(this, "Premi di nuovo Indietro per uscire", Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean handleUrl(String url) {
+        NavigationPolicy.Destination destination = NavigationPolicy.classify(url);
+        if (destination == NavigationPolicy.Destination.INTERNAL) {
+            webView.loadUrl(url);
+            return true;
+        }
+        if (destination == NavigationPolicy.Destination.EXTERNAL
+                || destination == NavigationPolicy.Destination.EMAIL) {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            } catch (ActivityNotFoundException error) {
+                Toast.makeText(this, "Nessuna app disponibile per aprire questo link", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+        Toast.makeText(this, "Link non supportato", Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     /* ------------------------------------------------------------------ */
@@ -337,12 +369,7 @@ public class MainActivity extends Activity {
         public void openURL(final String url) {
             runOnUiThread(new Runnable() {
                 public void run() {
-                    try {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        startActivity(intent);
-                    } catch (Exception e) {
-                        Toast.makeText(MainActivity.this, "Impossibile aprire il link", Toast.LENGTH_SHORT).show();
-                    }
+                    handleUrl(url);
                 }
             });
         }
