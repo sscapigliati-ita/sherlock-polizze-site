@@ -3,33 +3,14 @@ export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { contaFounderVenduti } from '../lib/storage';
-import { FOUNDER_MAX } from '../lib/paypal';
 
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
 
-// Recupera il counter Founder live (KV). Se KV non risponde, fallback a 0
-// (offerta visibile). Non bloccare mai il rendering della pagina per questo.
-let founderVenduti = 0;
-try {
-  founderVenduti = await contaFounderVenduti();
-} catch {}
-const founderRimanenti = Math.max(0, FOUNDER_MAX - founderVenduti);
-const founderAttivo = founderRimanenti > 0;
+// Le licenze Founder esistenti restano valide lato backend, ma l'offerta
+// lifetime non è più proposta a nuovi clienti.
+const founderAttivo = false;
 
-// Costruisco la lista piani dinamicamente. Founder appare SOLO se ci sono posti.
 const piani = [
-  ...(founderAttivo
-    ? [{
-        id: 'founder',
-        nome: 'Pass Pro a vita (Founder)',
-        durata: 'Accesso permanente · una tantum',
-        prezzo: '19,90 €',
-        alMese: 'una tantum, accesso per sempre',
-        badge: `Solo ${founderRimanenti}/${FOUNDER_MAX}`,
-        recommended: true,
-      }]
-    : []),
   { id: 'mensile', nome: 'Pass Pro 1 mese', durata: 'Valido 30 giorni · nessun rinnovo automatico', prezzo: '2,99 €', alMese: '2,99 €/mese', badge: null, recommended: !founderAttivo && false },
   { id: 'semestrale', nome: 'Pass Pro 6 mesi', durata: 'Valido 6 mesi · nessun rinnovo automatico', prezzo: '7,99 €', alMese: '1,33 €/mese', badge: 'Risparmi 55%', recommended: false },
   { id: 'annuale', nome: 'Pass Pro 12 mesi', durata: 'Valido 12 mesi · nessun rinnovo automatico', prezzo: '14,99 €', alMese: '1,25 €/mese', badge: founderAttivo ? 'Più conveniente (escluso Founder)' : 'Più conveniente', recommended: !founderAttivo },
@@ -87,15 +68,15 @@ const jsonLd = [
 ];
 ---
 <BaseLayout
-  title="Sherlock — Abbonati da 2,99€ | Analisi AI illimitate delle polizze"
-  description="Sottoscrivi Sherlock Pro: analisi illimitate, lettere di reclamo, ricorsi IVASS e diffide pronte all'uso. Pagamento sicuro PayPal. Da 1,25€/mese con il piano annuale."
+  title="Sherlock — Piani Pro da 2,99€ | Analisi documentale assistita"
+  description="Scegli un piano Sherlock Pro per analisi documentale e bozze personalizzabili da verificare. Pagamento PayPal, senza rinnovo automatico."
   jsonLd={jsonLd}
 >
   <Header slot="header" />
 
   <section class="px-5 pt-12 pb-6 max-w-5xl mx-auto text-center">
     <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-5">
-      Analisi illimitate · Lettere Pro · Nessun rinnovo automatico
+      Analisi documentale assistita · Bozze personalizzabili · Nessun rinnovo automatico
     </div>
     <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
       Scegli il tuo <span class="text-gold-400">piano</span>
@@ -109,15 +90,6 @@ const jsonLd = [
       Un reclamo scritto male può costarti molto più di un abbonamento annuale.
     </p>
 
-    {founderAttivo && (
-      <div class="mt-7 inline-flex flex-col sm:flex-row items-center gap-3 px-5 py-3 rounded-xl border border-gold-400/40 bg-gradient-to-br from-amber-500/10 to-gold-400/10">
-        <div class="text-xs uppercase tracking-widest text-gold-400 font-extrabold">🏆 Founder lifetime</div>
-        <div class="text-sm text-white">
-          <strong>19,90€ una sola volta — accesso Pro per sempre.</strong>
-          Solo per i primi {FOUNDER_MAX} utenti (<span class="text-gold-400 font-bold">{founderRimanenti} ancora disponibili</span>).
-        </div>
-      </div>
-    )}
   </section>
 
   <section class="px-5 pb-16 max-w-5xl mx-auto" id="checkout">
@@ -251,7 +223,7 @@ const jsonLd = [
       <h2 class="text-3xl font-extrabold text-white text-center mb-10">Cosa include l'abbonamento</h2>
       <div class="grid md:grid-cols-2 gap-4 text-navy-200">
         {[
-          'Analisi illimitate di polizze auto, casa, vita, salute, infortuni, RC professionale',
+          'Analisi di polizze auto, casa, vita, salute, infortuni e RC professionale nel periodo del piano',
           'Lettera di reclamo formale pronta per PEC',
           'Esposto IVASS pre-compilato',
           'Diffida stragiudiziale con riferimenti normativi pertinenti',

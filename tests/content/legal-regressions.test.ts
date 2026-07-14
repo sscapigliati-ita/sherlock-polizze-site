@@ -156,4 +156,14 @@ describe('Regressioni giuridiche R1-R6 (contenuto pubblico)', () => {
     const hits = findMatches(/(lettera|reclamo)\s+(già\s+)?pront[ao]\s+da\s+inviare/i);
     expect(hits, `Bozza presentata come pronta senza verifica: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
   });
+
+  it('nessuna scarsità artificiale basata sui primi iscritti', () => {
+    const hits = findMatches(/solo\s+(i\s+)?primi\s+\d+\s+(iscritti|clienti|utenti)/i);
+    expect(hits, `Scarsità non documentata: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('nessuna promessa pubblica di analisi AI illimitate', () => {
+    const hits = findMatches(/analisi\s+(AI\s+)?illimitate/i);
+    expect(hits, `Uso AI illimitato senza controllo costi: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
 });
