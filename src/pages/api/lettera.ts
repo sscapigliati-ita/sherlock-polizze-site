@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getAnthropicKey, getModel, valutaCodice } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
 import { marcaCodiceUsato } from '../../lib/storage';
+import { AI_UNTRUSTED_DATA_RULES, buildLetterEvidence } from '../../lib/ai-safety';
 
 export const prerender = false;
 export const maxDuration = 300;
@@ -23,17 +24,18 @@ function normalizzaLingua(raw: unknown): LangCode {
 }
 
 function istruzioneLingua(lang: LangCode): string {
-  return `\n\nIMPORTANT: Write the entire letter in ${LANG_NAMES[lang]}, including the header ("Città", "Data"), the salutation, body, legal references (translate Italian law article names), and signature line.`;
+  return `\n\nWrite the draft in ${LANG_NAMES[lang]}. Keep official Italian legal citations in their original form and do not invent translations or references.`;
 }
 
-const LSYS: Record<string, string> = {
+const LSYS = {
   reclamo:
-    'Sei avvocato specializzato in diritto assicurativo italiano. Genera lettera di reclamo formale completa citando artt. pertinenti (1892 c.c., 1905, 32 C.A.P., normativa IVASS). Includi intestazione [Citta] [Data] e spazio firma. Solo testo piano.',
+    'Prepara una bozza prudente di reclamo assicurativo. Usa segnaposto per dati mancanti e cita norme soltanto se presenti nelle evidenze e pertinenti.',
   ivass:
-    "Sei avvocato specializzato in diritto assicurativo italiano. Genera esposto IVASS completo. Inizia con All'Istituto per la Vigilanza sulle Assicurazioni (IVASS). Cita normativa violata. Solo testo piano.",
+    "Prepara una bozza prudente di esposto all'IVASS. Non descrivere IVASS come giudice della controversia e non inventare violazioni.",
   diffida:
-    'Sei avvocato specializzato in diritto assicurativo italiano. Genera diffida formale stragiudiziale. Fissa termine 15 giorni. Minaccia ricorso giudiziario e IVASS. Solo testo piano.',
-};
+    'Prepara una bozza prudente di comunicazione formale. Non fissare termini, conseguenze o iniziative giudiziarie se non supportati dalle evidenze; usa segnaposto da verificare.',
+} as const;
+type LetterType = keyof typeof LSYS;
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -90,22 +92,13 @@ export const POST: APIRoute = async ({ request }) => {
     await traccia('bloccato', 'analisi e tipo richiesti');
     return json({ error: 'analisi e tipo richiesti' }, 400);
   }
-
-  const esclusioni = (analisi.esclusioni_critiche ?? [])
-    .map((e: any) => `- ${e.titolo}: ${e.descrizione}`)
-    .join('\n');
-  const baseLegale = (analisi.base_legale_contestabile ?? []).join('\n');
-
-  const ctx =
-    `Compagnia: ${analisi.compagnia ?? ''}\n` +
-    `Tipo: ${analisi.tipo_polizza ?? ''}\n` +
-    `Rischio: ${analisi.rischio ?? ''}\n` +
-    `Riepilogo: ${analisi.riepilogo ?? ''}\n\n` +
-    `Esclusioni:\n${esclusioni}\n\n` +
-    `Base legale:\n${baseLegale}` +
-    (extra ? `\n\nNote: ${extra}` : '');
-
-  const system = (LSYS[tipo] ?? LSYS.reclamo) + istruzioneLingua(lingua);
+  if (!(tipo in LSYS)) {
+    await traccia('bloccato', 'invalid_letter_type');
+    return json({ error: 'INVALID_LETTER_TYPE' }, 400);
+  }
+  const letterType = tipo as LetterType;
+  const ctx = buildLetterEvidence(analisi as Record<string, unknown>, letterType, extra);
+  const system = `${LSYS[letterType]}\n${AI_UNTRUSTED_DATA_RULES}${istruzioneLingua(lingua)}\nReturn a draft, not legal advice. Put uncertainties and checks in avvertenze.`;
 
   const upstream = await fetch(ANTHROPIC_API_URL, {
     method: 'POST',
@@ -118,17 +111,40 @@ export const POST: APIRoute = async ({ request }) => {
       model: getModel(),
       max_tokens: 2048,
       system,
+      tools: [{
+        name: 'genera_bozza_lettera',
+        description: 'Restituisce la bozza e le verifiche necessarie.',
+        input_schema: {
+          type: 'object',
+          required: ['lettera', 'avvertenze'],
+          properties: {
+            lettera: { type: 'string', minLength: 1 },
+            avvertenze: { type: 'array', items: { type: 'string' }, maxItems: 10 },
+          },
+        },
+      }],
+      tool_choice: { type: 'tool', name: 'genera_bozza_lettera' },
       messages: [{ role: 'user', content: ctx }],
     }),
   });
 
   const data = await upstream.json();
   if (data?.error) {
-    await traccia('errore', data.error.message ?? 'Errore Anthropic');
-    return json({ error: data.error.message ?? 'Errore Anthropic' }, 502);
+    await traccia('errore', 'anthropic_error');
+    return json({ error: 'AI_PROVIDER_ERROR' }, 502);
   }
 
-  const testo: string = data?.content?.[0]?.text ?? '';
+  const toolUse = Array.isArray(data?.content)
+    ? data.content.find((block: any) => block?.type === 'tool_use' && block?.name === 'genera_bozza_lettera')
+    : undefined;
+  const testo = typeof toolUse?.input?.lettera === 'string' ? toolUse.input.lettera.trim() : '';
+  const avvertenze = Array.isArray(toolUse?.input?.avvertenze)
+    ? toolUse.input.avvertenze.filter((item: unknown): item is string => typeof item === 'string').slice(0, 10)
+    : [];
+  if (!testo) {
+    await traccia('errore', 'ai_output_invalid');
+    return json({ error: 'AI_OUTPUT_INVALID' }, 502);
+  }
 
   // Codice singolo: una volta generata la lettera, lo marco come consumato.
   if (esito.tipo === 'singolo' && esito.record) {
@@ -136,5 +152,5 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   await traccia('ok');
-  return json({ lettera: testo });
+  return json({ lettera: testo, avvertenze });
 };
