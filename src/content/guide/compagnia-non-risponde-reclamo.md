@@ -54,7 +54,7 @@ Lo strumento più potente in mano al consumatore. Si compila online o via PEC.
 
 - Modulo IVASS scaricabile da `ivass.it` (sezione "Consumatori → Reclami")
 - Allega: copia del reclamo inviato + ricevuta PEC/raccomandata + eventuale risposta interlocutoria
-- Tempo medio di gestione IVASS: 90-120 giorni
+- IVASS svolge una funzione di vigilanza sull'impresa: i tempi di risposta non sono fissati da un termine legale generale e variano caso per caso
 - **Costo: zero**
 
 L'effetto pratico: IVASS apre un fascicolo, scrive alla compagnia chiedendo conto. Nel 2025 **il 38% degli esposti** ha portato a una riapertura della pratica con esito favorevole (29,8% accolti + 8,2% conciliazione).

@@ -67,7 +67,7 @@ Per la struttura completa e un modello PDF vedi la guida [Diffida alla compagnia
 
 Se la Compagnia non si muove, esponi il caso all'**IVASS** (Istituto per la Vigilanza sulle Assicurazioni). È **gratuito**, si fa via PEC, e ha un effetto pratico spesso sottovalutato: la sola comunicazione da parte di IVASS alla Compagnia ("vi chiediamo chiarimenti") in molti casi sblocca la pratica.
 
-L'esposto va all'indirizzo PEC <code>tutela.consumatore@pec.ivass.it</code>. Tempi di risposta IVASS: **fino a 120 giorni** ma spesso meno.
+L'esposto va all'indirizzo PEC <code>tutela.consumatore@pec.ivass.it</code>. IVASS svolge una funzione di vigilanza sulle imprese assicurative: valuta l'esposto secondo le proprie prassi. **Non decide la controversia individuale** e non fissa un termine legale generale di risposta.
 
 Per la struttura dell'esposto e un modello PDF vedi [Esposto IVASS: modello e guida](/guide/esposto-ivass-modello).
 
@@ -125,7 +125,7 @@ Carica il PDF della polizza e Sherlock identifica le clausole contestabili e i r
 |-------|-------|-------|-------------------|
 | 1. Reclamo | 45 giorni | PEC | Apre il procedimento ufficiale |
 | 2. Diffida | 30 giorni | PEC | Interrompe prescrizione, mora |
-| 3. Esposto IVASS | 120 giorni | Gratis | Spesso sblocca la pratica |
+| 3. Esposto IVASS | tempi variabili | Gratis | Sollecita vigilanza sull'impresa |
 | 4. Mediazione + Giudizio | 6-24 mesi | 40 € - migliaia | Decisione vincolante |
 
 Il 90% dei casi si risolve **entro la mossa 3**. La causa è davvero l'ultima carta.

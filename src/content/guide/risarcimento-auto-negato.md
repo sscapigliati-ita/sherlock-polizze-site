@@ -272,7 +272,7 @@ Sì, ma con cautela. Il danno non patrimoniale richiede prova specifica e, in mo
 Un risarcimento negato non è un risarcimento **perso**. Nel 68% dei casi, un reclamo ben fatto ribalta la decisione. La differenza sta in:
 
 1. **Documentazione completa**
-2. **Riferimenti normativi corretti**
+2. **Riferimenti normativi pertinenti**
 3. **Forma formale** (PEC o raccomandata)
 4. **Termini perentori specifici**
 

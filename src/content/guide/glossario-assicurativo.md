@@ -111,7 +111,7 @@ La firma separata di una singola clausola limitativa. Senza, la clausola è **in
 L'evento dannoso per cui chiedi indennizzo. La definizione precisa cambia per tipo di polizza.
 
 ### Denuncia di sinistro
-La comunicazione che fai alla compagnia entro un termine (3-30 giorni a seconda del prodotto, di solito 3-8 giorni ex art. 1913 c.c.).
+La comunicazione che fai alla compagnia entro un termine variabile (indicativamente da 3 a 30 giorni a seconda del prodotto). L'art. 1913 c.c. prevede in via generale la denuncia entro **tre giorni** da quando il sinistro si è verificato o l'assicurato ne ha avuto conoscenza, salvo diversa previsione contrattuale o normativa applicabile. Verifica sempre il termine specifico indicato nella tua polizza.
 
 ### Decadenza
 Perdita del diritto all'indennizzo per inosservanza di un termine o di una procedura. **Effetto definitivo**.
