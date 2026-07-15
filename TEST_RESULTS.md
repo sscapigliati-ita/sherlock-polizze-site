@@ -89,3 +89,14 @@ Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
 - Privacy e consenso analytics: **20/20** controlli mirati.
 - Dominio canonico: **2/2** controlli; build superata e sitemap senza route legacy o `vercel.app`.
 - I conteggi finali saranno registrati soltanto dopo la verifica fresca del checkpoint.
+
+## Checkpoint fresco — 15 luglio 2026
+
+- `npm test`: exit 0, **139/139 test** in **22/22 file**. Avviso atteso: KV non configurato in locale, fallback in memoria nei test storage.
+- `npx astro check`: exit 0, **0 errori**, **0 warning**, **19 hint** non bloccanti.
+- `npm run build`: exit 0, output server Vercel, sitemap e PWA generati; server build riportato **29,38 s**.
+- `npm run test:e2e`: exit 0, **14 superati e 2 saltati intenzionalmente** su quattro viewport. La configurazione usa il sito di produzione corrente quando `PLAYWRIGHT_BASE_URL` non è impostata: è quindi un controllo di non regressione della PWA pubblicata, non del candidato non ancora deployato.
+- Sitemap buildata: zero match per `vercel.app`, `/abbonati`, `/abbonamento/` e `/reclamo-singolo`.
+- Output HTML buildato: `noindex,nofollow` confermato su piano mensile legacy e consulenza singola.
+- `git diff --check`: exit 0.
+- Commit prodotti da questa fase: zero file sotto `android/`. Il commit esterno `3ebc0fc` presente sul ramo contiene modifiche Android concorrenti e non è attribuito alla stabilizzazione pubblica.

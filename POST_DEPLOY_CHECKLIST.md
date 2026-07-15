@@ -1,9 +1,11 @@
 # Post-Deploy Checklist
 
 - [ ] Dominio e HTTPS corretti su `https://www.sherlockpolizze.it`.
-- [ ] Homepage, prezzi, privacy, trasparenza e PWA rispondono senza errori.
+- [ ] Homepage, privacy, trasparenza, simulazione report e PWA rispondono senza errori.
+- [ ] `/abbonati`, `/abbonamento/*` e `/reclamo-singolo` espongono `noindex,nofollow` e non sono collegate dalla navigazione pubblica.
 - [ ] Founder lifetime e scarsità artificiale non sono visibili.
 - [ ] Sitemap, robots, canonical e Open Graph puntano al dominio ufficiale.
+- [ ] Sitemap priva di `vercel.app`, `/abbonati`, `/abbonamento/` e `/reclamo-singolo`.
 - [ ] Consenso negato non emette analytics; consenso concesso usa lo stream previsto.
 - [ ] Analisi con file sintetico funziona; MIME/dimensione non validi sono rifiutati.
 - [ ] Errori AI non mostrano un report definitivo incompleto.
