@@ -135,6 +135,14 @@ public class MainActivity extends Activity {
         settings.setUseWideViewPort(true);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
+        // La PWA è già dark: impediamo al WebView di applicare l'algoritmo
+        // di darkening automatico che invertiva gli sfondi lasciando il testo
+        // bianco (titoli invisibili su fondo bianco su Android in dark mode).
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            settings.setAlgorithmicDarkeningAllowed(false);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            settings.setForceDark(WebSettings.FORCE_DARK_OFF);
+        }
 
         webView.addJavascriptInterface(new SherlockBridge(), "Android");
 

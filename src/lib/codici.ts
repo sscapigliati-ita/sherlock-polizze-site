@@ -16,6 +16,10 @@ export function generaCodicePro(): string {
 
 export function checksumValido(codice: string): boolean {
   const pulito = codice.trim().toUpperCase();
+  // Retrocompatibilità: codici Play Billing emessi prima del passaggio a SHK-*
+  // (formato PLAY-<8 hex>) restano validi — la validazione reale è la presenza
+  // del record in KV, non il checksum.
+  if (/^PLAY-[A-F0-9]{8}$/.test(pulito)) return true;
   if (!/^SHK-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(pulito)) return false;
   const payload = pulito.replace('SHK-', '').replace('-', '');
   let somma = 0;

@@ -4,12 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <meta name="theme-color" content="#070b18">
+<meta name="color-scheme" content="dark">
 <title>Sherlock</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root{
+  color-scheme:dark;
   --bg:#070b18;--bg2:#0e1426;--bg3:#0a1020;
   --surf:#131a30;--surf2:#1a2238;--surf3:#1e2745;
   --border:#1e293b;--border2:#334155;
@@ -1866,8 +1868,8 @@ function init(){
     on("btn-gen-lt","click",function(){
       if(!S.isPro){goPaywall();return;}if(!S.curA){Br.toast("Nessuna analisi");return;}
       var btn=document.getElementById("btn-gen-lt");btn.disabled=true;btn.textContent="Generazione in corso...";
-      var done=function(l){S.curLetter=l;document.getElementById("lt-out").textContent=l;document.getElementById("lt-out-wrap").classList.remove("hide");btn.disabled=false;btn.textContent="&#128269; Genera documento";setTimeout(function(){showReviewPrompt('letter_generated');},2500);};
-      var fail=function(e){alert("Errore: "+(e.message||e));btn.disabled=false;btn.textContent="&#128269; Genera documento";};
+      var done=function(l){S.curLetter=l;document.getElementById("lt-out").textContent=l;document.getElementById("lt-out-wrap").classList.remove("hide");btn.disabled=false;btn.innerHTML="&#128269; Genera documento";setTimeout(function(){showReviewPrompt('letter_generated');},2500);};
+      var fail=function(e){alert("Errore: "+(e.message||e));btn.disabled=false;btn.innerHTML="&#128269; Genera documento";};
       doLetter(S.curA,S.curLType,document.getElementById("lt-extra").value).then(done).catch(fail);
     });
     on("btn-copy-lt","click",function(){if(navigator.clipboard)navigator.clipboard.writeText(S.curLetter).then(function(){Br.toast("Copiato!");});else Br.toast("Seleziona e copia manualmente.");});
