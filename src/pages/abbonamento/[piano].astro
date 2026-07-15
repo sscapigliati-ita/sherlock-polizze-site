@@ -23,6 +23,7 @@ const dettagli = {
 const annullato = Astro.url.searchParams.get('annullato') === '1';
 ---
 <BaseLayout
+  noindex={true}
   title={`Sherlock Pro — Piano ${dettagli.nome} | ${dettagli.prezzo}`}
   description={`Sottoscrivi Sherlock Pro piano ${dettagli.nome.toLowerCase()} a ${dettagli.prezzo}. Pagamento sicuro PayPal. Codice di attivazione via email.`}
 >
