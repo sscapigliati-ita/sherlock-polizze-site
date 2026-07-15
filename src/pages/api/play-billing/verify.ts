@@ -13,7 +13,9 @@ import { generaCodicePro } from '../../../lib/codici';
 export const prerender = false;
 
 // Mappa productId Play → configurazione lato server. Founder è lifetime,
-// acquisto_singolo è una-tantum (consulenza singola: analisi + 1 lettera).
+// lettera_singola è una-tantum (consulenza singola: analisi + 1 lettera).
+// Nota: acquisto_singolo (v4.5-v4.6.9) è stato eliminato da Play Console e
+// Google non permette il riutilizzo dell'ID → rimpiazzato con lettera_singola.
 type MappaProdotto = {
   piano: RecordPro['piano'];
   prezzoEur: number;
@@ -21,7 +23,7 @@ type MappaProdotto = {
 };
 const MAPPA_PRODOTTI: Record<string, MappaProdotto> = {
   founder_lifetime: { piano: 'founder', prezzoEur: 19.9, durataMesi: 1200 },
-  acquisto_singolo: { piano: 'singolo', prezzoEur: 4.99, durataMesi: 1 },
+  lettera_singola: { piano: 'singolo', prezzoEur: 4.99, durataMesi: 1 },
 };
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const SCADENZA_LIFETIME = '2099-12-31T23:59:59Z';
