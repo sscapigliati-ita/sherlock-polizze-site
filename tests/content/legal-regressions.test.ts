@@ -201,4 +201,19 @@ describe('Regressioni giuridiche R1-R6 (contenuto pubblico)', () => {
     const hits = findMatches(/avrei\s+vinto|non\s+c['’]è\s+dubbio/i);
     expect(hits, `Conclusione certa non dimostrata: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
   });
+
+  it('art. 1892 non è un termine generale decorrente dal sinistro', () => {
+    const hits = findMatches(/1892[^\n]{0,400}(tre|3)\s*mesi[^\n]{0,100}(dal|dalla)\s*sinistro|(tre|3)\s*mesi[^\n]{0,400}1892/i);
+    expect(hits, `Uso errato art. 1892: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('nessuna qualificazione automatica delle clausole', () => {
+    const hits = findMatches(/clausola[^\n]{0,140}(?:è|sia)(?:\s|<[^>]+>)*(?:automaticamente\s+|da\s+ritenersi\s+)?(?:<[^>]+>\s*)*(?:vessatoria|nulla|inefficace)|doppia\s+firma\s+(?:sempre|obbligatoria)/i);
+    expect(hits, `Qualificazione automatica: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
+
+  it('ogni lettera pronta è qualificata come bozza da verificare', () => {
+    const hits = findMatches(/lettera\s+pronta\s+da\s+inviare|pronto\s+da\s+inviare\s+via\s+PEC/i);
+    expect(hits, `Bozza presentata come definitiva: ${JSON.stringify(hits, null, 2)}`).toHaveLength(0);
+  });
 });

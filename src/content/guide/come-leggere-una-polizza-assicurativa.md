@@ -133,7 +133,7 @@ Apri il PDF e cerca questi 12 termini. La loro **presenza** o **assenza** ti dic
 | **condizioni particolari prevalenti** | Le speciali battono le generali |
 | **previa autorizzazione** | Dovevi chiedere permesso PRIMA |
 | **dichiarazioni mendaci** | Hai dichiarato il falso = decadenza/rivalsa |
-| **specifica approvazione per iscritto** | Senza, la clausola è nulla (art. 1341 c.c.) |
+| **specifica approvazione per iscritto** | La sua assenza può incidere sull'efficacia di alcune clausole ricomprese nell'art. 1341 c.c.; occorre verificare testo e modalità di conclusione del contratto |
 
 ---
 

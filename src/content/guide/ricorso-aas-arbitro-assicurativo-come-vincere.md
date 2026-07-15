@@ -88,7 +88,7 @@ Qui ricostruisci giuridicamente la tua posizione. Stile e contenuti tipici:
 ### Punto 1 — Validità ed efficacia della polizza
 Cita: art. 1882 c.c. (definizione assicurazione), art. 1892 c.c. (termini per eccepire dichiarazioni inesatte), art. 1893 c.c. (effetti della reticenza non dolosa).
 
-Se la compagnia ti ha contestato reticenza dopo tempo, ricorda: ha 3 mesi dalla conoscenza del fatto per eccepirla (art. 1892 c. 2). Oltre, decade.
+Se la compagnia contesta una reticenza, verifica quando ha conosciuto l'inesattezza o la reticenza rilevante e se ricorrono i presupposti dell'art. 1892 c.c. Il termine previsto dalla norma riguarda l'esercizio delle specifiche facoltà dell'assicuratore e va valutato sul caso concreto.
 
 ### Punto 2 — Mala gestio
 Cita: art. 1175 c.c. (correttezza), art. 1375 c.c. (buona fede), Reg. IVASS n. 24/2008 (tempi reclamo).

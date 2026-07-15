@@ -132,7 +132,7 @@ Se hai ricevuto un diniego che invoca una di queste clausole, **prima di accetta
 1. Rileggi le Condizioni Generali e verifica che la clausola sia stata **specificamente sottoscritta** (art. 1341 c.c.) — non basta la firma generica sulla polizza, serve sottoscrizione separata della singola clausola limitativa
 2. Verifica se la clausola è stata **chiaramente segnalata** nel frontespizio (Reg. IVASS n. 41/2018, art. 13). Se è nascosta a pagina 22, è contestabile per difetto di trasparenza
 3. Verifica la **proporzionalità** della richiesta tecnica (es. GSM redondante in zone senza copertura)
-4. Verifica i **termini di accettazione** del rischio da parte della compagnia (art. 1892 c.c. — 3 mesi dal sinistro per eccepire)
+4. Se la compagnia invoca dichiarazioni inesatte o reticenze, verifica quando ne ha avuto conoscenza e se ricorrono i presupposti dell'art. 1892 c.c.; il termine previsto dalla norma non decorre in via generale dal sinistro
 
 Lo strumento naturale: [reclamo formale alla compagnia](/guide/pec-reclamo-assicurazione), poi se necessario [esposto IVASS](/guide/esposto-ivass-modello).
 
