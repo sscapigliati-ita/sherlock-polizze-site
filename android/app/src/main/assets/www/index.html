@@ -657,17 +657,36 @@ button:disabled{cursor:not-allowed;opacity:.55;filter:saturate(.55)}
       <div class="cmp-row"><span class="cmp-f">Ricorso IVASS</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
       <div class="cmp-row"><span class="cmp-f">Diffida formale stragiudiziale</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
     </div>
-    <div class="price-box">
-      <div class="price-n">&#127942; Pass Pro a vita</div>
-      <div class="price-p">Tutte le funzioni Pro, per sempre</div>
-      <div class="price-s">Una tantum. Nessun rinnovo. Numero limitato.</div>
-      <div style="font-size:1.4rem;color:var(--gold);font-weight:900;margin-top:14px">19,90 &euro;</div>
+    <!-- Social proof: le 14 recensioni Play 5⭐ -->
+    <div class="mt12 mb12 tc" style="padding:10px 14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);border-radius:12px">
+      <div style="font-size:.98rem;color:var(--gold);font-weight:700;letter-spacing:.02em">&#9733;&#9733;&#9733;&#9733;&#9733; 5,0 su Google Play</div>
+      <div style="font-size:.72rem;color:var(--text3);margin-top:3px">basato sulle prime recensioni utenti</div>
     </div>
+
     <button class="btn btn-outline btn-full mb8" onclick="goDemoReport('paywall')" data-i18n="paywall_demo_label">&#128269; Guarda un esempio reale di analisi Sherlock</button>
     <button class="btn btn-outline btn-full mb12" id="btn-view-example">&#128196; Vedi un esempio reale di lettera Pro</button>
-    <label class="lbl" for="founder-email">La tua email (per recuperare il Pro su altri device)</label>
+
+    <label class="lbl" for="founder-email">La tua email (per attivare l'acquisto e recuperare il codice)</label>
     <input type="email" class="input mb12" id="founder-email" placeholder="nome@esempio.it" autocomplete="email" inputmode="email">
-    <button class="btn btn-gold btn-full" id="btn-founder" onclick="startPlayPurchase()" disabled>&#128274; Sblocca a 19,90 &euro;</button>
+
+    <!-- OFFERTA PRIMARIA: Lettera Singola €4,99 (CTA gold grosso) -->
+    <div class="price-box mb12">
+      <div class="price-n">&#128231; Lettera singola</div>
+      <div class="price-p">1 analisi + 1 lettera PEC pronta all'invio</div>
+      <div class="price-s">Nessun abbonamento. Paga solo per questa pratica.</div>
+      <div style="font-size:1.6rem;color:var(--gold);font-weight:900;margin-top:12px">4,99 &euro;</div>
+    </div>
+    <button class="btn btn-gold btn-full mb16" id="btn-singolo" onclick="startPlayPurchase('acquisto_singolo')" disabled>&#128274; Sblocca la mia lettera - 4,99 &euro;</button>
+
+    <!-- OFFERTA SECONDARIA: Founder a vita (CTA outline piccolo) -->
+    <div class="code-div"><span>oppure — se hai piu casi</span></div>
+    <div style="padding:14px;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:12px;margin-bottom:12px">
+      <div style="font-size:.9rem;color:var(--text);font-weight:700">&#127942; Pass Pro a vita</div>
+      <div style="font-size:.76rem;color:var(--text3);margin-top:4px;line-height:1.55">Analisi e lettere illimitate, per sempre. Una tantum, nessun rinnovo. Solo per i primi 50 utenti.</div>
+      <div style="font-size:1.1rem;color:var(--gold);font-weight:800;margin-top:8px">19,90 &euro;</div>
+      <button class="btn btn-outline btn-full mt12" id="btn-founder" onclick="startPlayPurchase('founder_lifetime')" disabled>Sblocca a vita - 19,90 &euro;</button>
+    </div>
+
     <div class="mt12 tc"><small style="color:var(--text3);line-height:1.8">Pagamento sicuro via Google Play. La tua email serve a recuperare il Pro se cambi device.</small></div>
 
     <div class="code-div"><span>ho gia un codice</span></div>
@@ -1022,25 +1041,26 @@ window.onPurchasePending = function() {
   try { if (typeof Br !== 'undefined' && Br.toast) Br.toast("Pagamento in attesa di approvazione."); } catch(e) {}
 };
 var _lastPurchaseClick = 0;
-function startPlayPurchase() {
+function startPlayPurchase(productId) {
+  var pid = productId || 'founder_lifetime';
   var now = Date.now();
   if (now - _lastPurchaseClick < 500) return;   // debounce doppio tap
   _lastPurchaseClick = now;
   if (typeof Android === 'undefined' || !Android.isPlayBillingAvailable || !Android.isPlayBillingAvailable()) {
     try { if (typeof Br !== 'undefined' && Br.toast) Br.toast("Pagamento non disponibile. Aggiorna l'app o riprova piu' tardi."); } catch(e) {}
-    try { if (typeof track === 'function') track('play_billing_unavailable'); } catch(e) {}
+    try { if (typeof track === 'function') track('play_billing_unavailable', { product: pid }); } catch(e) {}
     return;
   }
   var emailEl = document.getElementById('founder-email');
   var email = ((emailEl && emailEl.value) || '').trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     try { if (typeof Br !== 'undefined' && Br.toast) Br.toast("Inserisci la tua email per continuare."); } catch(e) {}
-    try { if (typeof track === 'function') track('play_billing_email_required'); } catch(e) {}
+    try { if (typeof track === 'function') track('play_billing_email_required', { product: pid }); } catch(e) {}
     if (emailEl) emailEl.focus();
     return;
   }
-  try { if (typeof track === 'function') track('play_billing_initiated'); } catch(e) {}
-  Android.startPurchase('founder_lifetime', email);
+  try { if (typeof track === 'function') track('play_billing_initiated', { product: pid }); } catch(e) {}
+  Android.startPurchase(pid, email);
 }
 var MAX_FREE=1;       // 1 analisi gratis completa
 var MAX_TOTAL=10;     // tetto upload totali per non-Pro (preview o full); oltre = blocco anti-abuso
@@ -1875,13 +1895,15 @@ function init(){
     on("btn-copy-lt","click",function(){if(navigator.clipboard)navigator.clipboard.writeText(S.curLetter).then(function(){Br.toast("Copiato!");});else Br.toast("Seleziona e copia manualmente.");});
     on("btn-share-lt","click",function(){Br.share(S.curLetter);});
     // btn-subscribe rimosso in v4.5: ora il flusso Pro passa da Play Billing (vedi startPlayPurchase()).
-    // Enable/disable CTA Founder in base alla validità email
+    // Enable/disable CTA acquisto (singolo + founder) in base alla validità email
     var founderEmailEl = document.getElementById('founder-email');
+    var singoloBtnEl = document.getElementById('btn-singolo');
     var founderBtnEl = document.getElementById('btn-founder');
     if (founderEmailEl) {
       founderEmailEl.addEventListener('input', function(){
         var v = (founderEmailEl.value || '').trim().toLowerCase();
         var ok = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+        if (singoloBtnEl) singoloBtnEl.disabled = !ok;
         if (founderBtnEl) founderBtnEl.disabled = !ok;
       });
     }

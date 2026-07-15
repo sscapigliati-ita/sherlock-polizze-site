@@ -21,7 +21,7 @@ type MappaProdotto = {
 };
 const MAPPA_PRODOTTI: Record<string, MappaProdotto> = {
   founder_lifetime: { piano: 'founder', prezzoEur: 19.9, durataMesi: 1200 },
-  acquisto_singolo: { piano: 'singolo', prezzoEur: 3.99, durataMesi: 1 },
+  acquisto_singolo: { piano: 'singolo', prezzoEur: 4.99, durataMesi: 1 },
 };
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const SCADENZA_LIFETIME = '2099-12-31T23:59:59Z';
