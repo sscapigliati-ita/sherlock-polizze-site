@@ -19,7 +19,7 @@ import Footer from '../components/Footer.astro';
       esattamente cosa ne facciamo, con quali fornitori, per quanto.
     </p>
     <p class="text-navy-500 text-sm mb-10">
-      Ultimo aggiornamento: 3 luglio 2026. Questa pagina e la
+      Ultimo aggiornamento: 15 luglio 2026. Questa pagina e la
       <a href="/privacy" class="text-gold-400 hover:underline">Privacy Policy</a>
       dicono le stesse cose: se trovi un'incongruenza segnalacela.
     </p>
@@ -51,7 +51,7 @@ import Footer from '../components/Footer.astro';
         <p>
           Il documento viene inviato al nostro endpoint
           <code class="text-gold-400 notranslate" translate="no">/api/analizza</code>
-          via <strong class="text-white">HTTPS / TLS 1.3</strong>. È cifrato <strong class="text-white">in transito</strong>:
+          via <strong class="text-white">HTTPS / TLS</strong>. È cifrato <strong class="text-white">in transito</strong>:
           nessun intermediario su Internet può leggere il contenuto mentre viaggia. <em>Non è
           una cifratura end-to-end</em>: il nostro backend deve potere leggere il PDF per
           inoltrarlo all'AI.
@@ -60,7 +60,7 @@ import Footer from '../components/Footer.astro';
       <li class="bg-navy-900/50 border-l-4 border-gold-400 rounded-r-lg p-5">
         <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">3. Analisi AI</div>
         <p>
-          Il backend (serverless su Vercel, region Europa) inoltra il PDF al modello
+          Il backend serverless su Vercel inoltra il PDF al modello
           <span class="notranslate" translate="no">Claude</span> di Anthropic, che lo legge
           e genera un report strutturato. La policy di Anthropic per l'API a pagamento
           stabilisce che <strong class="text-white">i tuoi documenti non vengono usati per
@@ -68,13 +68,12 @@ import Footer from '../components/Footer.astro';
         </p>
       </li>
       <li class="bg-navy-900/50 border-l-4 border-gold-400 rounded-r-lg p-5">
-        <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">4. Risposta e distruzione del PDF</div>
+        <div class="text-xs uppercase tracking-widest text-gold-400 mb-1">4. Risposta e gestione temporanea del PDF</div>
         <p>
-          Il report viene restituito al telefono. A quel punto il PDF esiste solo nella
-          memoria temporanea della funzione serverless, che
-          <strong class="text-white">si distrugge al termine della richiesta</strong> (tipicamente entro
-          30 secondi). Non viene scritto su disco, non viene salvato in alcun database
-          nostro, non viene inviato a nessun altro fornitore.
+          Sherlock non conserva il file in un archivio applicativo permanente. Il
+          contenuto viene però trasmesso ai fornitori tecnici necessari all'elaborazione;
+          tempi e log tecnici dei fornitori seguono le rispettive configurazioni e
+          condizioni contrattuali.
         </p>
       </li>
       <li class="bg-navy-900/50 border-l-4 border-gold-400 rounded-r-lg p-5">
@@ -96,7 +95,7 @@ import Footer from '../components/Footer.astro';
     <ul class="list-disc list-inside space-y-2 mb-6 text-navy-200">
       <li><strong>Metadati richiesta</strong>: timestamp, indirizzo IP, esito (ok/errore/bloccato), durata in millisecondi, request ID univoco. <span class="text-navy-400 text-sm">Conservati 90 giorni per troubleshooting.</span></li>
       <li><strong>Solo se ti abboni</strong>: la tua email e il codice Pro generato (formato <code class="notranslate text-gold-400" translate="no">SHK-XXXX-XXXX</code>), salvati in Upstash Redis (cifrato a riposo). Servono a validare le tue future richieste Pro. <span class="text-navy-400 text-sm">Conservati fino a richiesta di cancellazione.</span></li>
-      <li><strong>Eventi anonimi di utilizzo</strong> via Firebase Analytics: apertura app, cambio lingua, analisi completata (con livello rischio, NON contenuto), visualizzazione paywall, ecc. <span class="text-navy-400 text-sm">Conservati 14 mesi (impostazione standard Firebase).</span></li>
+      <li><strong>Eventi pseudonimizzati di utilizzo</strong> via Firebase Analytics: apertura app, cambio lingua, analisi completata (con livello rischio, NON contenuto), visualizzazione paywall, ecc. <span class="text-navy-400 text-sm">La conservazione segue la configurazione del servizio.</span></li>
       <li><strong>Crash logs e diagnostica</strong>: modello dispositivo, versione OS, errori applicativi. Inviati a Firebase. <span class="text-navy-400 text-sm">Conservati 90 giorni.</span></li>
       <li>
         <strong>Solo sul sito, solo con il tuo consenso</strong>: eventi di conversione
@@ -127,14 +126,14 @@ import Footer from '../components/Footer.astro';
     <ul class="space-y-3 mb-10">
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
         <strong class="text-white">Anthropic</strong> (USA) — fornisce il modello Claude
-        che legge e analizza il PDF. <span class="text-navy-400 text-sm">Data Processing Agreement firmato; documenti non usati per training.</span>
+        che legge e analizza il PDF. <span class="text-navy-400 text-sm">Il trattamento segue le condizioni e le policy applicabili al servizio.</span>
       </li>
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
-        <strong class="text-white">Vercel</strong> (USA, region Europa) — ospita il sito
+        <strong class="text-white">Vercel</strong> — ospita il sito
         Sherlock e le funzioni serverless (<code class="text-gold-400 notranslate" translate="no">/api/analizza</code>, <code class="text-gold-400 notranslate" translate="no">/api/lettera</code>, ecc.).
       </li>
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
-        <strong class="text-white">Upstash Redis</strong> (via Vercel Marketplace, region Europa) —
+        <strong class="text-white">Upstash Redis</strong> (via Vercel Marketplace) —
         memorizza i codici Pro (<code class="text-gold-400 notranslate" translate="no">SHK-*</code>) e le
         email degli abbonati. Cifrato a riposo.
       </li>
@@ -151,7 +150,7 @@ import Footer from '../components/Footer.astro';
         <strong class="text-white">Google Ireland Ltd</strong> (Irlanda, con eventuali
         trasferimenti verso Google LLC USA coperti da Standard Contractual Clauses) —
         tre servizi distinti: <strong class="text-white">Firebase Analytics</strong> per eventi
-        anonimi dell'app e crash log; <strong class="text-white">Google Analytics 4</strong>
+        pseudonimizzati dell'app e crash log; <strong class="text-white">Google Analytics 4</strong>
         e <strong class="text-white">Google Ads</strong> (attivi sul sito web solo previo
         tuo consenso via banner cookie) per misurare le nostre campagne pubblicitarie
         e mostrare annunci di remarketing. Nessun dato del PDF o del report viene mai
@@ -185,9 +184,11 @@ import Footer from '../components/Footer.astro';
 
     <h2 class="text-2xl font-bold text-white mb-4">Cancellazione su richiesta (GDPR art. 17)</h2>
     <p class="mb-10">
-      Vuoi che cancelliamo la tua email e il tuo codice Pro? Scrivi a
+      Per una richiesta di cancellazione, accesso o esportazione dei dati conservati
+      lato server scrivi a
       <a href="mailto:scaplab@sherlockpolizze.it" class="text-gold-400 hover:underline notranslate" translate="no">scaplab@sherlockpolizze.it</a>
-      e procediamo entro 7 giorni lavorativi. I report sul tuo telefono li cancelli da solo
+      : la funzione non è automatica nell'app e viene gestita tramite supporto entro i
+      termini applicabili. I report sul tuo telefono li cancelli da solo
       con "Reset completo" nelle Impostazioni dell'app, o disinstallando.
     </p>
 

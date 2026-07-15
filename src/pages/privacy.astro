@@ -12,7 +12,7 @@ import Footer from '../components/Footer.astro';
 
   <article class="prose-article px-5 py-16">
     <h1>Privacy Policy</h1>
-    <p><strong>Ultimo aggiornamento:</strong> 3 luglio 2026</p>
+    <p><strong>Ultimo aggiornamento:</strong> 15 luglio 2026</p>
     <p class="text-sm text-navy-400">
       Questa pagina e la <a href="/trasparenza" class="text-gold-400 hover:underline">pagina Trasparenza</a>
       descrivono le stesse pratiche: se trovi un'incongruenza segnalacela.
@@ -44,10 +44,10 @@ import Footer from '../components/Footer.astro';
     </ul>
     <blockquote>
       <p>
-        <strong>I documenti non vengono salvati.</strong> Vengono trasmessi cifrati al
-        nostro backend, inoltrati al provider di analisi AI (Anthropic), e distrutti
-        dalla memoria della funzione serverless al termine della richiesta (tipicamente
-        entro 30 secondi). Nessuna copia su disco, nessun database, nessun training AI.
+        <strong>Sherlock non conserva il file in un archivio applicativo permanente.</strong>
+        Il contenuto viene però trasmesso al backend e ai fornitori tecnici necessari
+        all'elaborazione. Tempi e log tecnici dei fornitori seguono le rispettive
+        configurazioni e condizioni contrattuali.
       </p>
     </blockquote>
 
@@ -71,7 +71,7 @@ import Footer from '../components/Footer.astro';
 
     <h3>2.5 Cookie, eventi di utilizzo e misurazione web</h3>
 
-    <p><strong>App Android</strong> — tramite Google Firebase Analytics raccogliamo eventi anonimi:</p>
+    <p><strong>App Android</strong> — tramite Google Firebase Analytics raccogliamo eventi pseudonimizzati:</p>
     <ul>
       <li>Apertura app, cambio lingua, completamento analisi (con livello rischio aggregato, mai contenuto), visualizzazione paywall, attivazione Pro.</li>
       <li>Modello dispositivo, versione Android, versione app.</li>
@@ -80,7 +80,7 @@ import Footer from '../components/Footer.astro';
 
     <p><strong>Sito web (www.sherlockpolizze.it)</strong> — utilizziamo due strumenti Google distinti, entrambi soggetti al tuo consenso preventivo:</p>
     <ul>
-      <li><strong>Google Firebase Analytics (property "Sherlock Site Web")</strong>: eventi anonimi di navigazione (visualizzazioni pagina, click su Play Store, apertura app WebView, visualizzazione paywall), coerenti con la nomenclatura storica delle metriche di prodotto.</li>
+      <li><strong>Google Firebase Analytics (property "Sherlock Site Web")</strong>: eventi pseudonimizzati di navigazione (visualizzazioni pagina, click su Play Store, apertura app WebView, visualizzazione paywall), coerenti con la nomenclatura storica delle metriche di prodotto.</li>
       <li><strong>Google Analytics 4 (property "Sherlock Polizze Web", <code>G-21MQHMK771</code>) + Google Ads</strong>: quattro eventi di conversione — <code>click_play_store</code>, <code>start_analysis</code>, <code>click_abbonati</code>, <code>contact_or_report</code> — usati per misurare la performance delle campagne pubblicitarie Google Ads (attribuzione conversioni, remarketing, personalizzazione annunci). Ogni evento include l'URL della pagina, la posizione del CTA (header/footer/hero/body) e il testo del link.</li>
     </ul>
 
@@ -89,7 +89,7 @@ import Footer from '../components/Footer.astro';
         <strong>Consenso preventivo (Google Consent Mode v2).</strong> Alla prima visita il sito
         carica gli script di Google in modalità <em>denied</em>: nessun cookie di misurazione
         (<code>_ga</code>, <code>_ga_*</code>) né pubblicitario (<code>_gcl_*</code>) viene scritto sul tuo dispositivo,
-        e le hit inviate a Google sono "consent signals" anonimi senza identificatori utente.
+        e le hit inviate a Google sono segnali di consenso privi dei cookie di misurazione e pubblicitari.
         Un banner in basso ti chiede di scegliere <strong>Accetta</strong> o <strong>Rifiuta</strong>. La scelta è
         memorizzata in <code>localStorage</code> del tuo browser ed è revocabile in qualsiasi
         momento cancellando lo storage o visitando <code>?internal=1</code> (che disattiva
@@ -120,9 +120,11 @@ import Footer from '../components/Footer.astro';
       <li>Adempiere agli obblighi di legge (fatturazione, conservazione fiscale).</li>
     </ul>
     <p>
-      <strong>Non utilizziamo i tuoi dati per</strong>: profilazione pubblicitaria,
-      vendita o cessione a terzi (assicuratori, broker, comparatori), addestramento
-      di modelli AI.
+      <strong>Non usiamo il contenuto dei documenti per pubblicità.</strong> Sul sito,
+      previo consenso, Google Analytics e Google Ads possono trattare identificatori
+      online per misurazione e remarketing secondo le preferenze espresse nel banner.
+      Non vendiamo i dati ad assicuratori, broker o comparatori e non usiamo i documenti
+      per addestrare modelli AI.
     </p>
 
     <h2>4. Base giuridica del trattamento (GDPR)</h2>
@@ -144,7 +146,7 @@ import Footer from '../components/Footer.astro';
         <tr><th>Categoria</th><th>Dove</th><th>Durata</th></tr>
       </thead>
       <tbody>
-        <tr><td>Documenti caricati (PDF/immagini)</td><td>Memoria volatile serverless</td><td>Distrutti a fine richiesta (entro 30 secondi)</td></tr>
+        <tr><td>Documenti caricati (PDF/immagini)</td><td>Backend e provider necessari all'elaborazione</td><td>Nessun archivio applicativo permanente; eventuali log tecnici seguono configurazioni e condizioni dei fornitori</td></tr>
         <tr><td>Report di analisi</td><td>Solo sul tuo dispositivo</td><td>Fino a "Reset completo" o disinstallazione</td></tr>
         <tr><td>Email + codice Pro</td><td>Upstash Redis (cifrato a riposo)</td><td>Fino a richiesta di cancellazione</td></tr>
         <tr><td>Dati di fatturazione PayPal</td><td>PayPal + tuoi log</td><td>10 anni (obbligo fiscale)</td></tr>
@@ -160,12 +162,12 @@ import Footer from '../components/Footer.astro';
     <h2>6. Fornitori terzi (sub-processor)</h2>
     <p>I tuoi dati possono essere comunicati esclusivamente a questi fornitori, per le finalità specifiche indicate:</p>
     <ul>
-      <li><strong>Anthropic</strong> (USA) — analisi AI del PDF caricato. DPA firmato; documenti non usati per training.</li>
-      <li><strong>Vercel</strong> (USA, region Europa) — hosting sito + funzioni serverless backend.</li>
-      <li><strong>Upstash Redis</strong> (via Vercel Marketplace, region Europa) — storage cifrato dei codici Pro e delle email abbonati.</li>
+      <li><strong>Anthropic</strong> (USA) — analisi AI del PDF caricato; condizioni e policy del servizio disciplinano trattamento e conservazione tecnica.</li>
+      <li><strong>Vercel</strong> — hosting del sito e funzioni serverless backend.</li>
+      <li><strong>Upstash Redis</strong> (via Vercel Marketplace) — storage dei codici Pro e delle email abbonati.</li>
       <li><strong>PayPal</strong> — elaborazione pagamenti abbonamenti.</li>
       <li><strong>Resend</strong> — invio email transazionali (codice Pro post-pagamento).</li>
-      <li><strong>Google Ireland Ltd</strong> (Irlanda, con eventuali trasferimenti a Google LLC USA coperti da Standard Contractual Clauses) — Google Firebase Analytics per eventi anonimi di utilizzo dell'app e crash log; Google Analytics 4 e Google Ads (solo previo consenso) per misurazione delle campagne pubblicitarie e remarketing.</li>
+      <li><strong>Google Ireland Ltd</strong> (Irlanda, con eventuali trasferimenti a Google LLC USA coperti da Standard Contractual Clauses) — Google Firebase Analytics per eventi pseudonimizzati di utilizzo dell'app e crash log; Google Analytics 4 e Google Ads (solo previo consenso) per misurazione delle campagne pubblicitarie e remarketing.</li>
       <li><strong>Google Play Store</strong> — distribuzione app Android.</li>
       <li><strong>Autorità competenti</strong>, qualora richiesto per legge.</li>
     </ul>
@@ -182,13 +184,14 @@ import Footer from '../components/Footer.astro';
       <li>Reclamo al Garante per la Protezione dei Dati Personali.</li>
     </ul>
     <p>
-      Per esercitare questi diritti scrivici a
-      <strong>scaplab@sherlockpolizze.it</strong>. Risposta entro 7 giorni lavorativi.
+      Per una richiesta di cancellazione, accesso o esportazione dei dati conservati
+      lato server scrivici a <strong>scaplab@sherlockpolizze.it</strong>. La funzione non
+      è automatica nell'app e viene gestita tramite supporto entro i termini applicabili.
     </p>
 
     <h2>8. Sicurezza</h2>
     <ul>
-      <li>Cifratura in transito (HTTPS/TLS 1.3) per ogni comunicazione fra app, sito, backend e sub-processor.</li>
+      <li>Cifratura in transito tramite HTTPS/TLS per le comunicazioni fra app, sito, backend e fornitori.</li>
       <li>Cifratura a riposo per i dati persistenti (Upstash Redis cifrato gestito da Vercel).</li>
       <li>Accesso ai dati limitato al titolare del trattamento.</li>
       <li>I documenti caricati non vengono mai persistiti su disco né archiviati.</li>
