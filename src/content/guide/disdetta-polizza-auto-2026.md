@@ -127,7 +127,7 @@ Distinti saluti,
 
 Prima di disdire o rinnovare, fai analizzare la polizza dall'app Sherlock. L'AI estrae automaticamente: data di scadenza, termine di disdetta, costo delle singole garanzie accessorie (così sai cosa stai pagando davvero), clausole di tacito rinnovo nascoste.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

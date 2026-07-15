@@ -75,7 +75,7 @@ I beni di pregio (gioielli, orologi, contanti, oggetti d'arte) **non** seguono i
 - 1.500-3.000 € per "denaro contante e valori bollati"
 - 5.000-15.000 € per gioielli SE custoditi in cassaforte a muro
 
-Esempio reale: massimale generale 50.000 €, sotto-limite preziosi 15%, sotto-limite denaro 2.000 €. Se ti rubano gioielli per 30.000 € e contanti per 5.000 €, riceverai max 7.500 + 2.000 = **9.500 €**.
+Simulazione dimostrativa: massimale generale 50.000 €, sotto-limite preziosi 15%, sotto-limite denaro 2.000 €. Se ti rubano gioielli per 30.000 € e contanti per 5.000 €, riceverai max 7.500 + 2.000 = **9.500 €**.
 
 **Cosa fare:**
 - Inventario dettagliato dei preziosi con perizia (foto, scontrini, certificati di autenticità)
@@ -132,7 +132,7 @@ Se hai ricevuto un diniego che invoca una di queste clausole, **prima di accetta
 1. Rileggi le Condizioni Generali e verifica che la clausola sia stata **specificamente sottoscritta** (art. 1341 c.c.) — non basta la firma generica sulla polizza, serve sottoscrizione separata della singola clausola limitativa
 2. Verifica se la clausola è stata **chiaramente segnalata** nel frontespizio (Reg. IVASS n. 41/2018, art. 13). Se è nascosta a pagina 22, è contestabile per difetto di trasparenza
 3. Verifica la **proporzionalità** della richiesta tecnica (es. GSM redondante in zone senza copertura)
-4. Verifica i **termini di accettazione** del rischio da parte della compagnia (art. 1892 c.c. — 3 mesi dal sinistro per eccepire)
+4. Se la compagnia invoca dichiarazioni inesatte o reticenze, verifica quando ne ha avuto conoscenza e se ricorrono i presupposti dell'art. 1892 c.c.; il termine previsto dalla norma non decorre in via generale dal sinistro
 
 Lo strumento naturale: [reclamo formale alla compagnia](/guide/pec-reclamo-assicurazione), poi se necessario [esposto IVASS](/guide/esposto-ivass-modello).
 
@@ -142,7 +142,7 @@ Lo strumento naturale: [reclamo formale alla compagnia](/guide/pec-reclamo-assic
 
 Prima di firmare una polizza casa, caricala sull'app Sherlock: l'AI identifica automaticamente la presenza di queste 7 clausole, ne segnala la gravità, e ti indica se sono specificamente sottoscritte (quindi pienamente valide) o contestabili.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

@@ -191,7 +191,7 @@ L'INAIL da sola non ti garantisce praticamente nulla negli scenari più probabil
 
 Carica la polizza infortuni che ti propongono sull'app Sherlock: l'AI estrae franchigie, massimali, esclusioni, periodo carenza, definizione di "infortunio". Ti segnala se la polizza è davvero integrativa rispetto all'INAIL o se ha buchi di copertura.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

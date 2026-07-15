@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+
+android {
+    namespace 'it.sherlock.polizze'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'it.sherlock.polizze'
+        minSdk 21
+        targetSdk 35
+        versionCode 66
+        versionName '4.6.8'
+    }
+
+    def releaseKeystore = System.getenv('KEYSTORE_PATH')
+    def releaseStorePassword = System.getenv('KEYSTORE_PASSWORD')
+    def releaseAlias = System.getenv('KEY_ALIAS')
+    def releaseKeyPassword = System.getenv('KEY_PASSWORD')
+    def hasReleaseSigning = releaseKeystore && releaseStorePassword && releaseAlias && releaseKeyPassword
+
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                storeFile file(releaseKeystore)
+                storePassword releaseStorePassword
+                keyAlias releaseAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation platform('com.google.firebase:firebase-bom:33.5.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.android.billingclient:billing:7.1.1'
+    implementation 'com.google.android.play:app-update:2.1.0'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20240303'
+}

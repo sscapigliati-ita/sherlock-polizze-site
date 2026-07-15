@@ -411,8 +411,20 @@ body{
 .lang-btn.active{opacity:1;border-color:var(--amber);box-shadow:0 0 8px rgba(251,191,36,.4);}
 .lang-btn:active{transform:scale(.92);}
 </style>
+<style>
+/* Remediation Google Play: controlli leggibili, tattili e sempre riconoscibili. */
+.btn,.btn-back,.btn-gear,#bnav .tab,.lt-btn,.set-row,.acc-hdr{min-height:48px;touch-action:manipulation}
+:where(button,a,input,textarea,summary,[role="button"]):focus-visible{outline:3px solid var(--amber3);outline-offset:3px}
+button:disabled{cursor:not-allowed;opacity:.55;filter:saturate(.55)}
+#app-feedback{position:fixed;z-index:4000;left:16px;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));max-width:520px;margin:auto;padding:14px 16px;border:1px solid var(--border2);border-left:4px solid var(--amber);border-radius:14px;background:rgba(14,20,38,.98);box-shadow:0 18px 50px rgba(0,0,0,.48);color:var(--text);font-size:.86rem;line-height:1.5}
+#app-feedback[hidden]{display:none}
+.card,.card2{box-shadow:0 12px 34px rgba(2,6,23,.16)}
+@media (max-width:360px){.scr-scroll{padding-left:14px;padding-right:14px}.btn{padding-left:16px;padding-right:16px}.sp-title{font-size:2.45rem}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
+<div id="app-feedback" role="alert" aria-live="assertive" aria-atomic="true" hidden></div>
 <div id="app">
 <div class="lang-bar" id="lang-bar" role="toolbar" aria-label="Lingua">
   <button class="lang-btn" data-lang="it" aria-label="Italiano">🇮🇹</button>
@@ -474,8 +486,8 @@ body{
       </div>
       <div class="ob-slide">
         <div class="ob-icon">&#128269;</div>
-        <div class="ob-title">Analisi AI in 30 secondi</div>
-        <div class="ob-desc">Carica il PDF o scatta una foto. Sherlock identifica esclusioni critiche, clausole rischiose e termini di decadenza con precisione legale.</div>
+        <div class="ob-title">Analisi documentale assistita</div>
+        <div class="ob-desc">Carica il PDF o scatta una foto. Sherlock identifica esclusioni, clausole potenzialmente critiche e termini di decadenza indicando la pagina di riferimento per ogni rilievo. La valutazione di merito resta sempre da verificare sul caso concreto.</div>
       </div>
       <div class="ob-slide">
         <img class="ob-dog" src="img/dog_medium.png" alt="Sherlock">
@@ -502,7 +514,7 @@ body{
       <span class="logo">SHERLOCK</span>
       <span id="home-badge"></span>
     </div>
-    <button class="btn-gear" id="btn-home-gear">&#9881;</button>
+    <button class="btn-gear" id="btn-home-gear" aria-label="Impostazioni" type="button"><span aria-hidden="true">&#9881;</span></button>
   </div>
   <div id="home-free-banner" class="free-banner hide">
     <div class="free-label" id="free-label-text">Analisi gratuite rimaste</div>
@@ -616,7 +628,7 @@ body{
       <div class="cmp-row"><span class="cmp-f">Base legale contestabile</span><span class="cmp-a">&#10003;</span><span class="cmp-b">&#10003;</span></div>
       <div class="cmp-row"><span class="cmp-f">Raccomandazioni personalizzate</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
       <div class="cmp-row"><span class="cmp-f">Lettera di reclamo (pronta PEC)</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
-      <div class="cmp-row"><span class="cmp-f">Ricorso IVASS</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
+      <div class="cmp-row"><span class="cmp-f">Bozza di esposto IVASS</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
       <div class="cmp-row"><span class="cmp-f">Diffida formale stragiudiziale</span><span class="cmp-a" style="color:var(--danger)">&#10007;</span><span class="cmp-b text-ok">&#10003;</span></div>
     </div>
     <div class="price-box">
@@ -624,17 +636,6 @@ body{
       <div class="price-p">tre opzioni chiare, nessun rinnovo automatico</div>
       <div style="font-size:.7rem;color:var(--text3);margin-top:10px">Pagamento sicuro via</div>
       <div class="pp-logo">PAYPAL</div>
-    </div>
-
-    <!-- Piano Founder: lifetime, in evidenza -->
-    <div class="pw-plan pw-plan-primary" id="pw-plan-founder">
-      <div class="pw-plan-head">
-        <div class="pw-plan-badge">Consigliato</div>
-        <div class="pw-plan-name">Pass Pro Founder</div>
-        <div class="pw-plan-price">19,90 &euro; <small>una tantum</small></div>
-      </div>
-      <div class="pw-plan-body">Accesso Pro <b>a vita</b>. Analisi illimitate, tutte le lettere (Reclamo, IVASS, Diffida). Solo i primi 50 iscritti.</div>
-      <button class="btn btn-gold btn-full" id="btn-cta-founder">&#127775; Prendi il Pass Founder</button>
     </div>
 
     <!-- Prova Singola: pay-per-use -->
@@ -653,11 +654,11 @@ body{
         <div class="pw-plan-name">Pass Pro mensile / annuale</div>
         <div class="pw-plan-price">da 2,99 &euro; <small>/ mese</small></div>
       </div>
-      <div class="pw-plan-body">Analisi illimitate + lettere Pro. Mensile, semestrale o annuale (14,99 &euro; = 1,25 &euro;/mese). Nessun rinnovo automatico.</div>
+      <div class="pw-plan-body">Analisi e bozze Pro nel periodo scelto. Mensile, semestrale o annuale (14,99 &euro; = 1,25 &euro;/mese). Nessun rinnovo automatico.</div>
       <button class="btn btn-outline btn-full" id="btn-subscribe" data-i18n="activate_pro">&#128274; Vedi i piani Pro</button>
     </div>
 
-    <button class="btn btn-ghost btn-full mt12 mb12" id="btn-view-example">&#128196; Vedi un esempio reale di lettera Pro</button>
+    <button class="btn btn-ghost btn-full mt12 mb12" id="btn-view-example">&#128196; Vedi una simulazione dimostrativa di lettera Pro</button>
     <div class="mt12 tc"><small style="color:var(--text3);line-height:1.8">Il pagamento si apre nel flusso sicuro Sherlock/PayPal.<br>Usa la stessa email anche nell'app.</small></div>
     <div class="code-div"><span>ho gia pagato</span></div>
     <label class="lbl">La tua email del pagamento</label>
@@ -686,7 +687,7 @@ body{
     <div class="ex-intro">
       <div class="ex-tag">Fac-simile · Reclamo polizza</div>
       <div class="ex-title">Cosa riceverai con Sherlock Pro</div>
-      <div class="ex-sub">Un documento completo, con intestazione, riferimenti normativi e firma — pronto da personalizzare e inviare via PEC. Ecco un esempio reale.</div>
+      <div class="ex-sub">Una simulazione dimostrativa con intestazione e riferimenti da verificare e personalizzare prima dell'invio via PEC.</div>
     </div>
 
     <div class="ex-paper">
@@ -723,7 +724,7 @@ body{
 
         <p><strong>Motivo del diniego</strong>. Codesta Spett.le compagnia rigetta il sinistro invocando l'art. 7, comma 3, delle Condizioni Generali, secondo cui "in caso di assenza dell'assicurato dall'abitazione superiore a 48 ore, la garanzia furto opera solo se tutte le aperture, comprese quelle al piano terra, sono protette da sistema antintrusione attivo, con segnale GSM redondante".</p>
 
-        <p><strong>Contestazione</strong>. La clausola invocata è da ritenersi <strong>vessatoria</strong> ai sensi degli artt. 1341 e 1342 c.c. e <em>nulla</em> nei confronti del contraente per le seguenti ragioni:</p>
+        <p><strong>Punto da verificare</strong>. La clausola invocata limita la copertura. La sua eventuale vessatorietà, nullità o inefficacia non può essere determinata automaticamente e richiede la valutazione della formulazione, della struttura contrattuale e della disciplina applicabile. In particolare:</p>
 
         <ul>
           <li>non risulta specificamente approvata per iscritto, contrariamente a quanto richiesto dall'art. 1341, secondo comma, c.c.;</li>
@@ -731,7 +732,7 @@ body{
           <li>impone un obbligo tecnico (sistema GSM redondante) sproporzionato e privo di reale nesso causale con l'evento, contrario al principio di buona fede contrattuale ex art. 1375 c.c.</li>
         </ul>
 
-        <p>Si rileva inoltre che, ai sensi dell'<strong>art. 1892 c.c.</strong>, eventuali contestazioni sulla copertura debbano essere sollevate dall'assicuratore entro tre mesi dal sinistro: termine già abbondantemente decorso al momento della Vostra comunicazione di diniego.</p>
+        <p>L'<strong>art. 1892 c.c.</strong> disciplina le dichiarazioni inesatte e le reticenze rese con dolo o colpa grave. Il termine previsto dalla norma riguarda l'esercizio delle facoltà dell'assicuratore dopo la conoscenza dell'inesattezza o della reticenza rilevante e non costituisce un termine generale decorrente dal sinistro per ogni contestazione sulla copertura.</p>
 
         <p><strong>Richiesta</strong>. Tutto ciò premesso, si invita codesta Spett.le compagnia a <strong>riesaminare la pratica</strong> e a procedere alla liquidazione dell'indennizzo entro il termine di <strong>45 giorni</strong> dal ricevimento del presente reclamo, come previsto dal Regolamento IVASS n. 24/2008 e successive modifiche.</p>
 
@@ -1038,6 +1039,7 @@ document.addEventListener('click', function(e){
 })();
 var APP_BUILD=51; // versionCode — bumpare quando serve invalidare cache non-freeUsed
 var S={analyses:[],isPro:false,proCode:null,onboardingDone:false,freeUsed:0,curA:null,curLetter:"",curLType:"reclamo",devOpen:false,build:0};
+var NAV_STACK=["splash"];
 function load(){try{var r=localStorage.getItem("shk2");if(r)Object.assign(S,JSON.parse(r));}catch(e){}
   // Traccia il build senza resettare freeUsed: la prova gratuita è UNA per browser/dispositivo,
   // altrimenti bumpare l'app regalerebbe una prova nuova a ogni utente esistente.
@@ -1064,7 +1066,8 @@ var _cn=0,_cb={};
 window._apiReady=function(k){var r=Br.a?Android.getResult(k):"";var id=k.replace("cb_","");if(!_cb[id])return;var c=_cb[id];delete _cb[id];if(!r||r.indexOf("__ERR__")===0){c.rej(new Error(r?r.slice(7):"Errore"));return;}try{c.res(JSON.parse(atob(r)));}catch(e){c.res(r);}};
 function apicall(url,method,headers,body){return new Promise(function(res,rej){var id=String(++_cn);_cb[id]={res:res,rej:rej};if(Br.a){Android.callAPI(url,method,JSON.stringify(headers),body||"",id);}else{fetch(url,{method:method,headers:headers,body:body}).then(function(r){return r.json();}).then(function(d){var c=_cb[id];delete _cb[id];c.res(d);}).catch(function(e){var c=_cb[id];delete _cb[id];c.rej(e);});}});}
 var MAIN=["home","scanner","settings"];
-function show(id,noNav){[].forEach.call(document.querySelectorAll(".screen"),function(s){s.classList.remove("active");});var el=document.getElementById("screen-"+id);if(el)el.classList.add("active");document.getElementById("bnav").style.display=(noNav||MAIN.indexOf(id)<0)?"none":"flex";[].forEach.call(document.querySelectorAll("#bnav .tab"),function(t){t.classList.remove("active");});var m={home:"tab-home",scanner:"tab-scan",settings:"tab-set"};if(m[id]){var t=document.getElementById(m[id]);if(t)t.classList.add("active");}}
+function show(id,noNav,fromBack){[].forEach.call(document.querySelectorAll(".screen"),function(s){s.classList.remove("active");});var el=document.getElementById("screen-"+id);if(el)el.classList.add("active");document.getElementById("bnav").style.display=(noNav||MAIN.indexOf(id)<0)?"none":"flex";[].forEach.call(document.querySelectorAll("#bnav .tab"),function(t){t.classList.remove("active");});var m={home:"tab-home",scanner:"tab-scan",settings:"tab-set"};if(m[id]){var t=document.getElementById(m[id]);if(t)t.classList.add("active");}if(!fromBack&&NAV_STACK[NAV_STACK.length-1]!==id)NAV_STACK.push(id);}
+window.SherlockNavigation={canGoBack:function(){return NAV_STACK.length>1;},goBack:function(){if(!this.canGoBack())return false;NAV_STACK.pop();var previous=NAV_STACK[NAV_STACK.length-1];show(previous,MAIN.indexOf(previous)<0,true);return true;}};
 function goHome(){show("home");renderHome();}
 function goSettings(){show("settings",true);renderSettings();}
 function goPaywall(from){
@@ -1105,7 +1108,7 @@ function renderHome(){
   }else{
     h+='<div style="padding:8px 0 4px;font-size:.7rem;color:var(--text3);letter-spacing:.1em;margin-bottom:6px">ANALISI RECENTI</div>';
     S.analyses.forEach(function(a){h+=cardHtml(a);});
-    if(!S.isPro&&freeLeft()===0){h+='<div class="upgrade-bar mt8"><div class="upgrade-text"><div class="upgrade-title">Analisi gratuite esaurite</div><div class="upgrade-sub">Passa a Pro per analisi illimitate e documenti legali</div></div><button class="btn btn-gold btn-sm" id="btn-upgrade-home">Pro &#8250;</button></div>';}
+    if(!S.isPro&&freeLeft()===0){h+='<div class="upgrade-bar mt8"><div class="upgrade-text"><div class="upgrade-title">Analisi gratuite esaurite</div><div class="upgrade-sub">Passa a Pro per continuare con analisi e bozze personalizzabili</div></div><button class="btn btn-gold btn-sm" id="btn-upgrade-home">Pro &#8250;</button></div>';}
   }
   list.innerHTML=h;
   var es=document.getElementById("btn-es");if(es)es.addEventListener("click",goScanner);
@@ -1175,10 +1178,10 @@ function viewA(a){
   h+='<div class="act-btns">';
   if(S.isPro){
     h+='<button class="btn btn-gold btn-full" id="rb1">&#128221; Genera lettera di reclamo</button>';
-    h+='<button class="btn btn-outline btn-full" id="rb2">&#127963; Genera ricorso IVASS</button>';
+    h+='<button class="btn btn-outline btn-full" id="rb2">&#127963; Genera bozza di esposto IVASS</button>';
     h+='<button class="btn btn-outline btn-full" id="rb3">&#9878; Genera diffida formale</button>';
   }else{
-    h+='<div class="card2" style="border-color:var(--gold3)"><div style="font-size:.72rem;color:var(--gold3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Sherlock Pro</div><div style="font-size:1rem;color:var(--gold);font-weight:bold;margin-bottom:6px">Vuoi trasformare questa analisi in una lettera pronta da inviare?</div><div style="font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:12px">Sherlock puo generare un reclamo, una diffida o una segnalazione IVASS basata su questa polizza.</div><div style="background:#f7f1df;color:#20160a;border-radius:10px;padding:13px;margin-bottom:10px;position:relative;overflow:hidden"><div style="font-size:.66rem;letter-spacing:.12em;color:#7b642c;font-weight:bold;margin-bottom:8px">ANTEPRIMA LETTERA</div><div style="font-weight:bold;font-size:.82rem;margin-bottom:7px">Oggetto: reclamo formale relativo alla polizza</div><div style="font-size:.76rem;line-height:1.55;color:#4a3820">Spett.le Compagnia,<br>con la presente intendo contestare la gestione della copertura assicurativa relativa a...</div><div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(13,10,7,.08);text-align:center;color:#20160a;font-size:.72rem;font-weight:bold">Sblocca la lettera completa con Pro</div></div><button class="btn btn-gold btn-full" id="btn-upgrade-res">Genera lettera con Sherlock Pro</button><div style="font-size:.68rem;color:var(--text3);text-align:center;margin-top:8px">Da 2,99 euro/mese. Pagamento sicuro via PayPal.</div></div>';
+    h+='<div class="card2" style="border-color:var(--gold3)"><div style="font-size:.72rem;color:var(--gold3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Sherlock Pro</div><div style="font-size:1rem;color:var(--gold);font-weight:bold;margin-bottom:6px">Vuoi trasformare questa analisi in una bozza personalizzabile?</div><div style="font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:12px">Sherlock puo generare una bozza di reclamo, diffida o esposto IVASS basata su questa polizza, da verificare prima dell invio.</div><div style="background:#f7f1df;color:#20160a;border-radius:10px;padding:13px;margin-bottom:10px;position:relative;overflow:hidden"><div style="font-size:.66rem;letter-spacing:.12em;color:#7b642c;font-weight:bold;margin-bottom:8px">ANTEPRIMA BOZZA</div><div style="font-weight:bold;font-size:.82rem;margin-bottom:7px">Oggetto: reclamo relativo alla polizza</div><div style="font-size:.76rem;line-height:1.55;color:#4a3820">Spett.le Compagnia,<br>con la presente chiedo di riesaminare la gestione della copertura assicurativa relativa a...</div><div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(13,10,7,.08);text-align:center;color:#20160a;font-size:.72rem;font-weight:bold">Sblocca la bozza completa con Pro</div></div><button class="btn btn-gold btn-full" id="btn-upgrade-res">Genera bozza con Sherlock Pro</button><div style="font-size:.68rem;color:var(--text3);text-align:center;margin-top:8px">Da 2,99 euro/mese. Pagamento sicuro via PayPal.</div></div>';
   }
   h+='</div>';
   // Card "Condividi risultato anonimo" — nessun dato sensibile, solo sintesi.
@@ -1229,7 +1232,7 @@ function mkAcc(title,items,fn){
 function toggleAcc(h){var b=h.nextElementSibling,ar=h.querySelector(".acc-ar"),o=b.classList.toggle("open");if(ar)ar.style.transform=o?"rotate(90deg)":"";}
 function renderSettings(){
   var c=document.getElementById("lic-card");
-  if(S.isPro){c.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><img src="img/dog_icon.png" style="width:22px;height:22px;border-radius:50%"><span style="color:var(--gold);font-weight:bold">Sherlock Pro attivo</span></div><small style="color:var(--text3)">Licenza 12 mesi &middot; analisi illimitate &middot; Codice: '+(S.proCode||"&mdash;")+'</small>';}
+  if(S.isPro){c.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><img src="img/dog_icon.png" style="width:22px;height:22px;border-radius:50%"><span style="color:var(--gold);font-weight:bold">Sherlock Pro attivo</span></div><small style="color:var(--text3)">Licenza 12 mesi &middot; Codice: '+(S.proCode||"&mdash;")+'</small>';}
   else{
     var rem=freeLeft();
     c.innerHTML='<div style="color:var(--text2);margin-bottom:6px;font-size:.9rem">Piano gratuito</div>'+
@@ -1320,6 +1323,9 @@ function handleFile(file){
 function validCode(c){var cl=c.trim().toUpperCase();if(!/^SHK-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(cl))return false;var p=cl.replace("SHK-","").replace("-",""),s=0;for(var i=0;i<p.length;i++)s+=p.charCodeAt(i);return s%7===0;}
 function xe(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function fd(d){try{return new Date(d).toLocaleDateString("it-IT",{day:"2-digit",month:"short",year:"numeric"});}catch(e){return(d||"").slice(0,10);}}
+function showFeedback(options){var box=document.getElementById("app-feedback");if(!box)return;var o=typeof options==="string"?{message:options}:options||{};box.replaceChildren();var title=document.createElement("strong");title.textContent=o.title||"Operazione non completata";box.appendChild(title);if(o.message){var message=document.createElement("div");message.textContent=o.message;box.appendChild(message);}if(typeof o.retry==="function"){var retry=document.createElement("button");retry.type="button";retry.className="btn btn-outline btn-sm";retry.style.marginTop="10px";retry.textContent=o.retryLabel||"Riprova";retry.addEventListener("click",function(){box.hidden=true;o.retry();});box.appendChild(retry);}box.hidden=false;clearTimeout(showFeedback.timer);showFeedback.timer=setTimeout(function(){if(typeof o.retry!=="function")box.hidden=true;},6500);}
+function withUiTimeout(promise,ms){return Promise.race([promise,new Promise(function(_,reject){setTimeout(function(){reject(new Error("network_timeout"));},ms);})]);}
+function setBusy(button,busy,label){if(!button)return;if(!button.dataset.idleLabel)button.dataset.idleLabel=button.textContent;button.disabled=busy;button.setAttribute("aria-busy",String(busy));button.textContent=busy?(label||"Operazione in corso…"):button.dataset.idleLabel;}
 function on(id,ev,fn){var el=document.getElementById(id);if(el)el.addEventListener(ev,fn);}
 function init(){
   try{

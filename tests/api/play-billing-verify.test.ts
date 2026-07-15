@@ -19,6 +19,7 @@ vi.mock('../../src/lib/ga4', () => ({
 import { POST } from '../../src/pages/api/play-billing/verify';
 import * as playBilling from '../../src/lib/play-billing';
 import * as storage from '../../src/lib/storage';
+import * as ga4 from '../../src/lib/ga4';
 
 function makeReq(body: any): any {
   return { json: async () => body, headers: new Headers() };
@@ -114,6 +115,21 @@ describe('POST /api/play-billing/verify', () => {
     });
     expect(r.status).toBe(200);
     expect(playBilling.acknowledgePurchase).not.toHaveBeenCalled();
+  });
+
+  it('salva un acquisto license testing come test e non incrementa Founder', async () => {
+    (storage.cercaPerPurchaseToken as any).mockResolvedValue(null);
+    (playBilling.verifyInappPurchase as any).mockResolvedValue({
+      purchaseState: 0, consumptionState: 0, acknowledgementState: 1,
+      purchaseTimeMillis: '1720000000000', purchaseType: 0,
+      productId: 'founder_lifetime', purchaseToken: 'test-token',
+    });
+    await (POST as any)({ request: makeReq({ purchaseToken: 'test-token', productId: 'founder_lifetime', email: 'a@b.it' }) });
+    expect(storage.salvaCodicePro).toHaveBeenCalledWith(expect.objectContaining({
+      commercialStatus: 'test', paymentEnvironment: 'test', commercialStatusReason: 'google_play_license_test',
+    }));
+    expect(storage.incrementaFounderVenduti).not.toHaveBeenCalled();
+    expect(ga4.ga4TrackServer).not.toHaveBeenCalled();
   });
 
   it('502 PLAY_API_ERROR se verify ritorna 5xx', async () => {

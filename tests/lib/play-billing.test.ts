@@ -39,6 +39,16 @@ describe('play-billing wrapper', () => {
     }
   });
 
+  it('preserva purchaseType 0 per gli acquisti license testing', async () => {
+    const { verifyInappPurchase } = await import('../../src/lib/play-billing');
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ purchaseState: 0, consumptionState: 0, acknowledgementState: 1, purchaseTimeMillis: '1720000000000', purchaseType: 0 }),
+    }));
+    const result = await verifyInappPurchase('founder_lifetime', 'test-token');
+    expect('errore' in result ? undefined : result.purchaseType).toBe(0);
+  });
+
   it('verifyInappPurchase ritorna errore con status su 410 INVALID_TOKEN', async () => {
     (globalThis.fetch as any).mockResolvedValue({
       ok: false,

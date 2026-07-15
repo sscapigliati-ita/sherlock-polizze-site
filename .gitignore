@@ -25,3 +25,21 @@ pnpm-debug.log*
 
 .vercel
 .superpowers/
+.worktrees/
+
+# Android local/build artifacts and credentials
+android/.gradle/
+android/**/build/
+android/local.properties
+android/**/*.jks
+android/**/*.keystore
+android/**/google-services.json
+android/**/*.aab
+android/**/*.apk
+artifacts/
+
+# Browser test output
+playwright-report/
+test-results/**
+!test-results/google-play/
+!test-results/google-play/.gitkeep

@@ -13,7 +13,7 @@ export async function inviaMailCodice(opts: {
 }): Promise<{ ok: boolean; error?: string }> {
   const apiKey = getEnv('RESEND_API_KEY');
   if (!apiKey) {
-    console.warn('[mail] RESEND_API_KEY mancante: mail non inviata. Codice:', opts.codice);
+    console.warn('[mail] RESEND_API_KEY mancante: mail non inviata.');
     return { ok: false, error: 'Provider mail non configurato' };
   }
 

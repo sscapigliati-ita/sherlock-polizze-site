@@ -1,5 +1,10 @@
 import { Redis } from '@upstash/redis';
 import type { AnalyticsContext } from './analytics-context';
+import {
+  isRealPurchase,
+  normalizeCommercialMetadata,
+  type CommercialMetadata,
+} from './purchase-classification';
 
 function envVar(name: string): string | undefined {
   return (
@@ -42,7 +47,7 @@ export type RecordPro = {
   fonte?: 'paypal' | 'play';
   purchaseToken?: string;
   playOrderId?: string;
-};
+} & Partial<CommercialMetadata>;
 
 export async function marcaCodiceUsato(codice: string): Promise<void> {
   const key = `pro:${codice.trim().toUpperCase()}`;
@@ -226,6 +231,10 @@ export interface PayPalProcessingRecord {
   createdAt: string;
   updatedAt: string;
   errorReason?: string;
+  commercialStatus: CommercialMetadata['commercialStatus'];
+  commercialStatusReason: string;
+  commercialStatusUpdatedAt: string;
+  paymentEnvironment: CommercialMetadata['paymentEnvironment'];
 }
 
 const PAYPAL_PROC_PREFIX = 'paypal_proc:';
@@ -252,6 +261,10 @@ export async function iniziaPayPalProcessing(
     ga4Context: ga4Context ?? undefined,
     createdAt: now,
     updatedAt: now,
+    commercialStatus: 'incompleto',
+    commercialStatusReason: 'processing_started',
+    commercialStatusUpdatedAt: now,
+    paymentEnvironment: 'unknown',
   };
   if (!kvConfigurato()) {
     const esistente = _paypalProcFallback.get(oid);
@@ -454,6 +467,9 @@ export type SintesiAbbonati = {
   totali: number;
   attivi: number;
   ricavoEuroCent: number;
+  reali: number;
+  attiviReali: number;
+  perStato: Record<CommercialMetadata['commercialStatus'], number>;
 };
 
 // Allineati con paypal.ts > PIANI. Espressi in centesimi per evitare floating
@@ -481,15 +497,23 @@ export async function leggiAbbonati(): Promise<SintesiAbbonati> {
     records = Array.from(fallback.values());
   }
 
+  records = records.map((record) => ({ ...record, ...normalizeCommercialMetadata(record) }));
   records.sort((a, b) => b.dataEmissione.localeCompare(a.dataEmissione));
   const oraIso = new Date().toISOString();
   const attivi = records.filter((r) => r.dataScadenza > oraIso).length;
-  const ricavoEuroCent = records.reduce((s, r) => s + (PREZZI_CENT[r.piano] ?? 0), 0);
+  const realRecords = records.filter(isRealPurchase);
+  const attiviReali = realRecords.filter((r) => r.dataScadenza > oraIso).length;
+  const ricavoEuroCent = realRecords.reduce((s, r) => s + (PREZZI_CENT[r.piano] ?? 0), 0);
+  const perStato = { reale: 0, test: 0, rimborsato: 0, incompleto: 0, amministratore: 0 };
+  for (const record of records) perStato[normalizeCommercialMetadata(record).commercialStatus]++;
 
   return {
     records,
     totali: records.length,
     attivi,
     ricavoEuroCent,
+    reali: realRecords.length,
+    attiviReali,
+    perStato,
   };
 }

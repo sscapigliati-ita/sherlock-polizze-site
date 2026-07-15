@@ -1,6 +1,7 @@
 ---
 const year = new Date().getFullYear();
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+import { PUBLIC_OFFER } from '../config/public-offer';
 ---
 <footer class="bg-navy-900 border-t border-navy-800 mt-20">
   <div class="max-w-6xl mx-auto px-5 py-12 grid md:grid-cols-3 gap-10">
@@ -29,13 +30,13 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
       <div class="text-xs uppercase tracking-widest text-navy-500 mb-3">Sito</div>
       <ul class="space-y-2 text-sm text-navy-300">
         <li><a href="/" class="hover:text-white">Home</a></li>
-        <li><a href="/abbonati" class="hover:text-white">Abbonamento</a></li>
+        <li><a href={PUBLIC_OFFER.primaryCta.href} class="hover:text-white">{PUBLIC_OFFER.primaryCta.label}</a></li>
         <li><a href="/guide" class="hover:text-white">Guide</a></li>
         <li><a href="/arbitro-assicurativo" class="hover:text-white">Ricorso all'Arbitro Assicurativo</a></li>
         <li><a href="/reclamo-ivass" class="hover:text-white">Reclamo &amp; IVASS</a></li>
         <li><a href="/sinistro-respinto" class="hover:text-white">Sinistro respinto</a></li>
-        <li><a href="/esempio-report" class="hover:text-white">Esempio report</a></li>
-        <li><a href="/esempio-lettera" class="hover:text-white">Esempio lettera</a></li>
+        <li><a href="/esempio-report" class="hover:text-white">Simulazione report</a></li>
+        <li><a href="/esempio-lettera" class="hover:text-white">Simulazione lettera</a></li>
         <li><a href="/trasparenza" class="hover:text-white">Trasparenza dati</a></li>
         <li><a href="/privacy" class="hover:text-white">Privacy</a></li>
       </ul>

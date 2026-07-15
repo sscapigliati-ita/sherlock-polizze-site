@@ -185,7 +185,7 @@ NO. Le detrazioni del 19% che hai ottenuto in dichiarazione dei redditi NON vann
 
 Carica la tua polizza vita sull'app Sherlock: l'AI estrae la tabella valori di riscatto, calcola il valore stimato netto al momento attuale, confronta con scenari alternativi (mantenimento, riduzione) e ti dice numericamente quale strategia conviene.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

@@ -1,4 +1,6 @@
 import type { APIRoute } from 'astro';
+import { validateBase64Upload } from '../../lib/upload-validation';
+import { AI_UNTRUSTED_DATA_RULES } from '../../lib/ai-safety';
 import { getAnthropicKey, getModel, valutaCodice } from '../../lib/auth';
 import { estraiIp, loggaEvento, nuovoRequestId, type EventoAPI } from '../../lib/log';
 
@@ -154,14 +156,6 @@ function istruzioneLingua(lang: LangCode): string {
   return `\n\nIMPORTANT: Respond entirely in ${LANG_NAMES[lang]}, regardless of the documents' original language. All headings, labels, summary text, exclusion descriptions, table values, and recommendations must be in ${LANG_NAMES[lang]}.`;
 }
 
-// Valida che la stringa base64 decodificata inizi col magic byte di un PDF.
-function isValidPdfB64(b64: string): boolean {
-  try {
-    const head = Buffer.from(b64.slice(0, 16), 'base64').toString('ascii');
-    return head.startsWith('%PDF-');
-  } catch { return false; }
-}
-
 export const POST: APIRoute = async ({ request }) => {
   const t0 = Date.now();
   const requestId = nuovoRequestId();
@@ -212,20 +206,13 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  // Stima dimensione decodificata: base64 = ~1.33× il binario.
-  const sizeA = Math.floor(polizzaA.length * 0.75);
-  const sizeB = Math.floor(polizzaB.length * 0.75);
-  if (sizeA > MAX_PDF_BYTES || sizeB > MAX_PDF_BYTES) {
-    await traccia('bloccato', 'pdf_too_large');
-    return new Response(JSON.stringify({ errore: 'PDF troppo grande (max 20 MB per file)' }), {
-      status: 413, headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  if (!isValidPdfB64(polizzaA) || !isValidPdfB64(polizzaB)) {
-    await traccia('bloccato', 'invalid_pdf');
-    return new Response(JSON.stringify({ errore: 'Uno dei file caricati non è un PDF valido' }), {
-      status: 400, headers: { 'Content-Type': 'application/json' },
+  const uploadA = validateBase64Upload({ data: polizzaA, declaredMime: 'application/pdf', maxBytes: MAX_PDF_BYTES });
+  const uploadB = validateBase64Upload({ data: polizzaB, declaredMime: 'application/pdf', maxBytes: MAX_PDF_BYTES });
+  if (!uploadA.ok || !uploadB.ok) {
+    const code = !uploadA.ok ? uploadA.code : !uploadB.ok ? uploadB.code : 'UNSUPPORTED_FILE_SIGNATURE';
+    await traccia('bloccato', code.toLowerCase());
+    return new Response(JSON.stringify({ errore: code }), {
+      status: code === 'FILE_TOO_LARGE' ? 413 : 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
@@ -250,7 +237,7 @@ export const POST: APIRoute = async ({ request }) => {
   const reqBody = {
     model: getModel(),
     max_tokens: 8000,
-    system: SYS + istruzioneLingua(lang),
+    system: SYS + AI_UNTRUSTED_DATA_RULES + istruzioneLingua(lang),
     tools: [{
       name: 'report_confronto_polizze',
       description: 'Restituisce il confronto strutturato fra le due polizze',

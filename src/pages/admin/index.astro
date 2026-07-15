@@ -30,6 +30,7 @@ const [stats, abb, eventi, stabRes, ga4Ads, ga4Firebase, founderVenduti, ppProc]
   contaFounderVenduti().catch(() => 0),
   contaPayPalProcessing().catch(() => ({
     total: 0, processing: 0, completed: 0, failed: 0, withCaptureId: 0, stuckProcessing: 0,
+    ultimoAggiornamento: undefined,
   })),
 ]);
 const streamsConfigurati = statoStreamGa4();
@@ -133,17 +134,17 @@ const utilizzo: Health = {
 // UTILITÀ — quanti utenti trovano abbastanza valore da abbonarsi.
 // Score: emette 100 se abb.attivi >= 30 (tetto arbitrario configurabile).
 const utilita: Health = {
-  score: scoreLineare(abb.attivi, 0, 30),
+  score: scoreLineare(abb.attiviReali, 0, 30),
   label: 'Utilità',
-  big: fmtNum(abb.attivi),
-  note: `${fmtNum(abb.totali)} totali · ${ricavoEuro} €`,
-  trend: abb.totali > abb.attivi + 5 ? 'flat' : abb.attivi > 0 ? 'up' : 'na',
+  big: fmtNum(abb.attiviReali),
+  note: `${fmtNum(abb.reali)} reali · ${ricavoEuro} €`,
+  trend: abb.reali > abb.attiviReali + 5 ? 'flat' : abb.attiviReali > 0 ? 'up' : 'na',
 };
 
 // GRADIMENTO — combinazione di ANR (utenti che si arrabbiano) e ratio abbonati/utenti
 // (se convertono, hanno gradito). Media pesata: 70% ANR inverso + 30% conversion.
 const anrScore = anrRate === null ? 50 : scoreInverso(anrRate, 0.2, 1.0);
-const conversionRate = utenti7gg > 0 ? (abb.attivi / utenti7gg) * 100 : 0;
+const conversionRate = utenti7gg > 0 ? (abb.attiviReali / utenti7gg) * 100 : 0;
 const conversionScore = scoreLineare(conversionRate, 0, 5); // 5% conv → 100
 const gradimento: Health = {
   score: Math.round(anrScore * 0.7 + conversionScore * 0.3),
@@ -484,20 +485,28 @@ const fmtSoloData = (iso: string) =>
     </section>
 
     <section class="mb-6">
-      <div class="text-xs uppercase tracking-widest text-navy-400 font-bold mb-3">Abbonamenti PayPal</div>
+      <div class="text-xs uppercase tracking-widest text-navy-400 font-bold mb-3">Acquisti classificati</div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Abbonati attivi</div>
-          <div class="text-3xl font-extrabold text-emerald-400 mt-1">{abb.attivi}</div>
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Acquisti reali attivi</div>
+          <div class="text-3xl font-extrabold text-emerald-400 mt-1">{abb.attiviReali}</div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Abbonamenti totali</div>
-          <div class="text-3xl font-extrabold text-white mt-1">{abb.totali}</div>
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Acquisti reali</div>
+          <div class="text-3xl font-extrabold text-white mt-1">{abb.reali}</div>
         </div>
         <div class="rounded-xl border border-gold-400/40 bg-gradient-to-br from-navy-900 to-navy-800 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">Ricavo totale</div>
           <div class="text-3xl font-extrabold text-gold-400 mt-1">{ricavoEuro} €</div>
         </div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3">
+        {Object.entries(abb.perStato).map(([stato, totale]) => (
+          <div class="rounded-lg border border-navy-700 bg-navy-900/70 p-3">
+            <div class="text-[10px] uppercase tracking-widest text-navy-400">{stato}</div>
+            <div class="text-xl font-bold text-white">{totale}</div>
+          </div>
+        ))}
       </div>
     </section>
 
@@ -671,6 +680,7 @@ const fmtSoloData = (iso: string) =>
                       ? <span class="inline-block bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 rounded px-2 py-0.5 text-[10px] font-bold uppercase">Attivo</span>
                       : <span class="inline-block bg-red-500/15 text-red-300 border border-red-500/30 rounded px-2 py-0.5 text-[10px] font-bold uppercase">Scaduto</span>
                     }
+                    <span class="ml-1 inline-block bg-navy-700 text-navy-200 rounded px-2 py-0.5 text-[10px] font-bold uppercase">{r.commercialStatus}</span>
                   </td>
                   <td class="p-3 capitalize text-navy-200">{r.piano}</td>
                   <td class="p-3 text-right text-gold-300 font-bold">{importo}</td>

@@ -18,8 +18,9 @@ export default defineConfig({
       // che non hanno valore per l'indicizzazione (già Disallow su robots.txt).
       filter: (page) =>
         !page.includes('/admin') &&
-        !page.includes('/abbonamento/conferma') &&
-        !page.includes('/reclamo-singolo/conferma') &&
+        !page.includes('/abbonati') &&
+        !page.includes('/abbonamento') &&
+        !page.includes('/reclamo-singolo') &&
         !page.endsWith('/offline') &&
         !page.endsWith('/offline/') &&
         !page.endsWith('/stampa') &&

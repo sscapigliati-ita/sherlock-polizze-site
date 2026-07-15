@@ -205,7 +205,7 @@ Distinti saluti,
 
 Se hai ricevuto comunicazione di apertura istruttoria con responsabilità a tuo carico (o offerta liquidativa basata su tua responsabilità), carica i documenti sull'app Sherlock: l'AI estrae le clausole della polizza, identifica margini di contestazione del CAI o della responsabilità, segnala i termini residui per contestare, e prepara una bozza di lettera di contestazione.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

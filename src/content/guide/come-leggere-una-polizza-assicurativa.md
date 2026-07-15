@@ -133,7 +133,7 @@ Apri il PDF e cerca questi 12 termini. La loro **presenza** o **assenza** ti dic
 | **condizioni particolari prevalenti** | Le speciali battono le generali |
 | **previa autorizzazione** | Dovevi chiedere permesso PRIMA |
 | **dichiarazioni mendaci** | Hai dichiarato il falso = decadenza/rivalsa |
-| **specifica approvazione per iscritto** | Senza, la clausola è nulla (art. 1341 c.c.) |
+| **specifica approvazione per iscritto** | La sua assenza può incidere sull'efficacia di alcune clausole ricomprese nell'art. 1341 c.c.; occorre verificare testo e modalità di conclusione del contratto |
 
 ---
 
@@ -164,7 +164,7 @@ In sede di sinistro, se la compagnia respinge invocando una clausola ambigua, ha
 
 L'app Sherlock fa esattamente questa lettura strutturata in genere in meno di un minuto: estrae garanzie, esclusioni, franchigie, massimali, identifica i 12 termini critici e ti segnala quelli rischiosi con livello di gravità. Risparmia il tempo della lettura manuale e non si perde nulla.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

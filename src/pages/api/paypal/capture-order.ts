@@ -17,6 +17,7 @@ import {
 } from '../../../lib/storage';
 import { inviaMailCodice } from '../../../lib/mail';
 import { ga4TrackServer } from '../../../lib/ga4';
+import { isRealPurchase } from '../../../lib/purchase-classification';
 
 export const prerender = false;
 
@@ -57,6 +58,17 @@ async function completaEffetti(
   const dataEmissione = corrente.createdAt;
   const dataScadenza = calcolaScadenza(piano as any, new Date(dataEmissione));
   const isSingolo = piano === 'singolo';
+  const paymentEnvironment = cattura?.paymentEnvironment ?? corrente.paymentEnvironment;
+  const commercialStatus = paymentEnvironment === 'production' ? 'reale' : paymentEnvironment === 'sandbox' ? 'test' : corrente.commercialStatus;
+  if (commercialStatus !== corrente.commercialStatus || paymentEnvironment !== corrente.paymentEnvironment) {
+    corrente = (await aggiornaPayPalProcessing(orderId, {
+      commercialStatus,
+      commercialStatusReason: commercialStatus === 'reale' ? 'paypal_capture_production' : 'paypal_capture_sandbox',
+      commercialStatusUpdatedAt: new Date().toISOString(),
+      paymentEnvironment,
+    })) ?? corrente;
+  }
+  const realPurchase = isRealPurchase(corrente);
 
   // Checkpoint 1: salva codice Pro
   if (!corrente.codeSaved) {
@@ -67,6 +79,10 @@ async function completaEffetti(
       dataEmissione,
       dataScadenza,
       paypalOrderId: orderId,
+      commercialStatus: corrente.commercialStatus,
+      commercialStatusReason: corrente.commercialStatusReason,
+      commercialStatusUpdatedAt: corrente.commercialStatusUpdatedAt,
+      paymentEnvironment: corrente.paymentEnvironment,
       ...(isSingolo ? { usato: false } : {}),
     });
     await registraPayPalOrderId(orderId, codice).catch(() => undefined);
@@ -78,12 +94,12 @@ async function completaEffetti(
   }
 
   // Checkpoint 2: contatore Founder
-  if (piano === 'founder' && !corrente.founderCounterUpdated) {
+  if (piano === 'founder' && realPurchase && !corrente.founderCounterUpdated) {
     await incrementaFounderVenduti().catch(() => undefined);
     corrente = (await aggiornaPayPalProcessing(orderId, {
       founderCounterUpdated: true,
     })) ?? corrente;
-  } else if (piano !== 'founder' && !corrente.founderCounterUpdated) {
+  } else if (!corrente.founderCounterUpdated) {
     // Non-founder: nessun counter da aggiornare, ma marchiamo il checkpoint
     // per uniformità (evita di rientrare in questo ramo su retry).
     corrente = (await aggiornaPayPalProcessing(orderId, {
@@ -92,7 +108,7 @@ async function completaEffetti(
   }
 
   // Referral (idempotente sull'orderId via SADD in storage.ts)
-  if (cattura?.ref && cattura.ref !== codice) {
+  if (realPurchase && cattura?.ref && cattura.ref !== codice) {
     try {
       const referrer = await leggiCodicePro(cattura.ref);
       const validoReferrer =
@@ -127,7 +143,7 @@ async function completaEffetti(
   }
 
   // Checkpoint 4: GA4 purchase (server-side, solo se context valido e consenso)
-  if (!corrente.analyticsSent) {
+  if (!corrente.analyticsSent && realPurchase) {
     // Legge il context Analytics salvato in create-order. Se assente o senza
     // consenso, ga4TrackServer è no-op silenziosa.
     const ga4Ctx =
@@ -154,6 +170,8 @@ async function completaEffetti(
         },
       ],
     );
+    corrente = (await aggiornaPayPalProcessing(orderId, { analyticsSent: true })) ?? corrente;
+  } else if (!corrente.analyticsSent) {
     corrente = (await aggiornaPayPalProcessing(orderId, { analyticsSent: true })) ?? corrente;
   }
 

@@ -8,14 +8,14 @@ import ShareButtons from '../components/ShareButtons.astro';
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
 ---
 <BaseLayout
-  title="Esempio di report Sherlock — Polizza RC Auto analizzata | Sherlock"
-  description="Cosa restituisce Sherlock quando carichi una polizza? Ecco un esempio reale, con esclusioni critiche, clausole rischiose e raccomandazioni."
+  title="Simulazione di report Sherlock — Polizza RC Auto | Sherlock"
+  description="Simulazione dimostrativa del metodo Sherlock: documenti analizzati, clausole rilevanti, informazioni mancanti, punti da verificare e limiti dell'analisi."
 >
   <Header slot="header" />
 
   <article class="px-5 pt-12 pb-20 max-w-3xl mx-auto text-navy-100">
     <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
-      Guarda un esempio reale di analisi Sherlock
+      Guarda una simulazione dimostrativa di analisi Sherlock
     </h1>
     <p class="text-navy-300 text-lg mb-2">
       Polizza RC Auto, compagnia top-10 italiana. Caricato il PDF, analisi in
@@ -114,7 +114,7 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
         </div>
         <div class="text-navy-200 text-sm">
           <strong class="text-white">Perché rischiosa:</strong> il termine di 3
-          giorni è inferiore al termine codicistico di 8 giorni (art. 1913 c.c.).
+          giorni potrebbe risultare più stringente di quanto compatibile con l'art. 1913 c.c., che prevede in via generale la denuncia entro tre giorni salvo diversa disciplina contrattuale o normativa applicabile. Elemento da verificare sul caso concreto.
           La clausola è <em>potenzialmente vessatoria</em> ex art. 33 Codice del
           Consumo e contestabile.
         </div>
@@ -139,13 +139,16 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
         familiari conviventi che potrebbero guidare il veicolo, anche occasionalmente.
       </li>
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
-        Se hai un sinistro, denuncialo <strong class="text-white">entro 8 giorni</strong>
-        (termine codicistico) anche se la polizza dice 3 — è il termine legalmente
-        valido, salvo specifica trattativa.
+        Se hai un sinistro, verifica subito il termine della polizza. L'art. 1913 c.c.
+        prevede in via generale la comunicazione entro <strong class="text-white">tre giorni</strong>
+        da quando il sinistro si è verificato o ne hai avuto conoscenza, salvo
+        differenti disposizioni contrattuali o normative.
       </li>
       <li class="bg-navy-900 border border-navy-800 rounded-lg p-4">
-        Se la compagnia ti contesta sulla base di una clausola potenzialmente vessatoria, contesta la <strong class="text-white">nullità</strong>
-        per mancata specifica approvazione (art. 1341 c.c. + art. 33 Cod. Cons.).
+        Se la compagnia richiama una clausola limitativa, verifica con attenzione se
+        delimita il rischio o la responsabilità e se trovano applicazione gli artt.
+        1341-1342 c.c. o la disciplina consumeristica. La qualificazione richiede una
+        valutazione del testo e del caso concreto.
       </li>
     </ol>
 
@@ -158,7 +161,7 @@ const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.
       </a>
     </div>
 
-    <ShareButtons title="Esempio reale di analisi Sherlock — polizza RC Auto" path="/esempio-report" variant="app" />
+    <ShareButtons title="Simulazione dimostrativa di analisi Sherlock — polizza RC Auto" path="/esempio-report" variant="app" />
 
     <p class="text-xs text-navy-500 text-center">
       Sherlock è uno strumento di analisi AI, non sostituisce un avvocato o consulente
