@@ -176,7 +176,7 @@ Questo è uno dei pochi vantaggi residui della polizza vita rispetto ad altri in
 
 Carica la tua polizza vita sull'app Sherlock: l'AI estrae tipo, capitali, rendimenti minimi, costi (caricamenti, TER, penalità riscatto), beneficiari, esclusioni. Calcola il **rendimento atteso netto** confrontandolo con benchmark alternativi (titoli di Stato, ETF) per dirti se il prodotto vale davvero.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

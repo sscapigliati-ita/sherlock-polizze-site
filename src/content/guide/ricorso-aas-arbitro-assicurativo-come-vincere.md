@@ -226,7 +226,7 @@ Prima di presentare un ricorso AAS, carica nell'app Sherlock:
 
 L'AI estrae automaticamente: clausole invocate (e se sono specificamente sottoscritte), termini decadenziali invocati impropriamente, calcoli che la compagnia ha fatto male, e ti dice **quali documenti probatori devi raccogliere** per avere un ricorso forte. Esattamente quello che a me è mancato.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report) — o [leggi la mia storia completa](/storia-sherlock).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report) — o [leggi la mia storia completa](/storia-sherlock).
 
 ---
 

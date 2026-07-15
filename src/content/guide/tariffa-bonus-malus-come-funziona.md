@@ -126,7 +126,7 @@ Il vantaggio reale del cambio: spesso le compagnie nuove hanno tariffe più aggr
 
 Carica la tua polizza auto + l'attestato di rischio sull'app Sherlock: l'AI verifica la corrispondenza tra classe CU dichiarata e premio applicato, segnala anomalie nel calcolo del bonus-malus, e identifica eventuali clausole "trappola" sui sinistri sotto-soglia.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

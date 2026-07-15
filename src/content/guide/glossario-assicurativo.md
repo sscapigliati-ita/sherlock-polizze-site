@@ -230,7 +230,7 @@ Norma sulla trasparenza pre-contrattuale (frontespizio, DIP).
 
 L'app Sherlock estrae automaticamente dalla tua polizza tutti questi termini con il loro valore numerico specifico: massimali, franchigie, scoperti, sotto-limiti, esclusioni, termini di decadenza. Te li mostra in una vista chiara, segnalando quelli a rischio.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

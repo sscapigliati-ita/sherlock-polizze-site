@@ -157,7 +157,7 @@ Se la compagnia ti ha comunicato il mancato rinnovo e vuoi:
 
 Carica i documenti sull'app Sherlock: l'AI fa l'analisi in genere in meno di un minuto e ti segnala punti di attenzione e contestabilità.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

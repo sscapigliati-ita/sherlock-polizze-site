@@ -195,7 +195,7 @@ Tu paghi i 5.000 € di franchigia al terzo (o alla compagnia che li trattiene).
 
 L'app Sherlock estrae automaticamente dalla tua polizza tutti i numeri (massimali, franchigie, scoperti, sotto-limiti), li mette in tabella, e simula i tuoi indennizzi su 3 scenari di danno tipici (piccolo, medio, grosso) — così sai esattamente cosa ti aspetta.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

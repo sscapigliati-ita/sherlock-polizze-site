@@ -9,7 +9,7 @@ keywords: franchigia scoperto differenza, cosa è la franchigia, cosa è lo scop
 
 # Franchigia vs scoperto: la differenza che ti costa migliaia di euro
 
-> **TL;DR:** **Franchigia** = una cifra fissa che resta a tuo carico (es. 500 €). **Scoperto** = una percentuale del danno (es. 10%). **Massimale** = il limite massimo che la Compagnia paga. Sembrano sinonimi ma a parità di danno la differenza può essere di migliaia di euro. La cosa peggiore? Molte polizze li combinano. Esempio reale: kasko con franchigia 25%, scoperto minimo 500 €, massimale 25.000 € — su un danno di 4.000 € la Compagnia ti paga 2.500 €, non 4.000.
+> **TL;DR:** **Franchigia** = una cifra fissa che resta a tuo carico (es. 500 €). **Scoperto** = una percentuale del danno (es. 10%). **Massimale** = il limite massimo che la Compagnia paga. Sembrano sinonimi ma a parità di danno la differenza può essere di migliaia di euro. La cosa peggiore? Molte polizze li combinano. Simulazione dimostrativa: kasko con franchigia 25%, scoperto minimo 500 €, massimale 25.000 € — su un danno di 4.000 € la Compagnia ti paga 2.500 €, non 4.000.
 
 **Cosa imparerai:**
 - Definizione precisa di franchigia, scoperto, massimale
@@ -74,7 +74,7 @@ Il massimale **NON è la cifra che ti pagano**. È la cifra che **al massimo** p
 
 Molte polizze italiane **combinano** franchigia, scoperto e massimale. Il calcolo diventa: prima scoperto, poi (eventualmente) franchigia minima, poi massimale.
 
-**Esempio reale — Kasko auto:**
+**Simulazione dimostrativa — Kasko auto:**
 - Scoperto: 25% del danno
 - Minimo scoperto: 500 €
 - Massimale: 25.000 €

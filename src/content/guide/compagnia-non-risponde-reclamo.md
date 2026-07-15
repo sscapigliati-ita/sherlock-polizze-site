@@ -116,7 +116,7 @@ Per alcune controversie può essere possibile procedere senza assistenza legale,
 
 Prima di scrivere il reclamo, fai analizzare la polizza e la lettera di diniego dall'app Sherlock. L'AI individua automaticamente clausole contestabili, esclusioni nascoste e termini decadenziali invocati impropriamente — gli stessi punti che useresti tu nel reclamo, ma trovati in genere in meno di un minuto.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report) prima di provare.
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report) prima di provare.
 
 ---
 

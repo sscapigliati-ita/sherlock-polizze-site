@@ -148,7 +148,7 @@ Anche questo va dichiarato. È una malattia cronica pre-esistente. Spesso porta 
 
 Carica la tua polizza salute sull'app Sherlock: l'AI identifica automaticamente i periodi di carenza per ciascuna categoria, le esclusioni per malattie pregresse, le clausole potenzialmente vessatorie e contestabili sui termini di copertura. Te li mostra in modo strutturato con livello di rischio.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

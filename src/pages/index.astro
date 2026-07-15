@@ -6,21 +6,6 @@ import Footer from '../components/Footer.astro';
 
 const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
 
-// Recensioni 5★ pubblicate sul Play Store dell'app Sherlock (it.sherlock.polizze).
-// Testo integrale dell'utente, come pubblicato. Data: giugno 2026.
-const reviews = [
-  { autore: 'Sergio Giannini', data: '13 giu 2026', dataIso: '2026-06-13', testo: "Una app così ti cambia la vita! Finalmente le assicurazioni non ci possono più fregare con scritte piccole, nascoste e giri di parole incomprensibili. Un infinito GRAZIE al genio che ha avuto l'idea e l'ha messa in pratica in modo tanto mirabile." },
-  { autore: 'Carla Narduzzi',  data: '20 giu 2026', dataIso: '2026-06-20', testo: 'Il mondo aspettava una applicazione così utile. Idea tutto sommato semplice, ma rivoluzionaria. Un bravo a SCAPLab!' },
-  { autore: 'Maru D. C.',       data: '23 giu 2026', dataIso: '2026-06-23', testo: 'Questa idea semplice ma geniale sarà utile a tutte le persone che come me hanno continui dubbi sulle polizze assicurative che sottoscrivono senza conoscere realmente le offerte che le assicurazioni propongono.' },
-  { autore: 'Cristina',         data: '20 giu 2026', dataIso: '2026-06-20', testo: "L'app è fichissima e utilissima! Una vera genialata! Complimenti all'ideatore." },
-  { autore: 'Simone Scapigliati', data: '13 giu 2026', dataIso: '2026-06-13', testo: "Ottimo strumento per districarsi nell'inferno delle polizze." },
-  { autore: 'Francesco Belli',  data: '27 giu 2026', dataIso: '2026-06-27', testo: 'Scaplab è geniale in questa sua applicazione, ne aspettiamo altre!' },
-  { autore: 'Pasquale Peluso',  data: '13 giu 2026', dataIso: '2026-06-13', testo: 'App completa e valida.' },
-  { autore: 'Enrico Marcovaldi',data: '13 giu 2026', dataIso: '2026-06-13', testo: 'Molto utile.' },
-  { autore: 'Simone Cristofori', data: '25 giu 2026', dataIso: '2026-06-25', testo: 'Geniale!' },
-  { autore: 'SCDV',             data: '22 giu 2026', dataIso: '2026-06-22', testo: 'Ottima app...' },
-];
-
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -44,20 +29,6 @@ const jsonLd = [
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
     inLanguage: 'it-IT',
     description: 'Analizza polizze e dinieghi assicurativi. Genera bozze di reclamo PEC o IVASS.',
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '5',
-      bestRating: '5',
-      worstRating: '1',
-      reviewCount: String(reviews.length),
-    },
-    review: reviews.map((r) => ({
-      '@type': 'Review',
-      author: { '@type': 'Person', name: r.autore },
-      datePublished: r.dataIso,
-      reviewBody: r.testo,
-      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5', worstRating: '1' },
-    })),
   },
 ];
 ---
@@ -548,99 +519,15 @@ const jsonLd = [
           piccolo che non avevo mai letto. Da lì ho iniziato a studiare le polizze.
         </p>
         <p>
-          Negli anni, applicando questo approccio alle <strong>mie</strong> polizze,
-          ho recuperato o evitato di perdere
-          <strong class="text-gold-400">oltre 30.000€</strong>
-          tra importi ottenuti, rischi evitati e rinnovi rifiutati su condizioni
-          svantaggiose.
-        </p>
-        <p>
           Sherlock è quello che avrei voluto avere allora. L'ho fatto perché chi firma
           una polizza dovrebbe capire cosa sta firmando, senza dover diventare esperto
           di diritto assicurativo.
         </p>
-        <p class="text-xs text-navy-500 pt-2 border-t border-navy-800 mt-6">
-          Dato riferito all'esperienza personale del fondatore. Non costituisce
-          promessa di risultato: ogni polizza, ogni sinistro e ogni reclamo hanno esiti
-          che dipendono dal caso concreto.
-        </p>
       </div>
     </div>
   </section>
 
-  {/* Recensioni Play Store */}
-  <section class="px-5 py-16 max-w-6xl mx-auto">
-    <div class="text-center mb-10">
-      <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-300 font-semibold mb-4">
-        <svg viewBox="0 0 512 512" class="w-3.5 h-3.5" aria-hidden="true">
-          <path fill="#EA4335" d="M89 483.9c-9.6-4.6-16.6-13.4-19.1-24.1L285 256 69.9 52.2c2.5-10.7 9.5-19.5 19.1-24.1L338 256z"/>
-          <path fill="#FBBC04" d="M338 256l70.5-70.5c15.1 8.4 15.1 30.6 0 39l-70.5 40Z"/>
-          <path fill="#4285F4" d="M285 256 69.9 52.2C74.5 50 79.7 48.8 85 48.8c5.7 0 11.6 1.4 17 4.4l236 133.3z"/>
-          <path fill="#34A853" d="M338 325.5 102 458.8c-5.4 3-11.3 4.4-17 4.4-5.3 0-10.5-1.2-15.1-3.4L285 256z"/>
-        </svg>
-        Recensioni dal Google Play Store
-      </div>
-      <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-3">
-        Cosa dice chi <span class="text-gold-400">usa già Sherlock</span>
-      </h2>
-      <div class="flex items-center justify-center gap-2 text-sm text-navy-300">
-        <div class="flex gap-0.5" aria-hidden="true">
-          {[0,1,2,3,4].map(() => (
-            <svg viewBox="0 0 24 24" class="w-5 h-5 text-gold-400 fill-current"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"/></svg>
-          ))}
-        </div>
-        <span><strong class="text-white">5,0</strong> · {reviews.length} recensioni verificate su Play Store</span>
-      </div>
-    </div>
 
-    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 list-none p-0">
-      {reviews.map((r) => {
-        const iniziali = r.autore
-          .split(' ')
-          .filter(Boolean)
-          .slice(0, 2)
-          .map((p) => p[0]?.toUpperCase() ?? '')
-          .join('');
-        return (
-          <li class="bg-navy-900 border border-navy-800 rounded-xl p-5 flex flex-col hover:border-gold-400/30 transition">
-            <div class="flex items-start gap-3 mb-3">
-              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-900 font-extrabold text-sm">
-                {iniziali}
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-semibold text-white truncate">{r.autore}</div>
-                <div class="flex items-center gap-2 mt-0.5">
-                  <div class="flex gap-0.5" aria-label="5 stelle su 5">
-                    {[0,1,2,3,4].map(() => (
-                      <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-gold-400 fill-current" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27Z"/></svg>
-                    ))}
-                  </div>
-                  <time datetime={r.dataIso} class="text-xs text-navy-500">{r.data}</time>
-                </div>
-              </div>
-            </div>
-            <p class="text-navy-200 text-sm leading-relaxed">{r.testo}</p>
-          </li>
-        );
-      })}
-    </ul>
-
-    <div class="text-center mt-10">
-      <a
-        href={playStoreUrl}
-        target="_blank"
-        rel="noopener"
-        data-track="reviews_playstore_click"
-        class="inline-flex items-center gap-2 border border-navy-600 text-navy-100 font-semibold px-5 py-2.5 rounded-lg hover:bg-navy-900 transition"
-      >
-        Leggi tutte le recensioni su Google Play
-        <span aria-hidden="true">→</span>
-      </a>
-      <p class="text-xs text-navy-500 mt-3">
-        Recensioni pubbliche degli utenti dell'app Android. I nomi sono quelli pubblicati sul profilo Play Store dell'autore.
-      </p>
-    </div>
-  </section>
 
   <section class="bg-gradient-to-br from-navy-900 to-navy-950 border-b border-navy-800 px-5 py-16">
     <div class="max-w-3xl mx-auto text-center">

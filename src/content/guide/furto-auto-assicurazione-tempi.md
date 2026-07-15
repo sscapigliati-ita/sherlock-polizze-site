@@ -157,7 +157,7 @@ Vedi anche: [se la compagnia non risponde al reclamo](/guide/compagnia-non-rispo
 
 Prima di accettare l'offerta della compagnia, carica la lettera di offerta + la polizza sull'app Sherlock: l'AI verifica la congruità del calcolo del valore commerciale, identifica clausole di esclusione invocate impropriamente, e segnala se ci sono margini di contestazione per ottenere un'offerta più alta.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 

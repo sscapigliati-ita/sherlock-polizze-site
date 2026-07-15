@@ -114,7 +114,7 @@ Senza CAI firmato, la compagnia può chiedere documentazione integrativa e i 30 
 
 Se la compagnia ti ha respinto un sinistro CARD o ti ha fatto un'offerta che ti sembra bassa, carica la lettera di diniego/offerta nell'app Sherlock: l'AI identifica clausole invocate impropriamente, termini decadenziali calcolati male, motivazioni di rigetto contestabili. Riceverai una bozza di reclamo formale pronta da inviare.
 
-[Guarda un esempio reale di analisi Sherlock](/esempio-report).
+[Guarda una simulazione dimostrativa di analisi Sherlock](/esempio-report).
 
 ---
 
