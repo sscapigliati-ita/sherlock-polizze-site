@@ -1,8 +1,10 @@
 # Pending Tasks
 
-Ultimo aggiornamento: 14 luglio 2026.
+Ultimo aggiornamento: 15 luglio 2026.
 
 ## Residui dopo la Fase 1
+
+0. **Checkpoint deploy — non ancora pubblicato.** La stabilizzazione pubblica è implementata localmente; pubblicazione, smoke test e rollback attendono la verifica completa finale e il checkpoint umano previsto dalla specifica.
 
 1. **Media — revisione giuridica residua.** La tranche prioritaria IVASS/AAS è completata e coperta da test. Il prompt lettera ora produce una bozza strutturata con avvertenze; resta la revisione professionale dell'intero corpus. I controlli automatici non equivalgono a una certificazione legale.
 2. **Bassa — suggerimenti Astro/TypeScript.** Il checker è operativo e non segnala errori; restano 19 hint su API deprecate, import inutilizzati e script inline. Prossimo passo: pulizia separata senza modificare il comportamento.

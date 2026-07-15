@@ -1,8 +1,12 @@
 # Codex Implementation Status
 
-Ultimo aggiornamento: 14 luglio 2026.
+Ultimo aggiornamento: 15 luglio 2026.
 
 ## Stato corrente
+
+- Stabilizzazione del rischio pubblico in corso sul ramo `codex/site-conversion-redesign`.
+- Completati: configurazione offerta transitoria, bonifica art. 1892/clausole, rimozione prove sociali non verificabili, simulazioni dichiarate, noindex offerta legacy, privacy coerente e controllo dominio/sitemap.
+- Non completati in questa fase: restyling, nuovi prezzi, triage avanzato, upload multiplo, nuovo checkout e retention automatica.
 
 - Recupero Claude: completato e committato.
 - Specifica e piano Fase 1: approvati e committati.

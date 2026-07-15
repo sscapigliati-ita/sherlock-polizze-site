@@ -1,6 +1,6 @@
 # Privacy and Security Audit
 
-Data audit: 14 luglio 2026.
+Data audit: 15 luglio 2026.
 
 ## Controlli presenti
 
@@ -39,3 +39,10 @@ Privacy e trasparenza dichiarano che i documenti non sono conservati dall'applic
 ## Azioni sicure successive
 
 Il codice di attivazione è stato rimosso dai log. Rate limit, security headers, verifica contenuto upload e confini di fiducia/schema AI sono implementati e testati. Le azioni successive sono redazione strutturata degli errori, retention e protezione CSRF amministrativa. Implementare cancellazione/esportazione soltanto dopo aver definito autenticazione e proprietà dei record.
+## Aggiornamento 15 luglio 2026 — superficie pubblica
+
+- “Eventi anonimi” sostituito con “eventi pseudonimizzati” quando sono presenti identificatori persistenti.
+- Rimossi tempi assoluti di distruzione e garanzie non verificabili estese ai fornitori.
+- Chiarito che Sherlock non crea un archivio applicativo permanente dei documenti, mentre il contenuto viene trasmesso ai fornitori necessari.
+- Chiarito che accesso, esportazione e cancellazione dei dati server richiedono una richiesta al supporto.
+- Rinviati: retention automatica, cancellazione self-service, verifica contrattuale dei provider e revisione professionale dell'informativa.

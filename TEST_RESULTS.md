@@ -79,3 +79,13 @@ Eseguita il 14 luglio 2026 dopo tutti i commit applicativi:
 - Gradle `testDebugUnitTest bundleRelease`: **BUILD SUCCESSFUL**; AAB v4.6.7/vc65 firmato generato.
 - Playwright produzione: **14 superati, 2 saltati intenzionalmente** in 4 profili; navigazione, nomi accessibili, upload, retry, home e paywall verificati.
 - Smoke HTTP produzione: **200** su `/` e `/app/`; HSTS, CSP e nuovi contratti PWA presenti.
+
+## Stabilizzazione della superficie pubblica — risultati intermedi
+
+- Baseline precedente alle modifiche: `npm test` **112/112**; `npx astro check` 0 errori e 19 hint; build superata.
+- Dopo configurazione offerta e bonifica legale: `npm test` **124/124** in 18 file.
+- Fiducia pubblica e contenuti legali: **29/29** controlli mirati; `npx astro check` 0 errori e 19 hint.
+- Offerta legacy e retrocompatibilità: **26/26** controlli mirati.
+- Privacy e consenso analytics: **20/20** controlli mirati.
+- Dominio canonico: **2/2** controlli; build superata e sitemap senza route legacy o `vercel.app`.
+- I conteggi finali saranno registrati soltanto dopo la verifica fresca del checkpoint.

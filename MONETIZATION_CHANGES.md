@@ -1,6 +1,6 @@
 # Monetization Changes
 
-Data: 14 luglio 2026.
+Data: 15 luglio 2026.
 
 ## Premessa commerciale
 
@@ -38,3 +38,9 @@ Prossima tranche:
 ## Dominio e marca
 
 `astro.config.mjs`, sitemap, robots, canonical, JSON-LD, deep link Android e URL pubblici principali usano `https://www.sherlockpolizze.it`; il package Android è `it.sherlock.polizze`. Le occorrenze `vercel.app` trovate nei commenti/controlli host servono a escludere i preview dagli analytics e non devono essere sostituite.
+## Aggiornamento 15 luglio 2026 — transizione pubblica
+
+- I prodotti legacy non sono più commercializzati dalla navigazione o dalla homepage.
+- `/abbonati`, `/abbonamento/*` e `/reclamo-singolo` restano tecnicamente compatibili ma sono `noindex` ed esclusi dalla sitemap.
+- Non sono stati pubblicizzati né implementati i nuovi prezzi ipotizzati di 12,90 € e 24,90 €.
+- Nuovi prodotti, checkout e migrazione entitlement restano rinviati a una specifica separata.
