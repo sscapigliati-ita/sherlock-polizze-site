@@ -25,6 +25,7 @@ pnpm-debug.log*
 
 .vercel
 .superpowers/
+.worktrees/
 
 # Android local/build artifacts and credentials
 android/.gradle/
