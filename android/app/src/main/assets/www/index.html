@@ -508,6 +508,7 @@ button:disabled{cursor:not-allowed;opacity:.55;filter:saturate(.55)}
         <img class="ob-dog" src="img/dog_medium.png" alt="Sherlock">
         <div class="ob-title">1 analisi gratis completa, Pro per il resto</div>
         <div class="ob-desc">Con il piano gratuito analizzi 5 polizze con report completo. Sherlock Pro trasforma le criticita trovate in reclami, ricorsi IVASS e diffide pronte da inviare.</div>
+        <button class="btn btn-outline btn-sm mt16" style="font-size:.82rem" onclick="S.onboardingDone=true;save();track('onboarding_completed',{via:'demo'});goDemoReport('onboarding');">&#128269; Guarda subito un esempio</button>
       </div>
     </div>
   </div>
@@ -1468,7 +1469,7 @@ function renderHome(){
   var list=document.getElementById("home-list");
   var h="";
   if(!S.analyses.length){
-    h='<div class="empty-state"><img class="empty-dog" src="img/dog_icon.png" alt=""><div class="empty-bubble">Pronto a investigare.<br>Carica la tua prima polizza!</div><button class="btn btn-gold" id="btn-es">Analizza ora</button></div>';
+    h='<div class="empty-state"><img class="empty-dog" src="img/dog_icon.png" alt=""><div class="empty-bubble">Pronto a investigare.<br>Carica la tua prima polizza!</div><button class="btn btn-gold" id="btn-es">Analizza ora</button><button class="btn btn-outline btn-sm mt12" style="font-size:.82rem" onclick="goDemoReport(\'home_empty\')">&#128269; Prima guarda un esempio</button></div>';
   }else{
     h+='<div style="padding:8px 0 4px;font-size:.7rem;color:var(--text3);letter-spacing:.1em;margin-bottom:6px">ANALISI RECENTI</div>';
     S.analyses.forEach(function(a){h+=cardHtml(a);});

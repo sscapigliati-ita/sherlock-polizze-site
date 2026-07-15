@@ -1,0 +1,352 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// Landing sales page conversion-focused per traffico paid Google/Meta Ads.
+// Query target: "lettera reclamo assicurazione", "sinistro respinto cosa fare",
+// "reclamo compagnia assicurativa", "PEC compagnia". Non è una guida (per quello
+// vedi /guide/pec-reclamo-assicurazione), è una pagina di vendita.
+
+const playStoreUrl = 'https://play.google.com/store/apps/details?id=it.sherlock.polizze';
+const appUrl = '/app/';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Sherlock — Lettera di reclamo assicurativo',
+    description:
+      "Analisi AI della polizza + bozza di lettera di reclamo (PEC), esposto IVASS o diffida pronti da personalizzare. Prima analisi gratis. Lettera singola 4,99€. Nessun abbonamento.",
+    brand: { '@type': 'Brand', name: 'Sherlock' },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '5',
+      reviewCount: '14',
+      bestRating: '5',
+      worstRating: '1',
+    },
+    offers: {
+      '@type': 'AggregateOffer',
+      lowPrice: '0',
+      highPrice: '19.90',
+      priceCurrency: 'EUR',
+      offerCount: 3,
+      availability: 'https://schema.org/InStock',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'La lettera generata da Sherlock è valida come una scritta da un avvocato?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            "È una bozza tecnicamente corretta, con riferimenti normativi (Cod. Civ., Codice del Consumo, Regolamento IVASS 24/2008), pronta da inviare via PEC. Ha valore giuridico come qualsiasi reclamo firmato da te. Per contenziosi di valore elevato o particolarmente complessi restiamo un supporto informativo — la revisione di un avvocato può essere utile.",
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Quanto costa davvero?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            "L'analisi della prima polizza è gratis. Se vuoi la lettera pronta paghi 4,99€ una tantum (una sola pratica). Se hai più casi o vuoi tutto per sempre, c'è il Pass Pro a vita a 19,90€. Nessun abbonamento, nessun rinnovo, nessuna carta a scadenza.",
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Cosa succede se la compagnia non risponde al reclamo?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            "La legge dà alla compagnia 45 giorni per rispondere al reclamo. Se non risponde o la risposta non ti soddisfa, puoi rivolgerti a IVASS (l'autorità di vigilanza) con un esposto. Sherlock genera anche quello: ricevi analisi + bozza IVASS pronta.",
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'I miei dati sono al sicuro?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            "Sì. La polizza viene analizzata via API dell'intelligenza artificiale, senza salvarla in modo permanente. Nessun dato viene condiviso con la compagnia o con terzi. Dettagli completi su /trasparenza.",
+        },
+      },
+    ],
+  },
+];
+---
+<BaseLayout
+  title="Reclamo alla compagnia assicurativa: la lettera pronta in 3 minuti — Sherlock"
+  description="La compagnia ha respinto il sinistro o non ti convince? Sherlock analizza polizza e diniego, individua le clausole contestabili e prepara la lettera di reclamo (o esposto IVASS). Prima analisi gratis, lettera 4,99€."
+  jsonLd={jsonLd}
+>
+  <Header slot="header" />
+
+  <!-- HERO — messaggio + CTA sopra la piega -->
+  <section class="relative overflow-hidden border-b border-gold-400/40 bg-gradient-to-br from-navy-900 via-navy-950 to-navy-900">
+    <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-gold-400/10 blur-3xl"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 rounded-full bg-red-500/10 blur-3xl"></div>
+    </div>
+    <div class="relative max-w-4xl mx-auto px-5 py-12 lg:py-16 text-center">
+      <div class="inline-flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 px-3 py-1 rounded-full text-xs text-gold-400 font-semibold mb-6">
+        ★★★★★ 5,0 su Google Play · Prima analisi gratis
+      </div>
+      <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight mb-5">
+        La compagnia ti ha detto "no"?<br />
+        <span class="text-gold-400">Scrivi il reclamo giusto in 3 minuti.</span>
+      </h1>
+      <p class="text-lg text-navy-200 leading-relaxed max-w-2xl mx-auto mb-8">
+        Sherlock legge la tua polizza e la lettera di diniego, trova le clausole
+        contestabili e prepara una bozza di reclamo PEC — pronta da inviare.
+        <strong class="text-white">L'analisi è gratis</strong>, la lettera costa
+        <strong class="text-white">4,99€</strong>. Nessun abbonamento.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+        <a
+          href={appUrl}
+          class="bg-gold-400 text-navy-900 font-bold px-8 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/25 text-lg"
+          data-cta="hero-primary"
+        >
+          🔍 Analizza gratis il mio caso
+        </a>
+        <a
+          href="/esempio-report"
+          class="border border-navy-500 text-navy-100 font-semibold px-6 py-4 rounded-lg hover:bg-navy-800 transition"
+          data-cta="hero-example"
+        >
+          Vedi un esempio di report
+        </a>
+      </div>
+      <p class="text-xs text-navy-400">Nessuna carta richiesta · Analisi in ~30 sec · Solo Italia</p>
+    </div>
+  </section>
+
+  <!-- COME FUNZIONA — 3 step visivi -->
+  <section class="px-5 py-12 lg:py-16 max-w-5xl mx-auto">
+    <h2 class="text-3xl font-bold text-white text-center mb-3">In 3 passi, dalla polizza alla PEC pronta</h2>
+    <p class="text-center text-navy-300 mb-10 max-w-2xl mx-auto">
+      Non serve conoscere il codice civile. Sherlock fa il lavoro tecnico, tu decidi cosa firmare.
+    </p>
+    <div class="grid md:grid-cols-3 gap-5">
+      <div class="bg-navy-900 border border-navy-700 rounded-xl p-6">
+        <div class="text-gold-400 text-3xl font-black mb-3">1</div>
+        <h3 class="text-white font-bold mb-2">Carica polizza e lettera di diniego</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          PDF o foto. Anche solo le condizioni generali bastano per iniziare. La lettera di
+          diniego serve a mirare il reclamo, non è obbligatoria.
+        </p>
+      </div>
+      <div class="bg-navy-900 border border-navy-700 rounded-xl p-6">
+        <div class="text-gold-400 text-3xl font-black mb-3">2</div>
+        <h3 class="text-white font-bold mb-2">Sherlock analizza e identifica</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          In ~30 secondi ricevi: livello di rischio, esclusioni critiche, clausole potenzialmente
+          vessatorie e base legale contestabile con riferimenti normativi precisi.
+        </p>
+      </div>
+      <div class="bg-navy-900 border border-navy-700 rounded-xl p-6">
+        <div class="text-gold-400 text-3xl font-black mb-3">3</div>
+        <h3 class="text-white font-bold mb-2">Genera la lettera PEC (4,99€)</h3>
+        <p class="text-navy-300 text-sm leading-relaxed">
+          Reclamo alla compagnia, esposto IVASS o diffida formale — scegli tu.
+          Testo pronto, con intestazione, oggetto, riferimenti e firma. Copi, personalizzi, invii.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFRONTO PREZZO / ALTERNATIVE -->
+  <section class="px-5 py-12 lg:py-16 bg-navy-950 border-t border-b border-navy-800">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold text-white text-center mb-8">Quanto costa vs le alternative</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-gradient-to-br from-navy-900 to-navy-800 border-2 border-gold-400 rounded-xl p-6 shadow-2xl shadow-gold-400/10 relative">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold-400 text-navy-900 text-xs font-bold px-3 py-1 rounded-full">Consigliato</div>
+          <div class="text-gold-400 font-bold text-sm mb-1">Sherlock — Lettera Singola</div>
+          <div class="text-4xl font-black text-white mb-3">4,99€</div>
+          <ul class="text-navy-200 text-sm space-y-1.5 mb-5">
+            <li>✓ Analisi polizza inclusa (gratis)</li>
+            <li>✓ 1 lettera PEC pronta</li>
+            <li>✓ Personalizzabile e riutilizzabile</li>
+            <li>✓ 3 minuti, non 3 settimane</li>
+          </ul>
+          <a href={appUrl} class="block bg-gold-400 text-navy-900 font-bold text-center py-3 rounded-lg hover:bg-gold-300 transition" data-cta="pricing-single">
+            Inizia gratis →
+          </a>
+        </div>
+        <div class="bg-navy-900 border border-navy-700 rounded-xl p-6">
+          <div class="text-navy-400 font-bold text-sm mb-1">Avvocato assicurativo</div>
+          <div class="text-4xl font-black text-navy-200 mb-3">150–300€</div>
+          <ul class="text-navy-400 text-sm space-y-1.5 mb-5">
+            <li>• 1 consulto + 1 PEC</li>
+            <li>• Tempi 1-3 settimane</li>
+            <li>• Ottimo per contenziosi complessi</li>
+            <li>• Serve appuntamento</li>
+          </ul>
+          <p class="text-xs text-navy-500 text-center italic">Meglio Sherlock come primo passo, avvocato se il caso lo richiede.</p>
+        </div>
+        <div class="bg-navy-900 border border-navy-700 rounded-xl p-6">
+          <div class="text-navy-400 font-bold text-sm mb-1">Scrivere da sé</div>
+          <div class="text-4xl font-black text-navy-200 mb-3">0€ <span class="text-sm font-normal text-red-400">(alto rischio)</span></div>
+          <ul class="text-navy-400 text-sm space-y-1.5 mb-5">
+            <li>• Errori formali comuni</li>
+            <li>• Riferimenti normativi sbagliati</li>
+            <li>• Rischio rigetto per vizio di forma</li>
+            <li>• 2-4 ore di ricerca</li>
+          </ul>
+          <p class="text-xs text-navy-500 text-center italic">Se sai già come si scrive un reclamo IVASS, questa pagina non fa per te.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERCHÉ FUNZIONA — 3 punti concreti -->
+  <section class="px-5 py-12 lg:py-16 max-w-4xl mx-auto">
+    <h2 class="text-3xl font-bold text-white text-center mb-10">Perché una lettera Sherlock convince di più</h2>
+    <div class="space-y-6">
+      <div class="flex gap-4">
+        <div class="text-gold-400 text-2xl flex-shrink-0">⚖️</div>
+        <div>
+          <h3 class="text-white font-bold mb-1">Cita le clausole giuste della tua polizza</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">
+            L'analisi identifica esclusioni critiche, franchigie, termini di decadenza
+            e clausole potenzialmente vessatorie ex art. 1341 c.c. e art. 33 Cod. Cons.
+            La lettera cita gli articoli con numero e testo — non frasi generiche.
+          </p>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="text-gold-400 text-2xl flex-shrink-0">📜</div>
+        <div>
+          <h3 class="text-white font-bold mb-1">Rispetta i termini di legge</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">
+            Regolamento IVASS 24/2008: la compagnia ha 45 giorni per rispondere.
+            La lettera è formattata correttamente per raccomandata A/R o PEC,
+            con oggetto, riferimenti e richieste specifiche.
+          </p>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="text-gold-400 text-2xl flex-shrink-0">🎯</div>
+        <div>
+          <h3 class="text-white font-bold mb-1">Onesta su cosa può fare e cosa no</h3>
+          <p class="text-navy-300 text-sm leading-relaxed">
+            Sherlock è uno strumento informativo, non un avvocato. Ogni bozza include
+            un elenco di avvertenze e cose da verificare prima dell'invio. Le decisioni
+            (e la firma) restano tue.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ compatta -->
+  <section class="px-5 py-12 lg:py-16 bg-navy-950 border-t border-navy-800">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-3xl font-bold text-white text-center mb-8">Domande frequenti</h2>
+      <div class="space-y-3">
+        <details class="bg-navy-900 border border-navy-800 rounded-xl px-5 py-4 group">
+          <summary class="text-white font-semibold cursor-pointer flex items-center justify-between">
+            La lettera è valida come una scritta da un avvocato?
+            <span class="text-gold-400 group-open:rotate-180 transition">▾</span>
+          </summary>
+          <p class="text-navy-300 text-sm leading-relaxed mt-3">
+            È una bozza tecnicamente corretta, con riferimenti normativi (Cod. Civ., Codice del
+            Consumo, Regolamento IVASS 24/2008), pronta da inviare via PEC. Ha valore giuridico
+            come qualsiasi reclamo firmato da te. Per contenziosi di valore elevato o
+            particolarmente complessi restiamo un supporto informativo — la revisione di un
+            avvocato può essere utile.
+          </p>
+        </details>
+        <details class="bg-navy-900 border border-navy-800 rounded-xl px-5 py-4 group">
+          <summary class="text-white font-semibold cursor-pointer flex items-center justify-between">
+            Quanto costa davvero?
+            <span class="text-gold-400 group-open:rotate-180 transition">▾</span>
+          </summary>
+          <p class="text-navy-300 text-sm leading-relaxed mt-3">
+            L'analisi della prima polizza è <strong class="text-white">gratis</strong>. Se vuoi la
+            lettera pronta paghi <strong class="text-white">4,99€ una tantum</strong> (una sola
+            pratica). Se hai più casi o vuoi tutto per sempre, c'è il
+            <strong class="text-white">Pass Pro a vita</strong> a 19,90€ (numero limitato).
+            Nessun abbonamento, nessun rinnovo automatico.
+          </p>
+        </details>
+        <details class="bg-navy-900 border border-navy-800 rounded-xl px-5 py-4 group">
+          <summary class="text-white font-semibold cursor-pointer flex items-center justify-between">
+            Cosa succede se la compagnia non risponde?
+            <span class="text-gold-400 group-open:rotate-180 transition">▾</span>
+          </summary>
+          <p class="text-navy-300 text-sm leading-relaxed mt-3">
+            La legge dà alla compagnia <strong class="text-white">45 giorni</strong> per
+            rispondere al reclamo (Reg. IVASS 24/2008). Se non risponde o la risposta non
+            convince, puoi rivolgerti a <strong class="text-white">IVASS</strong> (l'autorità di
+            vigilanza) con un esposto. Sherlock genera anche quello: analisi + bozza IVASS pronta.
+          </p>
+        </details>
+        <details class="bg-navy-900 border border-navy-800 rounded-xl px-5 py-4 group">
+          <summary class="text-white font-semibold cursor-pointer flex items-center justify-between">
+            I miei dati sono al sicuro?
+            <span class="text-gold-400 group-open:rotate-180 transition">▾</span>
+          </summary>
+          <p class="text-navy-300 text-sm leading-relaxed mt-3">
+            La polizza viene analizzata dall'intelligenza artificiale, senza essere salvata in
+            modo permanente. Nessun dato viene condiviso con la compagnia o con terzi.
+            Dettagli completi su <a href="/trasparenza" class="text-gold-400 hover:text-gold-300 underline">Trasparenza</a>
+            e <a href="/privacy" class="text-gold-400 hover:text-gold-300 underline">Privacy</a>.
+          </p>
+        </details>
+        <details class="bg-navy-900 border border-navy-800 rounded-xl px-5 py-4 group">
+          <summary class="text-white font-semibold cursor-pointer flex items-center justify-between">
+            Posso usarlo da smartphone senza scaricare l'app?
+            <span class="text-gold-400 group-open:rotate-180 transition">▾</span>
+          </summary>
+          <p class="text-navy-300 text-sm leading-relaxed mt-3">
+            Sì. Sherlock funziona anche via web da smartphone — vai su
+            <a href={appUrl} class="text-gold-400 hover:text-gold-300 underline">sherlockpolizze.it/app</a>
+            e usalo direttamente dal browser. L'app Android è più veloce e supporta pagamenti
+            Google Play — la trovi <a href={playStoreUrl} class="text-gold-400 hover:text-gold-300 underline">qui</a>.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINALE -->
+  <section class="px-5 py-14 lg:py-20">
+    <div class="max-w-3xl mx-auto text-center bg-gradient-to-br from-navy-900 to-navy-800 border border-gold-400/40 rounded-2xl p-8 lg:p-12 shadow-2xl shadow-gold-400/10">
+      <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-4">
+        Il tuo caso può aspettare?
+      </h2>
+      <p class="text-navy-300 text-lg mb-8 max-w-xl mx-auto">
+        45 giorni sono un attimo. Non firmare risposte affrettate: fai leggere tutto a Sherlock.
+        L'analisi è gratis, nessuna carta richiesta.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+        <a
+          href={appUrl}
+          class="bg-gold-400 text-navy-900 font-bold px-8 py-4 rounded-lg hover:bg-gold-300 transition shadow-xl shadow-gold-400/25 text-lg"
+          data-cta="final-primary"
+        >
+          🔍 Analizza il mio caso adesso
+        </a>
+      </div>
+      <p class="text-xs text-navy-400">Nessuna carta · Nessun abbonamento · Puoi provare l'analisi prima di pagare la lettera</p>
+    </div>
+  </section>
+
+  <!-- disclaimer -->
+  <div class="max-w-3xl mx-auto px-5 pb-16 text-sm text-navy-400 leading-relaxed">
+    <strong class="text-navy-200">Importante:</strong> Sherlock è uno strumento di analisi
+    informativa. Non sostituisce un avvocato o un consulente iscritto all'albo. Le bozze
+    generate vanno riviste prima dell'invio e possono contenere errori. Per casi complessi
+    o di valore elevato, rivolgersi a un professionista qualificato.
+  </div>
+
+  <Footer slot="footer" />
+</BaseLayout>
