@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "it.sherlock.polizze",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_PLAY_APP_SIGNING_SHA256_FINGERPRINT"
+        "DF:E4:7D:2D:88:51:D7:0C:EA:2E:01:71:C3:69:A8:F7:3E:8C:F0:6A:67:65:EA:C3:7E:03:19:F4:DC:95:21:66",
+        "F1:30:A8:BE:C8:7C:F4:0C:53:BF:22:A2:C4:CE:7A:28:D4:86:A8:0D:9B:84:E6:BE:FE:5D:66:91:8E:4D:46:B7"
       ]
     }
   }

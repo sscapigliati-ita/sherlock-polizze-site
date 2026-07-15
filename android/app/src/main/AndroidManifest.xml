@@ -39,6 +39,17 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Android App Links: click su sherlockpolizze.it aprono direttamente l'app.
+                 autoVerify=true fa il check assetlinks.json in modo automatico.
+                 Consigliato da Google Ads (+~4.5% conversioni previste). -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="www.sherlockpolizze.it" />
+                <data android:host="sherlockpolizze.it" />
+            </intent-filter>
         </activity>
     </application>
 </manifest>
