@@ -188,6 +188,136 @@ export async function leggiAnalyticsProperty(
 }
 
 /**
+ * Traffico ADS-attribuito: sessioni/utenti provenienti da source=google + medium=cpc.
+ * Non usa l'API Google Ads (che richiederebbe developer token separato) — legge
+ * i dati che GA4 raccoglie via UTM auto-tagging dei click Ads.
+ */
+export type TrafficoAds = {
+  propertyId: string;
+  utenti7gg: number;
+  sessioni7gg: number;
+  conversioni7gg: number;
+  topCampagne: Array<{ nome: string; utenti: number; sessioni: number }>;
+};
+export type TrafficoAdsResult = TrafficoAds | { errore: string };
+
+export async function leggiTrafficoAds(
+  propertyIdEnv: 'GA4_PROPERTY_ID_ADS' | 'GA4_PROPERTY_ID_FIREBASE' = 'GA4_PROPERTY_ID_ADS',
+  giorni = 7,
+): Promise<TrafficoAdsResult> {
+  const propertyId = envVar(propertyIdEnv);
+  if (!propertyId) return { errore: `${propertyIdEnv} non configurata` };
+  if (!envVar('GOOGLE_SERVICE_ACCOUNT_B64')) return { errore: 'GOOGLE_SERVICE_ACCOUNT_B64 non configurata' };
+
+  try {
+    return await cached(`ga4:ads:v1:${propertyId}:${giorni}`, 60 * 60, async () => {
+      const range = { startDate: `${giorni}daysAgo`, endDate: 'today' };
+      // Filtro: sessionSource=google AND sessionMedium=cpc (traffico Ads).
+      const filtroAds = {
+        andGroup: {
+          expressions: [
+            { filter: { fieldName: 'sessionSource', stringFilter: { value: 'google' } } },
+            { filter: { fieldName: 'sessionMedium', stringFilter: { value: 'cpc' } } },
+          ],
+        },
+      };
+
+      const totRes = await runReport(propertyId, {
+        dateRanges: [range],
+        metrics: [
+          { name: 'activeUsers' },
+          { name: 'sessions' },
+          { name: 'conversions' },
+        ],
+        dimensionFilter: filtroAds,
+      });
+
+      const campRes = await runReport(propertyId, {
+        dateRanges: [range],
+        dimensions: [{ name: 'sessionCampaignName' }],
+        metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
+        dimensionFilter: filtroAds,
+        orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+        limit: 5,
+      });
+
+      const totRow = totRes.rows?.[0]?.metricValues ?? [];
+      return {
+        propertyId,
+        utenti7gg: Number(totRow[0]?.value ?? 0),
+        sessioni7gg: Number(totRow[1]?.value ?? 0),
+        conversioni7gg: Number(totRow[2]?.value ?? 0),
+        topCampagne: (campRes.rows ?? []).map((r: any) => ({
+          nome: r.dimensionValues?.[0]?.value ?? '(direct)',
+          utenti: Number(r.metricValues?.[0]?.value ?? 0),
+          sessioni: Number(r.metricValues?.[1]?.value ?? 0),
+        })),
+      } satisfies TrafficoAds;
+    });
+  } catch (e: any) {
+    return { errore: String(e?.message ?? e) };
+  }
+}
+
+/**
+ * SEO: top landing page dentro /guide/*. Proxy delle 23 guide pubblicate
+ * a giugno 2026. La posizione media / impressioni vere richiederebbero
+ * Search Console API — qui ci accontentiamo di sapere quali guide catturano
+ * traffico organico (SEO che funziona) vs quali no (SEO da rafforzare).
+ */
+export type SeoGuide = {
+  propertyId: string;
+  totaleVisiteGuide7gg: number;
+  topGuide: Array<{ path: string; views: number; utenti: number }>;
+};
+export type SeoGuideResult = SeoGuide | { errore: string };
+
+export async function leggiSeoGuide(
+  propertyIdEnv: 'GA4_PROPERTY_ID_ADS' = 'GA4_PROPERTY_ID_ADS',
+  giorni = 7,
+): Promise<SeoGuideResult> {
+  const propertyId = envVar(propertyIdEnv);
+  if (!propertyId) return { errore: `${propertyIdEnv} non configurata` };
+  if (!envVar('GOOGLE_SERVICE_ACCOUNT_B64')) return { errore: 'GOOGLE_SERVICE_ACCOUNT_B64 non configurata' };
+
+  try {
+    return await cached(`ga4:seo:v1:${propertyId}:${giorni}`, 60 * 60, async () => {
+      const range = { startDate: `${giorni}daysAgo`, endDate: 'today' };
+      // Filtro: pagePath che inizia con /guide/
+      const filtroGuide = {
+        filter: {
+          fieldName: 'pagePath',
+          stringFilter: { matchType: 'BEGINS_WITH', value: '/guide/' },
+        },
+      };
+
+      const res = await runReport(propertyId, {
+        dateRanges: [range],
+        dimensions: [{ name: 'pagePath' }],
+        metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+        dimensionFilter: filtroGuide,
+        orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+        limit: 8,
+      });
+
+      const topGuide: SeoGuide['topGuide'] = (res.rows ?? []).map((r: any) => ({
+        path: r.dimensionValues?.[0]?.value ?? '',
+        views: Number(r.metricValues?.[0]?.value ?? 0),
+        utenti: Number(r.metricValues?.[1]?.value ?? 0),
+      }));
+      const totaleVisiteGuide7gg = topGuide.reduce(
+        (s: number, g: SeoGuide['topGuide'][number]) => s + g.views,
+        0,
+      );
+
+      return { propertyId, totaleVisiteGuide7gg, topGuide } satisfies SeoGuide;
+    });
+  } catch (e: any) {
+    return { errore: String(e?.message ?? e) };
+  }
+}
+
+/**
  * Invalida le cache GA4 (chiamata da /admin?refresh=ga4).
  */
 export async function invalidaCacheGa4(): Promise<void> {
@@ -196,14 +326,16 @@ export async function invalidaCacheGa4(): Promise<void> {
   // @upstash/redis non espone scanIterator: uso scan cursor-based.
   // Ritorna [nextCursor, keys[]] per pagina; termino quando cursor === '0'.
   const chiavi: string[] = [];
-  let cursor = '0';
-  do {
-    const [next, keys] = (await r.scan(cursor, { match: 'ga4:v1:*', count: 100 })) as [
-      string,
-      string[],
-    ];
-    chiavi.push(...keys);
-    cursor = next;
-  } while (cursor !== '0');
+  for (const prefix of ['ga4:v1:*', 'ga4:ads:v1:*', 'ga4:seo:v1:*']) {
+    let cursor = '0';
+    do {
+      const [next, keys] = (await r.scan(cursor, { match: prefix, count: 100 })) as [
+        string,
+        string[],
+      ];
+      chiavi.push(...keys);
+      cursor = next;
+    } while (cursor !== '0');
+  }
   if (chiavi.length) await r.del(...chiavi);
 }

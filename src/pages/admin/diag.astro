@@ -1,0 +1,212 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { contaPayPalProcessing } from '../../lib/storage';
+import { statoStreamGa4 } from '../../lib/ga4';
+import { verificaAppLinks, invalidaCacheAppLinks } from '../../lib/app-links-check';
+
+// /admin/diag?refresh=applinks forza il refresh della cache App Links.
+if (Astro.url.searchParams.get('refresh') === 'applinks') {
+  await invalidaCacheAppLinks();
+}
+
+const [ppProc, appLinks] = await Promise.all([
+  contaPayPalProcessing().catch(() => ({
+    total: 0, processing: 0, completed: 0, failed: 0, withCaptureId: 0, stuckProcessing: 0,
+    ultimoAggiornamento: undefined as string | undefined,
+  })),
+  verificaAppLinks().catch((e: any) => ({
+    ok: false, status: null as number | null, packageMatch: false, fingerprintsCount: 0,
+    problemi: [String(e?.message ?? e)], checkedAt: new Date().toISOString(),
+  })),
+]);
+
+const streamsConfigurati = statoStreamGa4();
+const ppCaptureCoverage = ppProc.completed > 0
+  ? (ppProc.withCaptureId / ppProc.completed) * 100
+  : 0;
+
+const adminEmail = Astro.locals.adminEmail ?? '';
+
+const fmtData = (iso: string) =>
+  new Date(iso).toLocaleString('it-IT', {
+    timeZone: 'Europe/Rome',
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+---
+<BaseLayout
+  title="Diagnostica Admin — Sherlock"
+  description="Health check tecnici: PayPal processing, config env, App Links"
+>
+  <main class="notranslate px-5 py-10 max-w-6xl mx-auto" translate="no">
+    <header class="flex items-start justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-3xl font-extrabold text-white">Diagnostica <span class="text-gold-400">— tecnica</span></h1>
+        <p class="text-navy-300 text-sm mt-1">Health check che appesantirebbero la dashboard principale</p>
+        <p class="text-navy-400 text-xs mt-1">
+          Sessione: <span class="text-gold-400">{adminEmail}</span>
+          {' · '}<a href="/admin" class="underline hover:text-gold-300">← dashboard</a>
+          {' · '}<a href="/admin/play-diag" class="underline hover:text-gold-300">play diag &rarr;</a>
+        </p>
+      </div>
+    </header>
+
+    <section class="mb-8">
+      <div class="flex items-baseline justify-between mb-3">
+        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Android App Links</div>
+        <div class="text-[10px] text-navy-500">
+          Cache 10 min · <a href="/admin/diag?refresh=applinks" class="underline hover:text-gold-300">forza refresh</a>
+          {' · check eseguito: '}{fmtData(appLinks.checkedAt)}
+        </div>
+      </div>
+      <div class={`rounded-xl border p-4 ${appLinks.ok ? 'border-emerald-500/40 bg-navy-900' : 'border-red-500/40 bg-red-500/5'}`}>
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-bold text-white">
+              /.well-known/assetlinks.json
+              <span class="text-navy-500 font-normal text-xs">su www.sherlockpolizze.it</span>
+            </div>
+            <div class="text-[11px] text-navy-400 mt-1">
+              Se questo file diventa irraggiungibile o malformato, i click sui link
+              <code class="font-mono text-navy-200">sherlockpolizze.it</code> non aprono piu' l'app Android
+              (fall-back al browser). Google fa il re-crawl solo su nuova installazione.
+            </div>
+          </div>
+          <div class={`text-3xl font-extrabold flex-shrink-0 ${appLinks.ok ? 'text-emerald-400' : 'text-red-400'}`}>
+            {appLinks.ok ? '✓' : '✗'}
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+          <div class="rounded-lg bg-navy-800/60 border border-navy-700 p-2">
+            <div class="text-navy-400 uppercase tracking-widest text-[9px]">HTTP</div>
+            <div class={`font-mono font-bold ${appLinks.status && appLinks.status < 400 ? 'text-emerald-300' : 'text-red-300'}`}>
+              {appLinks.status ?? '—'}
+            </div>
+          </div>
+          <div class="rounded-lg bg-navy-800/60 border border-navy-700 p-2">
+            <div class="text-navy-400 uppercase tracking-widest text-[9px]">package</div>
+            <div class={`font-mono font-bold ${appLinks.packageMatch ? 'text-emerald-300' : 'text-red-300'}`}>
+              {appLinks.packageMatch ? 'match' : 'missing'}
+            </div>
+          </div>
+          <div class="rounded-lg bg-navy-800/60 border border-navy-700 p-2">
+            <div class="text-navy-400 uppercase tracking-widest text-[9px]">fingerprints</div>
+            <div class={`font-mono font-bold ${appLinks.fingerprintsCount > 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+              {appLinks.fingerprintsCount}
+            </div>
+          </div>
+          <div class="rounded-lg bg-navy-800/60 border border-navy-700 p-2">
+            <div class="text-navy-400 uppercase tracking-widest text-[9px]">problemi</div>
+            <div class={`font-mono font-bold ${appLinks.problemi.length === 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+              {appLinks.problemi.length}
+            </div>
+          </div>
+        </div>
+        {appLinks.problemi.length > 0 && (
+          <div class="mt-3 rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-[11px] text-red-200 space-y-1">
+            {appLinks.problemi.map((p) => (
+              <div>· <span class="font-mono">{p}</span></div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <div class="flex items-baseline justify-between mb-3">
+        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">PayPal Processing — health check (audit R4)</div>
+        <div class="text-[10px] text-navy-500">
+          Idempotenza + crash recovery · fonte: <span class="font-mono">paypal_proc:*</span>
+          {ppProc.ultimoAggiornamento && <> · ultimo update: {fmtData(ppProc.ultimoAggiornamento)}</>}
+        </div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Record totali</div>
+          <div class="text-3xl font-extrabold text-white mt-1">{ppProc.total}</div>
+          <div class="text-[10px] text-navy-500 mt-1">tutti gli orderId processati</div>
+        </div>
+        <div class="rounded-xl border border-emerald-500/30 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Completed</div>
+          <div class="text-3xl font-extrabold text-emerald-400 mt-1">{ppProc.completed}</div>
+          <div class="text-[10px] text-navy-500 mt-1">codice emesso + email + GA4</div>
+        </div>
+        <div class="rounded-xl border border-amber-500/30 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Processing</div>
+          <div class={`text-3xl font-extrabold mt-1 ${ppProc.processing > 0 ? 'text-amber-300' : 'text-navy-400'}`}>{ppProc.processing}</div>
+          <div class={`text-[10px] mt-1 ${ppProc.stuckProcessing > 0 ? 'text-red-300' : 'text-navy-500'}`}>
+            {ppProc.stuckProcessing > 0 ? `${ppProc.stuckProcessing} stuck > 10 min` : 'in-flight normale'}
+          </div>
+        </div>
+        <div class="rounded-xl border border-red-500/30 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Failed</div>
+          <div class={`text-3xl font-extrabold mt-1 ${ppProc.failed > 0 ? 'text-red-400' : 'text-navy-400'}`}>{ppProc.failed}</div>
+          <div class="text-[10px] text-navy-500 mt-1">capture o status non ok</div>
+        </div>
+        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">captureId coverage</div>
+          <div class={`text-3xl font-extrabold mt-1 ${ppCaptureCoverage >= 95 ? 'text-emerald-400' : ppCaptureCoverage >= 70 ? 'text-amber-300' : 'text-navy-500'}`}>
+            {ppProc.completed > 0 ? `${ppCaptureCoverage.toFixed(0)}%` : '—'}
+          </div>
+          <div class="text-[10px] text-navy-500 mt-1">
+            {ppProc.withCaptureId}/{ppProc.completed} completed con captureId
+          </div>
+        </div>
+      </div>
+      {ppProc.stuckProcessing > 0 && (
+        <div class="mt-3 rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-200">
+          ⚠️ <strong>{ppProc.stuckProcessing} record in stato <code class="font-mono">processing</code> da &gt; 10 min</strong>: possibile crash mid-flow. La logica di recovery in <code class="font-mono">capture-order.ts</code> li completa alla prossima chiamata dell'utente; se il cliente non torna, il codice non viene mai emesso. Considera un cron di reconciliation.
+        </div>
+      )}
+      {ppProc.total === 0 && (
+        <div class="mt-3 rounded-lg border border-navy-700 bg-navy-900/50 p-3 text-xs text-navy-400">
+          Nessun record ancora processato (i processing record sono nati con l'audit R4 del 13/07/2026). I record precedenti restano nell'indice legacy <code class="font-mono">paypal_order:*</code> e continuano a funzionare per idempotenza.
+        </div>
+      )}
+    </section>
+
+    <section class="mb-8">
+      <div class="flex items-baseline justify-between mb-3">
+        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Config check env GA4 — audit R4</div>
+        <div class="text-[10px] text-navy-500">Verifica env vars server-side (nessun valore mostrato)</div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class={`rounded-xl border p-4 ${streamsConfigurati.web ? 'border-emerald-500/30 bg-navy-900' : 'border-red-500/30 bg-red-500/5'}`}>
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1">
+              <div class="text-xs text-navy-400 uppercase tracking-widest">Stream GA4 Web</div>
+              <div class="text-sm font-mono text-navy-300 mt-1">GA4_WEB_MEASUREMENT_ID + GA4_WEB_API_SECRET</div>
+              <div class="text-[10px] text-navy-500 mt-2">
+                Proprietà "Sherlock Polizze Web" collegata a Google Ads. Riceve <code class="font-mono text-navy-300">purchase</code>, <code class="font-mono text-navy-300">analysis_complete</code>, <code class="font-mono text-navy-300">pro_status_lookup_success</code>, <code class="font-mono text-navy-300">checkout_started</code>, <code class="font-mono text-navy-300">paypal_redirect</code>.
+              </div>
+            </div>
+            <div class={`text-2xl font-extrabold ${streamsConfigurati.web ? 'text-emerald-400' : 'text-red-400'}`}>{streamsConfigurati.web ? '✓' : '✗'}</div>
+          </div>
+          {!streamsConfigurati.web && (
+            <div class="mt-3 text-[11px] text-red-200 leading-relaxed">
+              <strong>Non configurato.</strong> <code class="font-mono">ga4TrackServer</code> è no-op per lo stream 'web': Google Ads non riceve conversioni server-side. Configura entrambe le env in Vercel → Production/Preview.
+            </div>
+          )}
+        </div>
+        <div class={`rounded-xl border p-4 ${streamsConfigurati.firebase ? 'border-emerald-500/30 bg-navy-900' : 'border-amber-500/30 bg-amber-500/5'}`}>
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1">
+              <div class="text-xs text-navy-400 uppercase tracking-widest">Stream GA4 Firebase</div>
+              <div class="text-sm font-mono text-navy-300 mt-1">GA4_FIREBASE_MEASUREMENT_ID + GA4_FIREBASE_API_SECRET</div>
+              <div class="text-[10px] text-navy-500 mt-2">
+                Proprietà Firebase legacy (project sherlock-6f88c). Riceve <code class="font-mono text-navy-300">play_billing_verified</code> quando l'app Android trasmetterà <span class="italic">app_instance_id</span> via bridge. Fallback retrocompat: <code class="font-mono">PUBLIC_FIREBASE_MEASUREMENT_ID</code> + <code class="font-mono">GA4_API_SECRET</code>.
+              </div>
+            </div>
+            <div class={`text-2xl font-extrabold ${streamsConfigurati.firebase ? 'text-emerald-400' : 'text-amber-300'}`}>{streamsConfigurati.firebase ? '✓' : '⚠'}</div>
+          </div>
+          {!streamsConfigurati.firebase && (
+            <div class="mt-3 text-[11px] text-amber-200 leading-relaxed">
+              Non configurato (né env dedicate né fallback legacy). Play Billing events server-side no-op.
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

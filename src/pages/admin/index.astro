@@ -2,12 +2,20 @@
 export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { leggiStats } from '../../lib/log';
-import { leggiAbbonati, contaFounderVenduti, contaPayPalProcessing } from '../../lib/storage';
+import { leggiAbbonati, contaFounderVenduti } from '../../lib/storage';
 import { leggiUltimiEventi } from '../../lib/log';
 import { leggiStabilitaApp, invalidaCachePlay } from '../../lib/play';
-import { leggiAnalyticsProperty, invalidaCacheGa4, type AnalyticsResult } from '../../lib/ga4-data';
+import {
+  leggiAnalyticsProperty,
+  invalidaCacheGa4,
+  leggiTrafficoAds,
+  leggiSeoGuide,
+  type AnalyticsResult,
+  type TrafficoAdsResult,
+  type SeoGuideResult,
+} from '../../lib/ga4-data';
+import { verificaAppLinks } from '../../lib/app-links-check';
 import { FOUNDER_MAX } from '../../lib/paypal';
-import { statoStreamGa4 } from '../../lib/ga4';
 
 // /admin?refresh=play forza il refresh della cache Play (bypass 6h TTL).
 if (Astro.url.searchParams.get('refresh') === 'play') {
@@ -19,26 +27,31 @@ if (Astro.url.searchParams.get('refresh') === 'ga4') {
 }
 
 // Le chiamate esterne possono fallire (SA non configurato, permessi mancanti,
-// quote): allSettled/catch per non rompere la dashboard.
-const [stats, abb, eventi, stabRes, ga4Ads, ga4Firebase, founderVenduti, ppProc] = await Promise.all([
+// quote): catch/allSettled per non rompere la dashboard.
+const [
+  stats, abb, eventi, stabRes,
+  ga4Ads, ga4Firebase,
+  trafficoAdsRes, seoGuideRes,
+  appLinks,
+  founderVenduti,
+] = await Promise.all([
   leggiStats(),
   leggiAbbonati(),
   leggiUltimiEventi(50),
   leggiStabilitaApp().catch((e: any) => ({ errore: String(e?.message ?? e) }) as any),
   leggiAnalyticsProperty('GA4_PROPERTY_ID_ADS'),
   leggiAnalyticsProperty('GA4_PROPERTY_ID_FIREBASE'),
+  leggiTrafficoAds('GA4_PROPERTY_ID_ADS').catch((e: any) => ({ errore: String(e?.message ?? e) }) as TrafficoAdsResult),
+  leggiSeoGuide('GA4_PROPERTY_ID_ADS').catch((e: any) => ({ errore: String(e?.message ?? e) }) as SeoGuideResult),
+  verificaAppLinks().catch(() => ({ ok: false, status: null as number | null, packageMatch: false, fingerprintsCount: 0, problemi: ['fetch fallito'], checkedAt: new Date().toISOString() })),
   contaFounderVenduti().catch(() => 0),
-  contaPayPalProcessing().catch(() => ({
-    total: 0, processing: 0, completed: 0, failed: 0, withCaptureId: 0, stuckProcessing: 0,
-    ultimoAggiornamento: undefined,
-  })),
 ]);
-const streamsConfigurati = statoStreamGa4();
 const founderRimanenti = Math.max(0, FOUNDER_MAX - founderVenduti);
 const founderPctVenduto = (founderVenduti / FOUNDER_MAX) * 100;
-const ppCaptureCoverage = ppProc.completed > 0
-  ? (ppProc.withCaptureId / ppProc.completed) * 100
-  : 0;
+const trafficoAds = ('utenti7gg' in trafficoAdsRes) ? trafficoAdsRes : null;
+const trafficoAdsErr = ('errore' in trafficoAdsRes) ? trafficoAdsRes.errore : undefined;
+const seoGuide = ('topGuide' in seoGuideRes) ? seoGuideRes : null;
+const seoGuideErr = ('errore' in seoGuideRes) ? seoGuideRes.errore : undefined;
 const stab = ('crashRate28gg' in stabRes ? stabRes : null) as Awaited<ReturnType<typeof leggiStabilitaApp>> | null;
 const stabError = (stabRes as any).errore as string | undefined;
 const fmtPct = (n: number | null) => n === null ? '—' : `${n.toFixed(2)} %`;
@@ -234,7 +247,12 @@ const fmtSoloData = (iso: string) =>
       <div>
         <h1 class="text-3xl font-extrabold text-white">Dashboard Admin <span class="text-gold-400">— Sherlock</span></h1>
         <p class="text-navy-300 text-sm mt-1">Statistiche d'uso del backend AI e abbonamenti</p>
-        <p class="text-navy-400 text-xs mt-1">Sessione: <span class="text-gold-400">{adminEmail}</span> · <a href="/api/auth/logout" class="underline hover:text-gold-300">esci</a></p>
+        <p class="text-navy-400 text-xs mt-1">
+          Sessione: <span class="text-gold-400">{adminEmail}</span>
+          {' · '}<a href="/admin/diag" class="underline hover:text-gold-300">diag tecnica &rarr;</a>
+          {' · '}<a href="/admin/play-diag" class="underline hover:text-gold-300">play diag &rarr;</a>
+          {' · '}<a href="/api/auth/logout" class="underline hover:text-gold-300">esci</a>
+        </p>
       </div>
     </header>
 
@@ -297,23 +315,153 @@ const fmtSoloData = (iso: string) =>
       </div>
     </section>
 
+    {/* ============================ MARKETING ============================ */}
+    <section class="mb-8">
+      <div class="flex items-baseline justify-between mb-3">
+        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Marketing — 7 giorni</div>
+        <div class="text-[10px] text-navy-500">
+          Dati derivati da GA4 (source/medium=google/cpc per Ads, path=/guide/* per SEO). Per numeri veri click/costo apri
+          <a href="https://ads.google.com/aw/overview" target="_blank" rel="noopener" class="underline hover:text-gold-300">Google Ads</a>,
+          <a href="https://search.google.com/search-console" target="_blank" rel="noopener" class="underline hover:text-gold-300">Search Console</a>,
+          <a href="https://play.google.com/console/u/0/developers" target="_blank" rel="noopener" class="underline hover:text-gold-300">Play Console</a>.
+        </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* ADS ATTRIBUITI */}
+        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
+          <div class="flex items-baseline justify-between mb-3">
+            <div class="text-[10px] uppercase tracking-widest text-navy-400 font-bold">Traffico Google Ads</div>
+            <a href="https://ads.google.com/aw/overview" target="_blank" rel="noopener" class="text-[10px] text-gold-300 underline hover:text-gold-200">apri Ads &rarr;</a>
+          </div>
+          {trafficoAdsErr ? (
+            <div class="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-200">
+              Non disponibile: <span class="font-mono text-[10px]">{trafficoAdsErr}</span>
+            </div>
+          ) : trafficoAds && (
+            <>
+              <div class="grid grid-cols-3 gap-2 mb-3">
+                <div>
+                  <div class="text-[10px] text-navy-400 uppercase tracking-wider">Utenti</div>
+                  <div class="text-2xl font-extrabold text-white">{fmtNum(trafficoAds.utenti7gg)}</div>
+                </div>
+                <div>
+                  <div class="text-[10px] text-navy-400 uppercase tracking-wider">Sessioni</div>
+                  <div class="text-2xl font-extrabold text-white">{fmtNum(trafficoAds.sessioni7gg)}</div>
+                </div>
+                <div>
+                  <div class="text-[10px] text-navy-400 uppercase tracking-wider">Conversioni</div>
+                  <div class={`text-2xl font-extrabold ${trafficoAds.conversioni7gg > 0 ? 'text-emerald-400' : 'text-navy-500'}`}>
+                    {fmtNum(trafficoAds.conversioni7gg)}
+                  </div>
+                </div>
+              </div>
+              {trafficoAds.topCampagne.length > 0 ? (
+                <div>
+                  <div class="text-[10px] text-navy-500 uppercase tracking-wider mb-1">Top campagne (sessioni)</div>
+                  <ul class="space-y-0.5 text-[11px] font-mono">
+                    {trafficoAds.topCampagne.slice(0, 5).map((c) => (
+                      <li class="flex justify-between gap-2">
+                        <span class="text-navy-200 truncate">{c.nome || '(unnamed)'}</span>
+                        <span class="text-white flex-shrink-0">{fmtNum(c.sessioni)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div class="text-[11px] text-navy-500">Nessuna campagna con traffico negli ultimi 7gg.</div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* SEO GUIDE */}
+        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
+          <div class="flex items-baseline justify-between mb-3">
+            <div class="text-[10px] uppercase tracking-widest text-navy-400 font-bold">SEO guide — visite</div>
+            <a href="https://search.google.com/search-console" target="_blank" rel="noopener" class="text-[10px] text-gold-300 underline hover:text-gold-200">apri SC &rarr;</a>
+          </div>
+          {seoGuideErr ? (
+            <div class="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-200">
+              Non disponibile: <span class="font-mono text-[10px]">{seoGuideErr}</span>
+            </div>
+          ) : seoGuide && (
+            <>
+              <div class="mb-3">
+                <div class="text-[10px] text-navy-400 uppercase tracking-wider">Totale visite /guide/*</div>
+                <div class="text-2xl font-extrabold text-white">{fmtNum(seoGuide.totaleVisiteGuide7gg)}</div>
+                <div class="text-[9px] text-navy-500">impressioni/CTR/posizione richiedono Search Console API</div>
+              </div>
+              {seoGuide.topGuide.length > 0 ? (
+                <div>
+                  <div class="text-[10px] text-navy-500 uppercase tracking-wider mb-1">Top guide (pageviews)</div>
+                  <ul class="space-y-0.5 text-[11px] font-mono">
+                    {seoGuide.topGuide.slice(0, 5).map((g) => (
+                      <li class="flex justify-between gap-2">
+                        <span class="text-navy-200 truncate">{g.path.replace('/guide/', '')}</span>
+                        <span class="text-white flex-shrink-0">{fmtNum(g.views)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div class="text-[11px] text-navy-500">Nessun traffico organico rilevato negli ultimi 7gg.</div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* APP STORE PRESENCE */}
+        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
+          <div class="flex items-baseline justify-between mb-3">
+            <div class="text-[10px] uppercase tracking-widest text-navy-400 font-bold">Play Store — presenza</div>
+            <a href="https://play.google.com/store/apps/details?id=it.sherlock.polizze" target="_blank" rel="noopener" class="text-[10px] text-gold-300 underline hover:text-gold-200">apri store &rarr;</a>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <div>
+              <div class="text-[10px] text-navy-400 uppercase tracking-wider">Crash 28gg</div>
+              <div class={`text-2xl font-extrabold ${stab && stab.crashRate28gg !== null && stab.crashRate28gg > 1 ? 'text-red-400' : 'text-emerald-400'}`}>
+                {stab ? fmtPct(stab.crashRate28gg) : '—'}
+              </div>
+            </div>
+            <div>
+              <div class="text-[10px] text-navy-400 uppercase tracking-wider">ANR 28gg</div>
+              <div class={`text-2xl font-extrabold ${stab && stab.anrRate28gg !== null && stab.anrRate28gg > 0.47 ? 'text-red-400' : 'text-emerald-400'}`}>
+                {stab ? fmtPct(stab.anrRate28gg) : '—'}
+              </div>
+            </div>
+          </div>
+          {/* App Links summary */}
+          <div class={`rounded-lg border p-2 text-[11px] ${appLinks.ok ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-200' : 'border-red-500/40 bg-red-500/5 text-red-200'}`}>
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold">App Links {appLinks.ok ? '✓' : '✗'}</span>
+              <a href="/admin/diag" class="underline hover:opacity-80 text-[10px]">dettagli &rarr;</a>
+            </div>
+            <div class="text-[10px] opacity-80 mt-0.5">
+              {appLinks.ok
+                ? `assetlinks.json valido · ${appLinks.fingerprintsCount} fingerprint`
+                : appLinks.problemi[0] ?? 'errore fetch'}
+            </div>
+          </div>
+          <div class="text-[10px] text-navy-500 mt-2">
+            Cache Play 6h · <a href="/admin?refresh=play" class="underline hover:text-gold-300">refresh</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ============================ UTILIZZO API ============================ */}
     <section class="mb-6">
       <div class="flex items-baseline justify-between mb-3">
-        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Utilizzo API</div>
+        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Utilizzo API — backend</div>
         <div class="text-[10px] text-navy-500">i totali includono tentativi falliti e bloccati</div>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">Richieste analisi</div>
           <div class="text-3xl font-extrabold text-white mt-1">{stats.analisiTotali}</div>
           <div class="text-[10px] text-navy-500 mt-1">
             err: <span class="text-red-300">{stats.erroriAnalizzaTotali}</span> · bloc: <span class="text-amber-300">{stats.bloccatiAnalizzaTotali}</span>
           </div>
-        </div>
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Analisi oggi</div>
-          <div class="text-3xl font-extrabold text-gold-400 mt-1">{stats.analisiOggi}</div>
-          <div class="text-[10px] text-navy-500 mt-1">tentate (ok + err + bloc)</div>
         </div>
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
           <div class="text-xs text-navy-400 uppercase tracking-widest">Richieste lettera</div>
@@ -351,38 +499,13 @@ const fmtSoloData = (iso: string) =>
       )}
     </section>
 
-    <section class="mb-6">
-      <div class="flex items-baseline justify-between mb-3">
-        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">App Sherlock — Play Console</div>
-        <div class="text-[10px] text-navy-500">Cache 6h · medie su 28 giorni · <a href="/admin?refresh=play" class="underline hover:text-gold-300">forza refresh</a></div>
-      </div>
-
-      {stabError && (
-        <div class="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 mb-3 text-xs text-amber-200">
-          Stabilit&agrave; non disponibile: <span class="font-mono">{stabError}</span>
+    {stabError && (
+      <section class="mb-6">
+        <div class="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-200">
+          Stabilit&agrave; Play non disponibile: <span class="font-mono">{stabError}</span> — dettagli in <a href="/admin/play-diag" class="underline hover:text-gold-300">play diag</a>.
         </div>
-      )}
-
-      <div class="grid grid-cols-2 gap-3 mb-3">
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Crash rate (28gg)</div>
-          <div class={`text-3xl font-extrabold mt-1 ${stab && stab.crashRate28gg !== null && stab.crashRate28gg > 1 ? 'text-red-400' : 'text-emerald-400'}`}>
-            {stab ? fmtPct(stab.crashRate28gg) : '—'}
-          </div>
-          <div class="text-[10px] text-navy-500 mt-1">ultimo: {stab ? fmtPct(stab.crashRateOggi) : '—'}</div>
-        </div>
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">ANR rate (28gg)</div>
-          <div class={`text-3xl font-extrabold mt-1 ${stab && stab.anrRate28gg !== null && stab.anrRate28gg > 0.47 ? 'text-red-400' : 'text-emerald-400'}`}>
-            {stab ? fmtPct(stab.anrRate28gg) : '—'}
-          </div>
-          <div class="text-[10px] text-navy-500 mt-1">ultimo: {stab ? fmtPct(stab.anrRateOggi) : '—'}</div>
-        </div>
-      </div>
-      <div class="text-[11px] text-navy-500">
-        Fonte: Play Developer Reporting API (installazioni e disinstall dal bucket CSV rimossi: il pipeline è fermo <strong>upstream lato Google</strong> dal 21 giu 2026 e non è risolvibile da noi. Cronologia in <a href="/admin/play-diag" class="underline hover:text-gold-300">diagnostica</a>).
-      </div>
-    </section>
+      </section>
+    )}
 
     <section class="mb-6">
       <div class="flex items-baseline justify-between mb-3">
@@ -485,151 +608,63 @@ const fmtSoloData = (iso: string) =>
     </section>
 
     <section class="mb-6">
-      <div class="text-xs uppercase tracking-widest text-navy-400 font-bold mb-3">Acquisti classificati</div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="text-xs uppercase tracking-widest text-navy-400 font-bold mb-3">Monetizzazione</div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Colonna 1: KPI acquisti */}
         <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Acquisti reali attivi</div>
-          <div class="text-3xl font-extrabold text-emerald-400 mt-1">{abb.attiviReali}</div>
+          <div class="text-[10px] uppercase tracking-widest text-navy-400 font-bold mb-3">Acquisti</div>
+          <div class="grid grid-cols-3 gap-3 mb-3">
+            <div>
+              <div class="text-xs text-navy-400 uppercase tracking-widest">Attivi</div>
+              <div class="text-2xl font-extrabold text-emerald-400 mt-1">{abb.attiviReali}</div>
+              <div class="text-[9px] text-navy-500">non scaduti</div>
+            </div>
+            <div>
+              <div class="text-xs text-navy-400 uppercase tracking-widest">Reali</div>
+              <div class="text-2xl font-extrabold text-white mt-1">{abb.reali}</div>
+              <div class="text-[9px] text-navy-500">totali storici</div>
+            </div>
+            <div>
+              <div class="text-xs text-navy-400 uppercase tracking-widest">Ricavo</div>
+              <div class="text-2xl font-extrabold text-gold-400 mt-1">{ricavoEuro} €</div>
+              <div class="text-[9px] text-navy-500">cumulativo</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-3 border-t border-navy-800">
+            {Object.entries(abb.perStato).map(([stato, totale]) => (
+              <div>
+                <div class="text-[10px] uppercase tracking-widest text-navy-400">{stato}</div>
+                <div class="text-lg font-bold text-white">{totale}</div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Acquisti reali</div>
-          <div class="text-3xl font-extrabold text-white mt-1">{abb.reali}</div>
-        </div>
+
+        {/* Colonna 2: Founder pass */}
         <div class="rounded-xl border border-gold-400/40 bg-gradient-to-br from-navy-900 to-navy-800 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Ricavo totale</div>
-          <div class="text-3xl font-extrabold text-gold-400 mt-1">{ricavoEuro} €</div>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3">
-        {Object.entries(abb.perStato).map(([stato, totale]) => (
-          <div class="rounded-lg border border-navy-700 bg-navy-900/70 p-3">
-            <div class="text-[10px] uppercase tracking-widest text-navy-400">{stato}</div>
-            <div class="text-xl font-bold text-white">{totale}</div>
+          <div class="text-[10px] uppercase tracking-widest text-navy-400 font-bold mb-3">
+            Pass Pro a vita (Founder)
+            <span class="text-navy-500 font-normal normal-case tracking-normal ml-1">· fonte: <span class="font-mono">count:founder:venduti</span></span>
           </div>
-        ))}
-      </div>
-    </section>
-
-    <section class="mb-6">
-      <div class="flex items-baseline justify-between mb-3">
-        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Pass Pro a vita (Founder)</div>
-        <div class="text-[10px] text-navy-500">Contatore KV live · fonte: <span class="font-mono">count:founder:venduti</span></div>
-      </div>
-      <div class="rounded-xl border border-gold-400/40 bg-gradient-to-br from-navy-900 to-navy-800 p-4">
-        <div class="flex items-baseline justify-between gap-4 mb-3">
-          <div>
-            <div class="text-xs text-navy-400 uppercase tracking-widest">Founder venduti</div>
-            <div class="text-3xl font-extrabold text-gold-400 mt-1">
-              {founderVenduti} <span class="text-navy-500 text-lg font-bold">/ {FOUNDER_MAX}</span>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="text-xs text-navy-400 uppercase tracking-widest">Rimanenti</div>
-            <div class={`text-3xl font-extrabold mt-1 ${founderRimanenti === 0 ? 'text-red-400' : founderRimanenti < 10 ? 'text-amber-300' : 'text-emerald-400'}`}>{founderRimanenti}</div>
-          </div>
-        </div>
-        <div class="w-full h-2 bg-navy-800 rounded-full overflow-hidden">
-          <div class="h-full bg-gradient-to-r from-gold-500 to-gold-300" style={`width:${founderPctVenduto}%`}></div>
-        </div>
-        <div class="text-[10px] text-navy-500 mt-2 flex justify-between">
-          <span>{founderPctVenduto.toFixed(1)}% venduto</span>
-          <span>Chiude a {FOUNDER_MAX} — poi solo mensile/semestrale/annuale</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="mb-6">
-      <div class="flex items-baseline justify-between mb-3">
-        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">PayPal Processing — health check (audit R4)</div>
-        <div class="text-[10px] text-navy-500">
-          Idempotenza + crash recovery · fonte: <span class="font-mono">paypal_proc:*</span>
-          {ppProc.ultimoAggiornamento && <> · ultimo update: {fmtData(ppProc.ultimoAggiornamento)}</>}
-        </div>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Record totali</div>
-          <div class="text-3xl font-extrabold text-white mt-1">{ppProc.total}</div>
-          <div class="text-[10px] text-navy-500 mt-1">tutti gli orderId processati</div>
-        </div>
-        <div class="rounded-xl border border-emerald-500/30 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Completed</div>
-          <div class="text-3xl font-extrabold text-emerald-400 mt-1">{ppProc.completed}</div>
-          <div class="text-[10px] text-navy-500 mt-1">codice emesso + email + GA4</div>
-        </div>
-        <div class="rounded-xl border border-amber-500/30 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Processing</div>
-          <div class={`text-3xl font-extrabold mt-1 ${ppProc.processing > 0 ? 'text-amber-300' : 'text-navy-400'}`}>{ppProc.processing}</div>
-          <div class={`text-[10px] mt-1 ${ppProc.stuckProcessing > 0 ? 'text-red-300' : 'text-navy-500'}`}>
-            {ppProc.stuckProcessing > 0 ? `${ppProc.stuckProcessing} stuck > 10 min` : 'in-flight normale'}
-          </div>
-        </div>
-        <div class="rounded-xl border border-red-500/30 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">Failed</div>
-          <div class={`text-3xl font-extrabold mt-1 ${ppProc.failed > 0 ? 'text-red-400' : 'text-navy-400'}`}>{ppProc.failed}</div>
-          <div class="text-[10px] text-navy-500 mt-1">capture o status non ok</div>
-        </div>
-        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
-          <div class="text-xs text-navy-400 uppercase tracking-widest">captureId coverage</div>
-          <div class={`text-3xl font-extrabold mt-1 ${ppCaptureCoverage >= 95 ? 'text-emerald-400' : ppCaptureCoverage >= 70 ? 'text-amber-300' : 'text-navy-500'}`}>
-            {ppProc.completed > 0 ? `${ppCaptureCoverage.toFixed(0)}%` : '—'}
-          </div>
-          <div class="text-[10px] text-navy-500 mt-1">
-            {ppProc.withCaptureId}/{ppProc.completed} completed con captureId
-          </div>
-        </div>
-      </div>
-      {ppProc.stuckProcessing > 0 && (
-        <div class="mt-3 rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-200">
-          ⚠️ <strong>{ppProc.stuckProcessing} record in stato <code class="font-mono">processing</code> da &gt; 10 min</strong>: possibile crash mid-flow. La logica di recovery in <code class="font-mono">capture-order.ts</code> li completa alla prossima chiamata dell'utente; se il cliente non torna, il codice non viene mai emesso. Considera un cron di reconciliation.
-        </div>
-      )}
-      {ppProc.total === 0 && (
-        <div class="mt-3 rounded-lg border border-navy-700 bg-navy-900/50 p-3 text-xs text-navy-400">
-          Nessun record ancora processato (i processing record sono nati con l'audit R4 del 13/07/2026). I record precedenti restano nell'indice legacy <code class="font-mono">paypal_order:*</code> e continuano a funzionare per idempotenza.
-        </div>
-      )}
-    </section>
-
-    <section class="mb-6">
-      <div class="flex items-baseline justify-between mb-3">
-        <div class="text-xs uppercase tracking-widest text-navy-400 font-bold">Config check — audit R4</div>
-        <div class="text-[10px] text-navy-500">Verifica env vars server-side (nessun valore mostrato)</div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div class={`rounded-xl border p-4 ${streamsConfigurati.web ? 'border-emerald-500/30 bg-navy-900' : 'border-red-500/30 bg-red-500/5'}`}>
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex-1">
-              <div class="text-xs text-navy-400 uppercase tracking-widest">Stream GA4 Web</div>
-              <div class="text-sm font-mono text-navy-300 mt-1">GA4_WEB_MEASUREMENT_ID + GA4_WEB_API_SECRET</div>
-              <div class="text-[10px] text-navy-500 mt-2">
-                Proprietà "Sherlock Polizze Web" collegata a Google Ads. Riceve <code class="font-mono text-navy-300">purchase</code>, <code class="font-mono text-navy-300">analysis_complete</code>, <code class="font-mono text-navy-300">pro_status_lookup_success</code>, <code class="font-mono text-navy-300">checkout_started</code>, <code class="font-mono text-navy-300">paypal_redirect</code>.
+          <div class="flex items-baseline justify-between gap-4 mb-3">
+            <div>
+              <div class="text-xs text-navy-400 uppercase tracking-widest">Venduti</div>
+              <div class="text-3xl font-extrabold text-gold-400 mt-1">
+                {founderVenduti} <span class="text-navy-500 text-lg font-bold">/ {FOUNDER_MAX}</span>
               </div>
             </div>
-            <div class={`text-2xl font-extrabold ${streamsConfigurati.web ? 'text-emerald-400' : 'text-red-400'}`}>{streamsConfigurati.web ? '✓' : '✗'}</div>
+            <div class="text-right">
+              <div class="text-xs text-navy-400 uppercase tracking-widest">Rimanenti</div>
+              <div class={`text-3xl font-extrabold mt-1 ${founderRimanenti === 0 ? 'text-red-400' : founderRimanenti < 10 ? 'text-amber-300' : 'text-emerald-400'}`}>{founderRimanenti}</div>
+            </div>
           </div>
-          {!streamsConfigurati.web && (
-            <div class="mt-3 text-[11px] text-red-200 leading-relaxed">
-              <strong>Non configurato.</strong> <code class="font-mono">ga4TrackServer</code> è no-op per lo stream 'web': Google Ads non riceve conversioni server-side. Configura entrambe le env in Vercel → Production/Preview.
-            </div>
-          )}
-        </div>
-        <div class={`rounded-xl border p-4 ${streamsConfigurati.firebase ? 'border-emerald-500/30 bg-navy-900' : 'border-amber-500/30 bg-amber-500/5'}`}>
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex-1">
-              <div class="text-xs text-navy-400 uppercase tracking-widest">Stream GA4 Firebase</div>
-              <div class="text-sm font-mono text-navy-300 mt-1">GA4_FIREBASE_MEASUREMENT_ID + GA4_FIREBASE_API_SECRET</div>
-              <div class="text-[10px] text-navy-500 mt-2">
-                Proprietà Firebase legacy (project sherlock-6f88c). Riceve <code class="font-mono text-navy-300">play_billing_verified</code> quando l'app Android trasmetterà <span class="italic">app_instance_id</span> via bridge. Fallback retrocompat: <code class="font-mono">PUBLIC_FIREBASE_MEASUREMENT_ID</code> + <code class="font-mono">GA4_API_SECRET</code>.
-              </div>
-            </div>
-            <div class={`text-2xl font-extrabold ${streamsConfigurati.firebase ? 'text-emerald-400' : 'text-amber-300'}`}>{streamsConfigurati.firebase ? '✓' : '⚠'}</div>
+          <div class="w-full h-2 bg-navy-800 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-gold-500 to-gold-300" style={`width:${founderPctVenduto}%`}></div>
           </div>
-          {!streamsConfigurati.firebase && (
-            <div class="mt-3 text-[11px] text-amber-200 leading-relaxed">
-              Non configurato (né env dedicate né fallback legacy). Play Billing events server-side no-op.
-            </div>
-          )}
+          <div class="text-[10px] text-navy-500 mt-2 flex justify-between">
+            <span>{founderPctVenduto.toFixed(1)}% venduto</span>
+            <span>Chiude a {FOUNDER_MAX} → mensile/semestrale/annuale</span>
+          </div>
         </div>
       </div>
     </section>
