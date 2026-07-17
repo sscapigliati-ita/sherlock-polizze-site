@@ -13,6 +13,8 @@ import android.util.Base64;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
+
+import androidx.core.view.WindowCompat;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -89,9 +91,13 @@ public class MainActivity extends Activity {
         applyPersistedConsent();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        // Edge-to-edge: disegniamo dietro le barre di sistema. Il colore delle
+        // barre viene dal contenuto sottostante (root FrameLayout con BG scuro),
+        // non piu' da setStatusBarColor/setNavigationBarColor (deprecate su
+        // Android 15 SDK 35 — vedi Play Console Android vitals "Edge-to-edge").
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
         final int BG = Color.parseColor("#070b18");
-        getWindow().setStatusBarColor(BG);
-        getWindow().setNavigationBarColor(BG);
         getWindow().getDecorView().setBackgroundColor(BG);
 
         webView = new WebView(this);

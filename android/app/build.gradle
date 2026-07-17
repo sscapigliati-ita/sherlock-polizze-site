@@ -9,8 +9,8 @@ android {
         applicationId 'it.sherlock.polizze'
         minSdk 21
         targetSdk 35
-        versionCode 70
-        versionName '4.6.12'
+        versionCode 71
+        versionName '4.6.13'
     }
 
     def releaseKeystore = System.getenv('KEYSTORE_PATH')
@@ -33,6 +33,10 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            // Resource shrinking abilitato: rimuove drawable/layout/string non
+            // referenziati dal codice R8-shrinked. Richiede minifyEnabled true.
+            // Ref: Android vitals "La riduzione delle risorse non e' abilitata".
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (hasReleaseSigning) {
                 signingConfig signingConfigs.release
@@ -51,6 +55,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.android.billingclient:billing:7.1.1'
     implementation 'com.google.android.play:app-update:2.1.0'
+    // androidx.core: fornisce WindowCompat per la migrazione edge-to-edge (Android 15).
+    implementation 'androidx.core:core:1.13.1'
+    // androidx.fragment 1.8.x: la versione 1.1.0 e' segnalata obsoleta da
+    // Android vitals; forziamo qui la piu' recente stabile per override delle
+    // versioni transitive introdotte da play-services / firebase.
+    implementation 'androidx.fragment:fragment:1.8.5'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.json:json:20240303'
 }

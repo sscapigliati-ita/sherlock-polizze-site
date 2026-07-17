@@ -5,16 +5,20 @@
 -renamesourcefileattribute SourceFile
 
 # --- WebView JavaScript Bridge (critical) ---
-# The HTML in assets/www/index.html calls Android.callAPI, Android.startPurchase,
+# L'HTML in assets/www/index.html chiama Android.callAPI, Android.startPurchase,
 # Android.track, Android.openURL, Android.showToast, Android.shareText,
 # Android.vibrate, Android.isPlayBillingAvailable, Android.getResult,
-# Android.getDeviceId, Android.getBackendUrl. If R8 renames them the app breaks.
+# Android.getDeviceId, Android.getBackendUrl. Se R8 li rinomina l'app si rompe.
 -keepattributes JavascriptInterface
 -keepclassmembers class * {
     @android.webkit.JavascriptInterface <methods>;
 }
--keep class it.sherlock.polizze.MainActivity { *; }
--keep class it.sherlock.polizze.MainActivity$* { *; }
+# SherlockBridge e' registrata via addJavascriptInterface e i suoi metodi sono
+# chiamati dal JS tramite reflection sul nome originale. Manteniamo la classe
+# integra (nome + tutti i membri). MainActivity NON serve -keep esplicito: e'
+# dichiarata nel manifest e le consumer-rules Android preservano i lifecycle
+# callback. Meno keep = piu' ottimizzazione R8 (target Android vitals).
+-keep class it.sherlock.polizze.MainActivity$SherlockBridge { *; }
 
 # --- Play Billing (BillingManager referenced via method reference this::onPurchaseResult) ---
 -keep class it.sherlock.polizze.BillingManager { *; }
