@@ -4,6 +4,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Android 11+ package visibility: per poter risolvere l'intent
+         MediaStore.ACTION_IMAGE_CAPTURE serve dichiarare che l'app
+         "interroga" app che gestiscono quell'action. Senza questo blocco
+         resolveActivity() puo' restituire null anche se una camera app
+         e' installata. -->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+
     <application
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
@@ -39,17 +51,33 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Android App Links: click su sherlockpolizze.it aprono direttamente l'app.
+            <!-- Android App Links: click su www.sherlockpolizze.it aprono direttamente l'app.
                  autoVerify=true fa il check assetlinks.json in modo automatico.
-                 Consigliato da Google Ads (+~4.5% conversioni previste). -->
+                 NOTA: NON dichiariamo l'host apex "sherlockpolizze.it" perche' Vercel lo redirige
+                 308->www a livello di dominio, e Google non segue redirect per la verifica di
+                 /.well-known/assetlinks.json (falliva "domini web non associati"). Se in futuro
+                 si vuole coprire anche apex, spostare il redirect apex->www in un middleware
+                 Astro che escluda /.well-known/ e cambiare la config dominio in Vercel Dashboard. -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" />
                 <data android:host="www.sherlockpolizze.it" />
-                <data android:host="sherlockpolizze.it" />
             </intent-filter>
         </activity>
+
+        <!-- FileProvider per esporre l'Uri della foto scattata dalla
+             camera app tramite MediaStore.EXTRA_OUTPUT. L'authority
+             deve corrispondere a FILE_PROVIDER_AUTHORITY in MainActivity. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="it.sherlock.polizze.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 </manifest>

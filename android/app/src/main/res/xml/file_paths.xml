@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Cartella per foto scattate dalla fotocamera via WebChromeClient.
+         external-files-path punta a Context.getExternalFilesDir() ed e'
+         app-specific: non richiede WRITE_EXTERNAL_STORAGE ne' permessi
+         runtime. La sottocartella "captures" viene creata al primo scatto. -->
+    <external-files-path name="captures" path="Pictures/captures/" />
+</paths>

@@ -9,8 +9,8 @@ android {
         applicationId 'it.sherlock.polizze'
         minSdk 21
         targetSdk 35
-        versionCode 71
-        versionName '4.6.13'
+        versionCode 74
+        versionName '4.6.16'
     }
 
     def releaseKeystore = System.getenv('KEYSTORE_PATH')

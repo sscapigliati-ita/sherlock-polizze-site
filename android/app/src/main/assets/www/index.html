@@ -544,12 +544,6 @@ button:disabled{cursor:not-allowed;opacity:.55;filter:saturate(.55)}
     <button class="btn btn-outline btn-full" onclick="goCompara()" data-i18n="home_compara_label">
       ⚖️ Confronta 2 polizze
     </button>
-    <button class="btn btn-full" id="btn-home-storia-aas" type="button"
-            style="background:linear-gradient(135deg,rgba(251,191,36,.14),rgba(99,102,241,.10));border:1px solid rgba(251,191,36,.45);color:var(--text);text-align:left;padding:12px 14px;flex-direction:column;align-items:flex-start;gap:4px;">
-      <span style="font-size:.66rem;letter-spacing:.14em;color:var(--gold);font-weight:800;">LA STORIA DIETRO SHERLOCK</span>
-      <span style="font-size:.86rem;font-weight:700;line-height:1.35;color:var(--text);">Il mio ricorso all'Arbitro Assicurativo &rarr;</span>
-      <span style="font-size:.72rem;font-weight:400;color:var(--text2);line-height:1.4;">Perche' ho perso in dispositivo ma vinto nelle motivazioni. Leggi il caso reale su sherlockpolizze.it</span>
-    </button>
   </div>
   <div class="scr-scroll" id="home-list"></div>
 </div>
@@ -588,6 +582,11 @@ button:disabled{cursor:not-allowed;opacity:.55;filter:saturate(.55)}
     <div style="font-size:.74rem;color:var(--text3);text-align:center;padding:10px 0;border-top:1px solid var(--border)">Includi frontespizio e condizioni generali per massima accuratezza</div>
   </div>
   <input type="file" id="file-input" accept="application/pdf,image/jpeg,image/png,image/jpg" style="display:none">
+  <!-- Input dedicati: separano PDF (file picker) e foto (fotocamera).
+       L'attributo capture="environment" segnala al WebChromeClient Android
+       (params.isCaptureEnabled()) di aprire direttamente la fotocamera. -->
+  <input type="file" id="file-pdf" accept="application/pdf" style="display:none">
+  <input type="file" id="file-photo" accept="image/*" capture="environment" style="display:none">
 </div>
 
 <div id="screen-analyzing" class="screen">
@@ -936,6 +935,148 @@ button:disabled{cursor:not-allowed;opacity:.55;filter:saturate(.55)}
   </div>
 </div>
 
+<!-- SCHERMATA PRIVACY POLICY (locale, no link esterni) -->
+<div id="screen-privacy" class="screen">
+  <div class="scr-hdr">
+    <button class="btn-back" id="btn-priv-back" aria-label="Indietro" type="button"><span aria-hidden="true">&#8249;</span></button>
+    <h2>Privacy Policy</h2>
+  </div>
+  <div class="scr-scroll" style="padding:0 18px 24px;">
+    <p style="font-size:.72rem;color:var(--text3);margin:8px 0 16px;">Ultimo aggiornamento: 15 luglio 2026 &middot; Conforme al Regolamento (UE) 2016/679 (GDPR)</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:14px 0 6px;">1. Titolare del trattamento</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">ScapLAB &mdash; Stefano Scapigliati<br>Email: <span style="color:var(--gold2)">scaplab@sherlockpolizze.it</span></p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">2. Dati raccolti</h3>
+    <ul style="font-size:.82rem;line-height:1.65;color:var(--text2);padding-left:20px;">
+      <li><b>Email</b>: solo se acquisti Pro &mdash; per recuperare il codice su nuovi device.</li>
+      <li><b>Codice Pro</b> (SHK&#8209;XXXX&#8209;XXXX): per validare l'accesso alle funzioni Pro.</li>
+      <li><b>App Instance ID</b> (pseudonimo Firebase) e <b>ANDROID_ID</b>: analytics e anti&#8209;frode.</li>
+      <li><b>Documenti caricati</b>: PDF/immagini polizze inviati al backend per l'analisi. Non archiviati permanentemente.</li>
+      <li><b>Report analisi</b>: memorizzati SOLO sul tuo device (localStorage). Noi non ne abbiamo copia.</li>
+      <li><b>Eventi Firebase Analytics</b>: apertura app, completamento analisi (senza contenuto), paywall, attivazione Pro; modello device, versione app, crash log.</li>
+      <li><b>Metadati richieste API</b>: timestamp, IP, esito. Non registriamo contenuto PDF né dati estratti.</li>
+    </ul>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">3. Pagamenti</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Gli acquisti in-app (Lettera Singola, Pass Pro a vita) sono gestiti esclusivamente da <b>Google Play Billing</b>. Riceviamo da Google solo l'ID transazione, il prodotto acquistato e l'email fornita dall'utente per l'attivazione. Non riceviamo n&eacute; memorizziamo dati di carte o strumenti di pagamento: tutto resta su Google Play.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">4. Finalit&agrave;</h3>
+    <ul style="font-size:.82rem;line-height:1.65;color:var(--text2);padding-left:20px;">
+      <li>Fornire il servizio di analisi polizze e generazione lettere/PEC.</li>
+      <li>Validare l'attivazione Pro su dispositivi successivi.</li>
+      <li>Migliorare stabilit&agrave; e funzionalit&agrave;.</li>
+      <li>Adempiere a obblighi di legge (fatturazione, conservazione fiscale).</li>
+    </ul>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);"><b>Non usiamo il contenuto dei documenti per pubblicit&agrave;</b>. Non vendiamo dati ad assicuratori/broker/comparatori. Non usiamo i documenti per addestrare modelli AI.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">5. Base giuridica (GDPR)</h3>
+    <ul style="font-size:.82rem;line-height:1.65;color:var(--text2);padding-left:20px;">
+      <li>Esecuzione del contratto (art. 6.1.b GDPR).</li>
+      <li>Legittimo interesse (art. 6.1.f) per log tecnici e diagnostica.</li>
+      <li>Obbligo di legge (art. 6.1.c) per fatturazione.</li>
+      <li>Consenso (art. 6.1.a), revocabile, per invio codice Pro via email e per Firebase Analytics.</li>
+    </ul>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">6. Conservazione</h3>
+    <ul style="font-size:.82rem;line-height:1.65;color:var(--text2);padding-left:20px;">
+      <li>Documenti caricati: nessun archivio applicativo permanente; eventuali log tecnici dei fornitori seguono le loro configurazioni.</li>
+      <li>Report analisi: sul tuo device fino a "Cancella dati locali" o disinstallazione.</li>
+      <li>Email + codice Pro: fino a richiesta di cancellazione.</li>
+      <li>Dati di fatturazione Google Play: 10 anni (obbligo fiscale).</li>
+      <li>Eventi Firebase e crash log: fino a 14 mesi.</li>
+      <li>Metadati richieste API (Vercel logs): 90 giorni.</li>
+    </ul>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">7. Fornitori terzi</h3>
+    <ul style="font-size:.82rem;line-height:1.65;color:var(--text2);padding-left:20px;">
+      <li><b>Anthropic</b> (USA) &mdash; analisi AI del PDF.</li>
+      <li><b>Vercel</b> &mdash; hosting backend e funzioni serverless.</li>
+      <li><b>Upstash Redis</b> (via Vercel Marketplace) &mdash; storage codici Pro e email.</li>
+      <li><b>Google Play Billing</b> &mdash; elaborazione pagamenti in-app.</li>
+      <li><b>Resend</b> &mdash; invio email transazionali (codice Pro post-acquisto).</li>
+      <li><b>Google Firebase</b> (Google Ireland Ltd) &mdash; eventi analytics pseudonimizzati e crash log.</li>
+      <li><b>Google Play Store</b> &mdash; distribuzione app.</li>
+      <li>Autorit&agrave; competenti, se richiesto per legge.</li>
+    </ul>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">8. I tuoi diritti (GDPR)</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">In qualsiasi momento puoi esercitare i diritti previsti dagli artt. 15-21 GDPR: accesso, rettifica, cancellazione ("diritto all'oblio"), limitazione, portabilit&agrave;, opposizione. Puoi anche presentare reclamo al Garante per la Protezione dei Dati Personali.</p>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Per richieste scrivi a <span style="color:var(--gold2)">scaplab@sherlockpolizze.it</span>.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">9. Sicurezza</h3>
+    <ul style="font-size:.82rem;line-height:1.65;color:var(--text2);padding-left:20px;">
+      <li>Cifratura in transito (HTTPS/TLS) fra app, backend e fornitori.</li>
+      <li>Cifratura a riposo per i dati persistenti (Upstash Redis).</li>
+      <li>Accesso ai dati limitato al titolare.</li>
+      <li>Documenti caricati mai persistiti su disco n&eacute; archiviati.</li>
+    </ul>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">10. Minori</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Sherlock non &egrave; destinato a minori di 14 anni. Non raccogliamo intenzionalmente dati di minori.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">11. Modifiche</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Possiamo aggiornare questa policy. Le modifiche sostanziali verranno comunicate tramite notifica in-app. La data in cima al documento indica l'ultima versione.</p>
+
+    <div style="margin-top:20px;padding:12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;">
+      <div style="font-size:.75rem;color:var(--text3);line-height:1.7;text-align:center;">Documento redatto secondo il Regolamento (UE) 2016/679 (GDPR) e il D.Lgs. 196/2003 (Codice Privacy italiano).</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCHERMATA TERMINI DI SERVIZIO (locale, no link esterni) -->
+<div id="screen-terms" class="screen">
+  <div class="scr-hdr">
+    <button class="btn-back" id="btn-terms-back" aria-label="Indietro" type="button"><span aria-hidden="true">&#8249;</span></button>
+    <h2>Termini di servizio</h2>
+  </div>
+  <div class="scr-scroll" style="padding:0 18px 24px;">
+    <p style="font-size:.72rem;color:var(--text3);margin:8px 0 16px;">Ultimo aggiornamento: 15 luglio 2026</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:14px 0 6px;">1. Oggetto</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Sherlock &mdash; Detective Polizze &egrave; un'app di analisi assistita da AI di polizze assicurative e di generazione di bozze di reclami, esposti IVASS e diffide. Gestore: ScapLAB &mdash; Stefano Scapigliati.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">2. Servizio gratuito e Pro</h3>
+    <ul style="font-size:.82rem;line-height:1.65;color:var(--text2);padding-left:20px;">
+      <li><b>Piano gratuito</b>: analisi polizza con report completo (limite in-app di 5 analisi totali).</li>
+      <li><b>Lettera Singola</b> (una tantum, 4,99&nbsp;&euro;): sblocca 1 lettera pronta all'invio per una specifica pratica.</li>
+      <li><b>Pass Pro a vita</b> (una tantum, 19,90&nbsp;&euro;): analisi e lettere illimitate, per sempre, sul dispositivo/account di acquisto.</li>
+    </ul>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">3. Pagamenti</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Tutti gli acquisti in-app sono gestiti da <b>Google Play Billing</b>. Rimborsi e assistenza sui pagamenti seguono le policy di Google Play. Nessun rinnovo automatico: entrambi i prodotti Pro sono acquisti una tantum.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">4. Natura del servizio &mdash; NON &egrave; consulenza legale</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);"><b>Sherlock non fornisce consulenza legale professionale.</b> I report e le lettere generate sono strumenti di orientamento e supporto redatti tramite modelli linguistici (AI). Per pratiche complesse o giudiziarie ti raccomandiamo di rivolgerti a un avvocato o a un consulente qualificato.</p>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Prima di inviare qualsiasi documento generato dall'app: (a) verifica personalmente i riferimenti normativi citati; (b) sostituisci i campi tra parentesi quadre con i tuoi dati reali; (c) rileggi il contenuto per adeguatezza al tuo caso specifico.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">5. Limitazione di responsabilit&agrave;</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">ScapLAB non risponde di eventuali danni derivanti dall'invio di reclami/lettere generati dall'app senza revisione da parte dell'utente, n&eacute; dell'esito di pratiche presso compagnie assicurative, IVASS o AAS. Il servizio &egrave; fornito "as is". La responsabilit&agrave; massima di ScapLAB, per qualunque titolo, &egrave; limitata all'importo effettivamente corrisposto dall'utente per il prodotto in-app.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">6. Uso corretto</h3>
+    <ul style="font-size:.82rem;line-height:1.65;color:var(--text2);padding-left:20px;">
+      <li>&Egrave; vietato caricare documenti non tuoi senza autorizzazione o contenuti illeciti.</li>
+      <li>&Egrave; vietato usare l'app per generare massivamente contenuti (limite anti-abuso 10 upload per dispositivo non-Pro).</li>
+      <li>&Egrave; vietato tentare di bypassare i controlli anti-frode o di condividere/reveuse codici Pro non propri.</li>
+    </ul>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">7. Recesso</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Trattandosi di contenuti digitali forniti in esecuzione immediata su richiesta esplicita dell'utente (art. 59, lett. o, Codice del Consumo), il diritto di recesso di 14 giorni non si applica una volta iniziata l'esecuzione del servizio. Rimborsi eccezionali sono gestiti tramite Google Play Support.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">8. Privacy</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Il trattamento dei dati personali &egrave; descritto nella Privacy Policy (voce dedicata in Impostazioni).</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">9. Modifiche</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Possiamo aggiornare questi termini nel tempo. Le modifiche sostanziali verranno comunicate tramite notifica in-app. La data in cima al documento indica l'ultima versione.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">10. Legge applicabile e foro</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">Al presente rapporto si applica la legge italiana. Per le controversie con consumatori resta competente il foro del consumatore ai sensi di legge.</p>
+
+    <h3 style="color:var(--gold);font-size:.92rem;margin:16px 0 6px;">11. Contatti</h3>
+    <p style="font-size:.82rem;line-height:1.6;color:var(--text2);">ScapLAB &mdash; Stefano Scapigliati<br>Email: <span style="color:var(--gold2)">scaplab@sherlockpolizze.it</span></p>
+  </div>
+</div>
+
 <!-- SCHERMATA CONFRONTO 2 POLIZZE -->
 <div id="screen-compara" class="screen">
   <div class="compara-header">
@@ -1071,13 +1212,7 @@ function startPlayPurchase(productId) {
 }
 var MAX_FREE=1;       // 1 analisi gratis completa
 var MAX_TOTAL=10;     // tetto upload totali per non-Pro (preview o full); oltre = blocco anti-abuso
-var PP="https://www.sherlockpolizze.it/";
 var MAIL="scaplab@sherlockpolizze.it";
-var PRIVACY_URL="https://www.sherlockpolizze.it/privacy";
-var TERMS_URL="https://www.sherlockpolizze.it/privacy";
-var SITE_URL="https://www.sherlockpolizze.it/";
-var GUIDES_URL="https://www.sherlockpolizze.it/guide";
-var EXAMPLE_REPORT_URL="https://www.sherlockpolizze.it/esempio-report";
 var PLAY_STORE_URL="https://play.google.com/store/apps/details?id=it.sherlock.polizze";
 var BE_BASE="https://www.sherlockpolizze.it";
 var ENDP_ANALIZZA=BE_BASE+"/api/analizza";
@@ -1863,21 +1998,25 @@ function init(){
     on("tab-scan","click",goScanner);
     on("tab-set","click",goSettings);
     on("btn-home-gear","click",goSettings);
-    on("btn-home-storia-aas","click",function(){track('storia_aas_clicked',{from:'home'});Br.url(SITE_URL+"storia-sherlock");});
     on("btn-scanner-back","click",function(){goHome();show("home");});
     on("btn-result-back","click",function(){goHome();show("home");});
     on("btn-letter-back","click",function(){if(S.curA)viewA(S.curA);else goHome();});
     on("btn-pw-back","click",function(){if(S.curA)viewA(S.curA);else{goHome();show("home");}});
     on("btn-view-example","click",goExample);
     on("btn-ex-back","click",goPaywall);
-    on("btn-ex-subscribe","click",function(){track('paywall_cta_clicked',{from:'example_letter'});track('subscribe_external_click',{from:'example'});Br.url(PP);});
+    on("btn-ex-subscribe","click",function(){track('paywall_cta_clicked',{from:'example_letter'});goPaywall('example');});
     on("btn-set-back","click",function(){goHome();show("home");});
     on("btn-partial-upgrade","click",goPaywall);
     var fi=document.getElementById("file-input");
+    var fiPdf=document.getElementById("file-pdf");
+    var fiPhoto=document.getElementById("file-photo");
     on("upload-zone","click",function(){if(!canScan()){goPaywall();return;}fi.click();});
-    on("btn-pdf","click",function(){if(!canScan()){goPaywall();return;}fi.click();});
-    on("btn-photo","click",function(){if(!canScan()){goPaywall();return;}fi.click();});
-    fi.addEventListener("change",function(e){if(e.target.files[0]){handleFile(e.target.files[0]);e.target.value="";}});
+    on("btn-pdf","click",function(){if(!canScan()){goPaywall();return;}fiPdf.click();});
+    on("btn-photo","click",function(){if(!canScan()){goPaywall();return;}fiPhoto.click();});
+    function onPickedFile(e){if(e.target.files[0]){handleFile(e.target.files[0]);e.target.value="";}}
+    fi.addEventListener("change",onPickedFile);
+    fiPdf.addEventListener("change",onPickedFile);
+    fiPhoto.addEventListener("change",onPickedFile);
     // Compara 2 polizze (v4.2)
     var fA=document.getElementById("file-a"),fB=document.getElementById("file-b");
     if(fA)fA.addEventListener("change",function(e){var f=e.target.files[0];if(f)comparaOnFile("a",f);});
@@ -1936,8 +2075,10 @@ function init(){
       }).catch(function(e){btn.disabled=false;btn.textContent="Attiva con email";if(em)em.textContent=(e&&e.message)||"Errore di rete";err.classList.remove("hide");});
     });
     on("btn-support","click",function(){Br.url("mailto:"+MAIL+"?subject=Sherlock+v3.0+Supporto");});
-    on("btn-privacy","click",function(){Br.url(PRIVACY_URL);});
-    on("btn-terms","click",function(){Br.url(TERMS_URL);});
+    on("btn-privacy","click",function(){track('privacy_viewed',{});show('privacy',true);});
+    on("btn-terms","click",function(){track('terms_viewed',{});show('terms',true);});
+    on("btn-priv-back","click",function(){show('settings',true);});
+    on("btn-terms-back","click",function(){show('settings',true);});
     on("btn-share-app","click",function(){
       track('app_shared',{lang:currentLang});
       var msg=I18N[currentLang]&&I18N[currentLang].share_msg

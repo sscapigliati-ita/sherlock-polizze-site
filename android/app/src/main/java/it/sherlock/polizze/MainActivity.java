@@ -9,11 +9,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 
+import androidx.core.content.FileProvider;
 import androidx.core.view.WindowCompat;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -25,6 +28,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -61,8 +65,13 @@ public class MainActivity extends Activity {
     private WebView webView;
     private FirebaseAnalytics mFirebaseAnalytics;
     private ValueCallback<Uri[]> filePathCallback;
+    // Uri del file destinazione quando l'utente sceglie di scattare una foto:
+    // impostata da createCameraCaptureIntent() e restituita in onActivityResult
+    // se la camera app scrive in EXTRA_OUTPUT (data.getData() e' null in questo caso).
+    private Uri pendingCameraUri;
     private static final int FILE_CHOOSER_REQUEST = 1;
     private static final int UPDATE_REQUEST_CODE = 500;
+    private static final String FILE_PROVIDER_AUTHORITY = "it.sherlock.polizze.fileprovider";
     private static final Map<String, String> pendingResults = new HashMap<String, String>();
 
     private static final String BACKEND_URL = "https://www.sherlockpolizze.it";
@@ -166,10 +175,27 @@ public class MainActivity extends Activity {
                     filePathCallback.onReceiveValue(null);
                 }
                 filePathCallback = cb;
+                pendingCameraUri = null;
+
+                // capture="environment" sull'<input> HTML → apri direttamente
+                // la fotocamera invece del file picker documenti.
+                if (params != null && params.isCaptureEnabled()) {
+                    Intent cameraIntent = createCameraCaptureIntent();
+                    if (cameraIntent != null) {
+                        try {
+                            startActivityForResult(cameraIntent, FILE_CHOOSER_REQUEST);
+                            return true;
+                        } catch (ActivityNotFoundException ignore) {
+                            // Nessuna camera app: cadi sul file picker sotto.
+                            pendingCameraUri = null;
+                        }
+                    }
+                }
+
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("*/*");
-                String[] mimes = {"application/pdf", "image/jpeg", "image/png", "image/jpg"};
+                String[] mimes = buildAcceptMimeTypes(params);
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimes);
                 try {
                     startActivityForResult(Intent.createChooser(intent, "Seleziona documento"), FILE_CHOOSER_REQUEST);
@@ -312,12 +338,21 @@ public class MainActivity extends Activity {
         if (requestCode == FILE_CHOOSER_REQUEST && filePathCallback != null) {
             Uri[] results = null;
             try {
-                if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-                    results = new Uri[]{data.getData()};
+                if (resultCode == RESULT_OK) {
+                    // Caso file picker: la Uri arriva in data.getData().
+                    // Caso fotocamera: data e' null e il file e' stato scritto
+                    // dall'app camera nella Uri passata in EXTRA_OUTPUT
+                    // (memorizzata in pendingCameraUri).
+                    if (data != null && data.getData() != null) {
+                        results = new Uri[]{data.getData()};
+                    } else if (pendingCameraUri != null) {
+                        results = new Uri[]{pendingCameraUri};
+                    }
                 }
                 filePathCallback.onReceiveValue(results);
             } finally {
                 filePathCallback = null;
+                pendingCameraUri = null;
             }
         } else if (requestCode == UPDATE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -326,6 +361,68 @@ public class MainActivity extends Activity {
                 logAnalytics("update_declined", null);
             }
         }
+    }
+
+    /**
+     * Prepara un Intent per la fotocamera con destinazione EXTRA_OUTPUT
+     * gestita da FileProvider. Il file di output viene creato in
+     * getExternalFilesDir(Pictures)/captures/, una cartella app-specific
+     * che non richiede permessi runtime. La Uri viene memorizzata in
+     * pendingCameraUri per essere restituita al WebView in onActivityResult.
+     * Restituisce null se non si riesce a creare il file di destinazione.
+     */
+    private Intent createCameraCaptureIntent() {
+        try {
+            File dir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "captures");
+            if (!dir.exists() && !dir.mkdirs()) return null;
+            File photoFile = new File(dir, "capture_" + System.currentTimeMillis() + ".jpg");
+            Uri uri = FileProvider.getUriForFile(this, FILE_PROVIDER_AUTHORITY, photoFile);
+            pendingCameraUri = uri;
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            return intent;
+        } catch (Exception e) {
+            pendingCameraUri = null;
+            return null;
+        }
+    }
+
+    /**
+     * Costruisce EXTRA_MIME_TYPES per il file picker rispettando l'attributo
+     * accept dell'<input> HTML. Espande "image/*" nei formati concreti gestiti
+     * dal backend e mantiene "application/pdf". Se accept e' vuoto o non
+     * mappabile, restituisce il set completo PDF + immagini (comportamento
+     * legacy prima della fix camera).
+     */
+    private String[] buildAcceptMimeTypes(WebChromeClient.FileChooserParams params) {
+        String[] accept = params != null ? params.getAcceptTypes() : null;
+        if (accept == null || accept.length == 0) {
+            return new String[]{"application/pdf", "image/jpeg", "image/png", "image/jpg"};
+        }
+        java.util.LinkedHashSet<String> out = new java.util.LinkedHashSet<String>();
+        for (String a : accept) {
+            if (a == null) continue;
+            String t = a.trim().toLowerCase();
+            if (t.isEmpty()) continue;
+            if ("image/*".equals(t)) {
+                out.add("image/jpeg");
+                out.add("image/png");
+                out.add("image/jpg");
+            } else if (t.contains(",")) {
+                for (String p : t.split(",")) {
+                    String pp = p.trim();
+                    if (!pp.isEmpty() && pp.contains("/")) out.add(pp);
+                }
+            } else if (t.contains("/")) {
+                out.add(t);
+            }
+        }
+        if (out.isEmpty()) {
+            return new String[]{"application/pdf", "image/jpeg", "image/png", "image/jpg"};
+        }
+        return out.toArray(new String[0]);
     }
 
     @Override
