@@ -12,6 +12,23 @@
       "destination": "/googlea8b3c155b0ce48ba.html"
     }
   ],
+  "redirects": [
+    {
+      "source": "/it",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/it/:path*",
+      "destination": "/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/abbonamento",
+      "destination": "/abbonati",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
