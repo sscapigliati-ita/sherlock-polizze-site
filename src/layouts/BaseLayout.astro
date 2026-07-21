@@ -240,9 +240,9 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
 
           // Traffico interno: attivato con ?internal=1 (persiste in localStorage),
           // disattivato con ?internal=0. Setta traffic_type=internal sulla config
-          // gtag della sola property Ads (G-21MQHMK771); Firebase (G-VVW7CNHTYJ)
-          // resta libero perché è un'altra property e i suoi eventi legacy non
-          // devono essere filtrati come "internal" da questa configurazione.
+          // gtag della property GA4 sherlock-6f88c (G-VVW7CNHTYJ), l'unica dove
+          // arriva ora sia il web sia l'app. Il filtro GA4 su traffic_type=internal
+          // escluderà queste hit dai report.
           // Su GA4: Admin → Data Streams → Web → Configure tag settings →
           // Define internal traffic; poi Admin → Data Filters → Exclude Internal
           // Traffic → State: Active.
@@ -294,11 +294,8 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
           }
 
           // Helper globale per emissione manuale (pagine specifiche possono chiamarlo).
-          // NOTA: NON usiamo send_to per isolare alla property Ads. Osservato in produzione:
-          // se il container gtag di G-21MQHMK771 non è ancora servito dalla CDN Google
-          // (property nuova → risposta 503 su gtag/js?id=...), send_to fa scartare l'evento
-          // invece di routarlo. Meglio la cross-contamination con Firebase (nomi custom
-          // click_* sono comunque distinti dai nomi legacy Firebase play_store_click ecc.).
+          // Ora che web e app convergono sulla stessa property GA4 (sherlock-6f88c),
+          // send_to non serve: gli eventi vanno all'unico stream configurato.
           window.sherlockGtag = function (name, params) {
             if (typeof window.gtag !== 'function') return;
             var base = { page_location: window.location.href };
@@ -397,8 +394,7 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
 
             if (!eventName) return;
 
-            // Nessun send_to: vedi nota su sherlockGtag sopra (container G-21MQHMK771
-            // non ancora servito → send_to fa scartare l'evento).
+            // Nessun send_to: unica property GA4 configurata (vedi nota su sherlockGtag).
             var params = {
               page_location: window.location.href,
               cta_position: pos,
