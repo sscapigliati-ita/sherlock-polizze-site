@@ -47,13 +47,13 @@ const organizationSchema = {
 const SEARCH_CONSOLE_DEFAULT = 'Gt6_Gl8rQWMM0ukWbARFmOcsogYwp3sCt3XAw9D9SCo';
 const searchConsoleToken = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? SEARCH_CONSOLE_DEFAULT;
 
-// GA4 gtag.js per Google Ads/conversions. Property SEPARATA da PUBLIC_FIREBASE_MEASUREMENT_ID
-// (Firebase Analytics resta attivo in parallelo per gli eventi già cablati:
-// play_store_click, app_open_click, subscribe_plan_click, paywall_view_intent, ecc.).
-// Stream "Sherlock Polizze Web" (stream ID 15187336886). Il Measurement ID è pubblico
-// by design (finisce nel bundle client), quindi hardcodato come default coerente con
-// SEARCH_CONSOLE_DEFAULT. PUBLIC_GA4_ID può overridarlo se in futuro cambia lo stream.
-const GA4_ID_DEFAULT = 'G-21MQHMK771';
+// GA4 gtag.js. Stream "Sherlock Polizze Web" (stream ID 15187336886, property
+// 543947575) è associato al Google Tag `G-VVW7CNHTYJ` — lo stesso MID usato dal
+// Firebase SDK: Google ha consolidato le due property in un unico Google Tag.
+// Il MID legacy G-21MQHMK771 risulta 404 sulla CDN Google Tag Manager e va
+// evitato. Il Measurement ID è pubblico by design (finisce nel bundle client),
+// quindi hardcodato come default. PUBLIC_GA4_ID può overridarlo se cambia lo stream.
+const GA4_ID_DEFAULT = 'G-VVW7CNHTYJ';
 const ga4Id = import.meta.env.PUBLIC_GA4_ID ?? GA4_ID_DEFAULT;
 // Emesso nell'HTML solo se PROD (esclude astro dev locale). Il check runtime
 // sull'hostname esclude i preview deployment di Vercel (*.vercel.app).
