@@ -3,14 +3,16 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace 'it.sherlock.polizze'
-    compileSdk 35
+    // Android 16 (API 36). Google Play richiede targetSdk >= 36 per gli update
+    // caricati dopo il 31 ago 2026. AGP 8.12.3 + Gradle 8.13 già supportano.
+    compileSdk 36
 
     defaultConfig {
         applicationId 'it.sherlock.polizze'
         minSdk 21
-        targetSdk 35
-        versionCode 74
-        versionName '4.6.16'
+        targetSdk 36
+        versionCode 75
+        versionName '4.6.17'
     }
 
     def releaseKeystore = System.getenv('KEYSTORE_PATH')
@@ -53,7 +55,11 @@ android {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.5.1')
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.android.billingclient:billing:7.1.1'
+    // Play Billing v9: richiesto da Google Play >= 31 ago 2026 (deprecato tutto <8.0.0).
+    // Il codice attuale (BillingManager.java) usa già API moderne — ProductDetails,
+    // queryProductDetailsAsync, queryPurchasesAsync, PendingPurchasesParams — quindi
+    // il salto v7 → v9 è drop-in senza modifiche funzionali.
+    implementation 'com.android.billingclient:billing:9.0.0'
     implementation 'com.google.android.play:app-update:2.1.0'
     // androidx.core: fornisce WindowCompat per la migrazione edge-to-edge (Android 15).
     implementation 'androidx.core:core:1.13.1'
