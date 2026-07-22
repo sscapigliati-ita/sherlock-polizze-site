@@ -14,6 +14,7 @@ import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryProductDetailsResult;
 import com.android.billingclient.api.QueryPurchasesParams;
 
 import java.util.Collections;
@@ -102,7 +103,10 @@ public class BillingManager implements PurchasesUpdatedListener {
         QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
                 .setProductList(Collections.singletonList(product))
                 .build();
-        billingClient.queryProductDetailsAsync(params, (result, list) -> {
+        billingClient.queryProductDetailsAsync(params, (result, queryResult) -> {
+            // v9 breaking: il secondo arg è QueryProductDetailsResult, non più
+            // List<ProductDetails> diretto. La lista si estrae da getProductDetailsList().
+            List<ProductDetails> list = queryResult.getProductDetailsList();
             if (result.getResponseCode() != BillingClient.BillingResponseCode.OK || list.isEmpty()) {
                 listener.onResult(new PurchaseResult(ResultKind.ERROR, productId, null, null,
                         "product_not_found", false));

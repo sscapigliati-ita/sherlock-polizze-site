@@ -9,7 +9,9 @@ android {
 
     defaultConfig {
         applicationId 'it.sherlock.polizze'
-        minSdk 21
+        // Play Billing 9.0.0 richiede minSdk >= 23 (Android 6.0 Marshmallow).
+        // < 0.3% del parco installato Android 5.x nel 2026, accettabile.
+        minSdk 23
         targetSdk 36
         versionCode 75
         versionName '4.6.17'
