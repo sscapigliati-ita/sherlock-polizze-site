@@ -132,18 +132,14 @@ const jsonLd = [
         </p>
         <div class="grid sm:grid-cols-3 gap-3">
           <a
-            href={playStoreUrl}
-            target="_blank"
-            rel="noopener"
+            href="/app/"
             data-track="hero_cta_polizza_click"
             class="bg-gold-400 text-navy-900 font-bold text-base px-4 py-4 rounded-xl hover:bg-gold-300 transition shadow-lg shadow-gold-400/20 text-center"
           >
             Analizza una polizza
           </a>
           <a
-            href={playStoreUrl}
-            target="_blank"
-            rel="noopener"
+            href="/app/"
             data-track="hero_cta_diniego_click"
             class="bg-red-500/15 border border-red-500/40 text-red-100 font-bold text-base px-4 py-4 rounded-xl hover:bg-red-500/25 transition text-center"
           >
@@ -162,6 +158,20 @@ const jsonLd = [
           Se serve, prepara una bozza di <strong class="text-white">reclamo PEC o esposto IVASS</strong>
           con i riferimenti normativi giusti.
         </p>
+        <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-navy-400">
+          <span>Preferisci l'app nativa?</span>
+          <a
+            href={playStoreUrl}
+            target="_blank"
+            rel="noopener"
+            data-preserve-android="1"
+            data-track="hero_cta_playstore_click"
+            class="inline-flex items-center gap-1.5 text-emerald-300 hover:text-emerald-200 font-semibold underline underline-offset-4 decoration-emerald-400/40"
+          >
+            <span aria-hidden="true">▶</span>
+            Scarica l'app Android su Google Play
+          </a>
+        </div>
       </div>
 
       <div class="flex flex-col gap-5 h-full">
