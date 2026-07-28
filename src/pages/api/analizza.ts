@@ -219,7 +219,7 @@ export const POST: APIRoute = async ({ request }) => {
         {
           name: 'report_analisi_polizza',
           description:
-            'Restituisci il report completo dell\'analisi di una polizza assicurativa italiana.',
+            'Restituisci l\'analisi strutturata di una polizza assicurativa italiana (valutazione del rischio, clausole principali, esclusioni ed eventuali basi legali contestabili).',
           input_schema: SCHEMA_REPORT,
         },
       ],

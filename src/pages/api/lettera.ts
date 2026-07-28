@@ -27,13 +27,27 @@ function istruzioneLingua(lang: LangCode): string {
   return `\n\nWrite the draft in ${LANG_NAMES[lang]}. Keep official Italian legal citations in their original form and do not invent translations or references.`;
 }
 
+// Vincoli giuridici applicati a tutti i tipi di lettera. Vietano formule
+// errate ricorrenti nei modelli LLM sul diritto assicurativo italiano —
+// in particolare l'attribuzione all'art. 1892 c.c. di un termine generale
+// di tre mesi decorrente dal sinistro (interpretazione scorretta: il termine
+// riguarda l'esercizio delle facoltà dell'assicuratore dopo la conoscenza
+// dell'inesattezza/reticenza rilevante).
+const LEGAL_ACCURACY_RULES = `
+LEGAL ACCURACY — hard constraints on Italian insurance law:
+- Do NOT state or imply that art. 1892 c.c. sets a general 3-month deadline running from the loss/sinistro for any policy-coverage dispute. That is a widespread but incorrect reading.
+- If art. 1892 c.c. is relevant, describe it prudently: it concerns the insurer's exercise of its faculties (impugnazione/contestazione) after knowledge of a material inaccuracy or reticence, with dolo o colpa grave, and the timing runs from that knowledge — not from the loss.
+- Preferred wording when applicable: "Qualora il diniego sia fondato su presunte dichiarazioni inesatte o reticenti, dovranno essere verificati i presupposti previsti dagli articoli 1892 e 1893 c.c., compreso il momento in cui l'impresa abbia acquisito conoscenza delle circostanze contestate."
+- Never fabricate case law, IVASS provisions, article numbers, or deadlines. Cite only what is in the evidence or clearly established (e.g. Reg. IVASS 24/2008 for reclamo handling).
+- When uncertain about a legal reference, either omit it or list it in "avvertenze" as a point to verify with a lawyer.`;
+
 const LSYS = {
   reclamo:
-    'Prepara una bozza prudente di reclamo assicurativo. Usa segnaposto per dati mancanti e cita norme soltanto se presenti nelle evidenze e pertinenti.',
+    'Prepara una bozza prudente di reclamo assicurativo. Usa segnaposto per dati mancanti e cita norme soltanto se presenti nelle evidenze e pertinenti.' + LEGAL_ACCURACY_RULES,
   ivass:
-    "Prepara una bozza prudente di esposto all'IVASS. Non descrivere IVASS come giudice della controversia e non inventare violazioni.",
+    "Prepara una bozza prudente di esposto all'IVASS. Non descrivere IVASS come giudice della controversia e non inventare violazioni." + LEGAL_ACCURACY_RULES,
   diffida:
-    'Prepara una bozza prudente di comunicazione formale. Non fissare termini, conseguenze o iniziative giudiziarie se non supportati dalle evidenze; usa segnaposto da verificare.',
+    'Prepara una bozza prudente di comunicazione formale. Non fissare termini, conseguenze o iniziative giudiziarie se non supportati dalle evidenze; usa segnaposto da verificare.' + LEGAL_ACCURACY_RULES,
 } as const;
 type LetterType = keyof typeof LSYS;
 
