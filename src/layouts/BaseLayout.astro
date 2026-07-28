@@ -632,14 +632,24 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
       var links = document.querySelectorAll('a[href*="play.google.com"]');
       for (var i = 0; i < links.length; i++) {
         var a = links[i];
+        // Opt-out esplicito: link intenzionali verso Play Store (es. card
+        // "Scarica su Play Store" della sezione invito installazione) devono
+        // restare intatti — il redirect a /app/ farebbe perdere lo scopo del
+        // CTA e la sostituzione del textContent svuoterebbe card complesse
+        // (titolo + descrizione + CTA in un unico <a>).
+        if (a.getAttribute('data-preserve-android') === '1') continue;
         a.href = '/app/';
         a.removeAttribute('target');
         a.removeAttribute('rel');
         var txt = (a.textContent || '').toLowerCase();
-        // Rietichetta soltanto i CTA generici "scarica/prova/apri l'app": i
-        // pulsanti hero contestuali ("Analizza una polizza", "Analizza un
-        // diniego") restano intatti — descrivono già l'azione web.
-        if (txt.indexOf('scarica') !== -1 || txt.indexOf('installa') !== -1 || txt === "apri l'app") {
+        // Rietichetta soltanto i CTA generici brevi "scarica/installa/apri
+        // l'app": i pulsanti hero contestuali ("Analizza una polizza",
+        // "Analizza un diniego") restano intatti — descrivono già l'azione
+        // web. Limite prudenziale (60 char): evita di sovrascrivere link
+        // ricchi (card con titolo+testo+CTA) che contengono per caso
+        // "scarica" ma non sono un semplice CTA.
+        var isShortCta = (a.textContent || '').length <= 60;
+        if (isShortCta && (txt.indexOf('scarica') !== -1 || txt.indexOf('installa') !== -1 || txt === "apri l'app")) {
           a.textContent = 'Apri Sherlock';
         }
       }
