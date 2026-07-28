@@ -80,17 +80,64 @@ const jsonLd = [
       Analisi documentale assistita · Bozze personalizzabili · Nessun rinnovo automatico
     </div>
     <h1 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
-      Scegli il tuo <span class="text-gold-400">piano</span>
+      Sblocca la <span class="text-gold-400">tua lettera</span>
     </h1>
     <p class="text-lg text-navy-300 max-w-2xl mx-auto mb-3">
-      <strong class="text-white">Con Pro non compri "un'app".</strong>
-      Sblocchi le bozze di reclamo, esposto IVASS e diffida che trasformano
-      l'analisi in un'azione concreta verso la compagnia.
+      <strong class="text-white">Hai già visto l'analisi.</strong>
+      Ora ti serve la lettera per contestare: reclamo formale, esposto IVASS o diffida.
+      Parti con la <strong class="text-white">Lettera singola a 3,99&nbsp;€</strong> —
+      passi a Pro solo se hai più pratiche da seguire.
     </p>
     <p class="text-sm text-navy-400 max-w-2xl mx-auto">
       Un reclamo scritto male può costarti molto più di un abbonamento annuale.
     </p>
 
+  </section>
+
+  <!-- PRIMO PRODOTTO PROPOSTO: Lettera singola 3,99 € -->
+  <section class="px-5 pb-8 max-w-5xl mx-auto" id="lettera-singola">
+    <div class="rounded-2xl border-2 border-gold-400 bg-gradient-to-br from-navy-800 to-navy-900 p-6 lg:p-8 shadow-2xl shadow-gold-400/10">
+      <div class="flex flex-col lg:flex-row lg:items-center gap-5">
+        <div class="flex-1">
+          <div class="inline-flex items-center gap-2 bg-emerald-500/15 border border-emerald-500/40 px-3 py-1 rounded-full text-[11px] uppercase tracking-widest text-emerald-300 font-extrabold mb-3">
+            <span aria-hidden="true">⚡</span>
+            Consigliato · La prima lettera
+          </div>
+          <h2 class="text-2xl lg:text-3xl font-extrabold text-white mb-2">
+            Lettera singola — <span class="text-gold-400">3,99&nbsp;€</span>
+          </h2>
+          <p class="text-navy-200 leading-relaxed mb-3">
+            Una sola pratica da chiudere? Paghi <strong class="text-white">una volta</strong>,
+            ricevi un codice per <strong class="text-white">1 analisi AI + 1 lettera</strong>
+            (reclamo PEC, esposto IVASS o diffida — scegli tu). Utilizzabile sul sito o
+            sull'app. Nessun abbonamento.
+          </p>
+          <ul class="space-y-1.5 text-sm text-navy-200 mb-2">
+            <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> <span>Perfetta subito dopo l'analisi: trasforma il report in una lettera pronta</span></li>
+            <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> <span>Codice via email, valido 30 giorni, funziona su web e app</span></li>
+            <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> <span>Nessun rinnovo automatico</span></li>
+          </ul>
+        </div>
+        <div class="lg:w-64 flex-shrink-0">
+          <a
+            href="/reclamo-singolo"
+            data-track="paywall_choose_singolo"
+            class="block text-center bg-gold-400 hover:bg-gold-300 text-navy-900 font-extrabold text-lg px-6 py-4 rounded-xl transition shadow-xl shadow-gold-400/30"
+          >
+            Compra la lettera singola →
+          </a>
+          <div class="text-center text-xs text-navy-400 mt-3">
+            Pagamento sicuro PayPal
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-6 text-sm text-navy-400">
+      Hai più pratiche o vuoi controllare più polizze?
+      <a href="#checkout" class="text-gold-400 hover:text-gold-300 font-semibold underline underline-offset-4">
+        Guarda i piani Pro qui sotto ↓
+      </a>
+    </div>
   </section>
 
   <section class="px-5 pb-16 max-w-5xl mx-auto" id="checkout">
@@ -340,6 +387,20 @@ const jsonLd = [
     err.classList.add('hidden');
     try {
       const wRef: any = window;
+      // checkout_started client-side: emesso ANCHE se la POST fallisce lato
+      // server (create-order emette lo stesso evento server-side, ma su
+      // errore di rete/paypal il client sarebbe cieco). Duplicati minimi
+      // filtrabili in GA4 via transaction_id assente.
+      const prezziMap: Record<string, number> = { mensile: 2.99, semestrale: 7.99, annuale: 14.99, founder: 19.90, singolo: 3.99 };
+      const valore = prezziMap[piano] ?? 0;
+      try {
+        if (typeof wRef.sherlockGtag === 'function') {
+          wRef.sherlockGtag('checkout_started', { piano, value: valore, currency: 'EUR' });
+        }
+        if (typeof wRef.sherlockTrack === 'function') {
+          wRef.sherlockTrack('checkout_started', { piano, value: valore, currency: 'EUR' });
+        }
+      } catch { /* analytics best-effort */ }
       const ref = typeof wRef.sherlockRef === 'function' ? wRef.sherlockRef() : null;
       // Recupero contesto Analytics reale (vero GA4 client_id + session_id via
       // gtag('get', ID, 'client_id', ...)) SOLO dopo consenso. Se il consenso è

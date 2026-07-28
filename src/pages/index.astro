@@ -42,7 +42,7 @@ const jsonLd = [
     author: { '@type': 'Organization', name: 'Sherlock' },
     publisher: { '@type': 'Organization', name: 'Sherlock' },
     inLanguage: 'it-IT',
-    description: 'Analizza polizze e dinieghi assicurativi con AI. Genera bozze di reclamo PEC o IVASS in 30 secondi.',
+    description: 'Analizza polizze e dinieghi assicurativi con AI. Genera bozze di reclamo PEC o IVASS pronte da rivedere.',
     screenshot: 'https://www.sherlockpolizze.it/og-cover.png',
   },
 ];
@@ -276,6 +276,143 @@ const jsonLd = [
           <a href="/reclamo-ivass" class="hover:text-gold-300 font-semibold">Reclamo &amp; IVASS</a>
           <span class="text-navy-600">→</span>
           <a href="/arbitro-assicurativo" class="hover:text-gold-300 font-semibold">Ricorso all'Arbitro</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Invito installazione — tre percorsi di accesso all'app + prezzi essenziali */}
+  <section id="scarica-sherlock" aria-labelledby="scarica-sherlock-title" class="px-5 py-16 max-w-6xl mx-auto">
+    <div class="relative overflow-hidden rounded-3xl border border-gold-400/30 bg-gradient-to-br from-navy-900 via-navy-950 to-navy-900 shadow-2xl shadow-black/40 p-7 lg:p-12">
+      <div aria-hidden="true" class="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-gold-400/10 blur-3xl"></div>
+      <div aria-hidden="true" class="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-emerald-400/5 blur-3xl"></div>
+
+      <div class="relative text-center max-w-3xl mx-auto mb-10">
+        <div class="inline-flex items-center gap-2 bg-gold-400/15 border border-gold-400/50 px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.18em] text-gold-300 font-extrabold mb-5">
+          <span aria-hidden="true">📥</span>
+          Porta Sherlock con te
+        </div>
+        <h2 id="scarica-sherlock-title" class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-3">
+          Scarica, installa o apri Sherlock — <span class="text-gold-400">come preferisci</span>
+        </h2>
+        <p class="text-navy-200 leading-relaxed">
+          La <strong class="text-white">prima analisi è gratis</strong>, senza carta.
+          Poi paghi <strong class="text-white">3,99&nbsp;€</strong> per la lettera singola o
+          scegli un <strong class="text-white">Pass Pro da 2,99&nbsp;€/mese</strong> se hai più pratiche.
+        </p>
+      </div>
+
+      <div class="relative grid md:grid-cols-3 gap-4 lg:gap-5">
+        {/* Android nativo */}
+        <a
+          href="https://play.google.com/store/apps/details?id=it.sherlock.polizze"
+          target="_blank"
+          rel="noopener"
+          data-track="install_cta_android_click"
+          class="group relative flex flex-col bg-navy-950 border border-navy-700 hover:border-gold-400/60 rounded-2xl p-6 transition shadow-lg hover:shadow-gold-400/10"
+        >
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-300 text-xl flex items-center justify-center font-bold" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor"><path d="M17.523 15.34l1.474-2.554a.36.36 0 10-.624-.36l-1.494 2.588a9.15 9.15 0 00-3.883-.85 9.15 9.15 0 00-3.882.85L7.62 12.426a.36.36 0 10-.624.36l1.474 2.554C5.85 16.76 3.7 19.14 3.4 22h17.2c-.3-2.86-2.45-5.24-5.077-6.66zM8.482 19.9a.72.72 0 110-1.44.72.72 0 010 1.44zm6.996 0a.72.72 0 110-1.44.72.72 0 010 1.44z"/></svg>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase tracking-widest text-emerald-300 font-bold">Consigliato su Android</div>
+              <div class="font-bold text-white text-lg">Scarica su Google Play</div>
+            </div>
+          </div>
+          <p class="text-navy-300 text-sm leading-relaxed mb-4 flex-1">
+            App nativa Android. Notifiche di aggiornamento, condivisione veloce del report,
+            fotocamera integrata per acquisire polizza e diniego.
+          </p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gold-400 font-bold group-hover:text-gold-300">Apri Play Store →</span>
+            <span class="text-navy-500 text-xs">Android 6.0+</span>
+          </div>
+        </a>
+
+        {/* Web / desktop */}
+        <a
+          href="/app/"
+          data-track="install_cta_web_click"
+          class="group relative flex flex-col bg-navy-950 border-2 border-gold-400 rounded-2xl p-6 transition shadow-xl shadow-gold-400/10"
+        >
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold-400 text-navy-950 text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">Prova subito</span>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-gold-400/20 text-gold-300 text-xl flex items-center justify-center font-bold" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1"/><path d="M8 20h8M12 16v4"/></svg>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase tracking-widest text-gold-400 font-bold">Nessuna installazione</div>
+              <div class="font-bold text-white text-lg">Apri nel browser</div>
+            </div>
+          </div>
+          <p class="text-navy-300 text-sm leading-relaxed mb-4 flex-1">
+            Stessa app, stesso backend. Sul PC o Mac carichi anche PDF grandi
+            senza passare dal telefono. Prima analisi gratuita, subito.
+          </p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gold-400 font-bold group-hover:text-gold-300">Prova ora →</span>
+            <span class="text-navy-500 text-xs">Chrome / Safari / Firefox</span>
+          </div>
+        </a>
+
+        {/* iPhone / PWA */}
+        <a
+          href="/ios"
+          data-track="install_cta_ios_click"
+          class="group relative flex flex-col bg-navy-950 border border-navy-700 hover:border-gold-400/60 rounded-2xl p-6 transition shadow-lg hover:shadow-gold-400/10"
+        >
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-navy-800 text-white text-xl flex items-center justify-center font-bold" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor"><path d="M17.05 12.536c-.032-3.176 2.593-4.706 2.713-4.778-1.478-2.163-3.775-2.459-4.593-2.494-1.955-.198-3.813 1.15-4.803 1.15-.99 0-2.518-1.121-4.14-1.09-2.13.031-4.093 1.24-5.187 3.147-2.211 3.827-.566 9.492 1.594 12.593 1.055 1.516 2.317 3.223 3.968 3.16 1.593-.063 2.194-1.031 4.116-1.031 1.922 0 2.462 1.031 4.14 1 1.71-.031 2.79-1.547 3.836-3.067 1.21-1.762 1.712-3.469 1.744-3.557-.037-.017-3.353-1.29-3.388-5.033zM14.108 3.31c.876-1.066 1.469-2.548 1.306-4.025-1.263.053-2.797.842-3.706 1.907-.814.945-1.53 2.457-1.339 3.906 1.412.11 2.86-.72 3.739-1.788z"/></svg>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase tracking-widest text-navy-300 font-bold">iPhone / iPad</div>
+              <div class="font-bold text-white text-lg">Installala come app</div>
+            </div>
+          </div>
+          <p class="text-navy-300 text-sm leading-relaxed mb-4 flex-1">
+            Su iPhone Sherlock si aggiunge alla schermata Home come una vera app
+            (PWA). Nessun App Store, nessun account — bastano 3 tap in Safari.
+          </p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gold-400 font-bold group-hover:text-gold-300">Istruzioni iPhone →</span>
+            <span class="text-navy-500 text-xs">iOS 14+</span>
+          </div>
+        </a>
+      </div>
+
+      {/* Riquadro prezzi / rassicurazioni */}
+      <div class="relative mt-8 rounded-2xl border border-navy-700 bg-navy-950/60 px-5 py-5 sm:px-7 sm:py-6 flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-8">
+        <div class="flex-1 grid sm:grid-cols-3 gap-4 text-sm">
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400 mt-0.5" aria-hidden="true">✓</span>
+            <div><div class="text-white font-bold">1ª analisi gratis</div><div class="text-navy-400 text-xs">Nessuna carta richiesta</div></div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-gold-400 mt-0.5" aria-hidden="true">✉</span>
+            <div><div class="text-white font-bold">Lettera singola 3,99&nbsp;€</div><div class="text-navy-400 text-xs">Una tantum · nessun abbonamento</div></div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-gold-400 mt-0.5" aria-hidden="true">★</span>
+            <div><div class="text-white font-bold">Pass Pro da 2,99&nbsp;€/mese</div><div class="text-navy-400 text-xs">Da 1,25&nbsp;€/mese sul piano annuale</div></div>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row lg:flex-col gap-2 lg:min-w-[200px]">
+          <a
+            href="/reclamo-singolo"
+            data-track="install_cta_singola_click"
+            class="inline-flex items-center justify-center bg-gold-400 text-navy-900 font-bold text-sm px-4 py-2.5 rounded-lg hover:bg-gold-300 transition"
+          >
+            Sblocca la lettera →
+          </a>
+          <a
+            href="/abbonati"
+            data-track="install_cta_pro_click"
+            class="inline-flex items-center justify-center border border-gold-400/50 text-gold-200 font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-gold-400/10 transition"
+          >
+            Vedi i piani Pro
+          </a>
         </div>
       </div>
     </div>

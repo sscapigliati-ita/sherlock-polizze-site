@@ -1071,7 +1071,11 @@ window.SherlockNavigation={canGoBack:function(){return NAV_STACK.length>1;},goBa
 function goHome(){show("home");renderHome();}
 function goSettings(){show("settings",true);renderSettings();}
 function goPaywall(from){
-  track('paywall_viewed', { analyses_used: S.freeUsed||0, from_screen: from||'unknown' });
+  // paywall_view = nome canonico funnel (sostituisce paywall_viewed).
+  // paywall_viewed emesso in parallelo per retrocompatibilità dashboard R3.
+  var pwParams = { analyses_used: S.freeUsed||0, from_screen: from||'unknown', paywall: 'in_app' };
+  track('paywall_view', pwParams);
+  track('paywall_viewed', pwParams);
   if (from === 'result') track('letter_preview_opened', { from_screen: from });
   show("paywall",true);
 }

@@ -148,27 +148,33 @@ async function completaEffetti(
     // consenso, ga4TrackServer è no-op silenziosa.
     const ga4Ctx =
       corrente.ga4Context ?? (await leggiPayPalGa4Context(orderId).catch(() => null));
+    const transactionId = corrente.captureId ?? cattura?.captureId ?? orderId;
+    const valorePiano = Number(PIANI[piano as keyof typeof PIANI]?.prezzo) || 0;
+    const items: Parameters<typeof ga4TrackServer>[3] = [
+      {
+        item_id: piano,
+        item_name: PIANI[piano as keyof typeof PIANI]?.nome || piano,
+        item_category: piano === 'singolo' ? 'consulenza' : 'abbonamento',
+        price: valorePiano,
+        quantity: 1,
+        currency: 'EUR',
+      },
+    ];
+    // `purchase`: nome canonico GA4 ecommerce (deduplicabile via transaction_id
+    // sulla proprietà Ads).
     void ga4TrackServer(
       'purchase',
       ga4Ctx,
-      {
-        // transaction_id = captureId se disponibile (più stabile per idempotenza
-        // GA4), fallback a orderId.
-        transaction_id: corrente.captureId ?? cattura?.captureId ?? orderId,
-        value: Number(PIANI[piano as keyof typeof PIANI]?.prezzo) || 0,
-        currency: 'EUR',
-        piano,
-      },
-      [
-        {
-          item_id: piano,
-          item_name: PIANI[piano as keyof typeof PIANI]?.nome || piano,
-          item_category: piano === 'singolo' ? 'consulenza' : 'abbonamento',
-          price: Number(PIANI[piano as keyof typeof PIANI]?.prezzo) || 0,
-          quantity: 1,
-          currency: 'EUR',
-        },
-      ],
+      { transaction_id: transactionId, value: valorePiano, currency: 'EUR', piano },
+      items,
+    );
+    // `purchase_completed`: alias richiesto per il funnel di brand — stesso
+    // transaction_id, per evitare doppio conteggio in eventuali join.
+    void ga4TrackServer(
+      'purchase_completed',
+      ga4Ctx,
+      { transaction_id: transactionId, value: valorePiano, currency: 'EUR', piano },
+      items,
     );
     corrente = (await aggiornaPayPalProcessing(orderId, { analyticsSent: true })) ?? corrente;
   } else if (!corrente.analyticsSent) {

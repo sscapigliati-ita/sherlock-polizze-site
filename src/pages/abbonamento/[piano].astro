@@ -100,6 +100,19 @@ const annullato = Astro.url.searchParams.get('annullato') === '1';
       btn.textContent = 'Reindirizzamento a PayPal...';
       err.classList.add('hidden');
 
+      // checkout_started client-side (server-side lo emette anche create-order).
+      const prezziMap: Record<string, number> = { mensile: 2.99, semestrale: 7.99, annuale: 14.99 };
+      const valore = prezziMap[piano] ?? 0;
+      try {
+        const w: any = window;
+        if (typeof w.sherlockGtag === 'function') {
+          w.sherlockGtag('checkout_started', { piano, value: valore, currency: 'EUR' });
+        }
+        if (typeof w.sherlockTrack === 'function') {
+          w.sherlockTrack('checkout_started', { piano, value: valore, currency: 'EUR' });
+        }
+      } catch { /* analytics best-effort */ }
+
       try {
         const r = await fetch('/api/paypal/create-order', {
           method: 'POST',

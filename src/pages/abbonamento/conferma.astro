@@ -108,11 +108,10 @@ import Footer from '../../components/Footer.astro';
       if (codiceOut) codiceOut.textContent = data.codice;
       if (!data.mailInviata) warnMail?.classList.remove('hidden');
       sessionStorage.removeItem('sherlock_pending');
-      // NB: rimosso sherlockTrack('purchase_success') client-side. La property
-      // Firebase riceveva l'evento 2 volte (client `purchase_success` + server
-      // `purchase` da capture-order → duplicazione stessa property). Adesso
-      // solo l'evento `purchase` server-side (verificato) rappresenta la
-      // conversione. Vedi report R3 §5.
+      // NB: la conversione ufficiale (evento `purchase` + `purchase_completed`)
+      // è emessa server-side da /api/paypal/capture-order con transaction_id
+      // stabile — client-side non ripete l'evento per evitare doppio conteggio
+      // sulla stessa property. Vedi report R3 §5.
     } catch (e: any) {
       loading?.classList.add('hidden');
       errore?.classList.remove('hidden');

@@ -359,6 +359,23 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
             });
           };
 
+          // Emetti paywall_view sulla property GA4 web (collegata a Google Ads)
+          // per le pagine paywall. Nome canonico del funnel — allineato al
+          // sherlockTrack('paywall_view') Firebase, ma diretto allo stream Ads.
+          try {
+            var pwPath = window.location.pathname;
+            var pwName = null;
+            if (pwPath === '/abbonati' || pwPath === '/abbonati/') pwName = 'abbonati';
+            else if (pwPath === '/reclamo-singolo' || pwPath === '/reclamo-singolo/') pwName = 'lettera_singola';
+            else if (pwPath.indexOf('/abbonamento/') === 0) {
+              var seg = pwPath.split('/abbonamento/')[1] || '';
+              pwName = 'piano_' + (seg.split('/')[0] || '');
+            }
+            if (pwName) {
+              window.sherlockGtag('paywall_view', { paywall: pwName });
+            }
+          } catch (e) {}
+
           // Click delegate per gli eventi di conversione richiesti da Ads.
           // Capture phase (true) → parte prima di qualunque handler bubble del sito.
           document.addEventListener('click', function (e) {
@@ -505,9 +522,15 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
           // pageview iniziale).
           const path = location.pathname;
           if (path === '/abbonati' || path.endsWith('/abbonati')) {
+            // paywall_view = nome canonico funnel. `pricing_view` mantenuto per
+            // retrocompatibilità con dashboard/audit precedenti.
+            window.sherlockTrack('paywall_view', { paywall: 'abbonati', from_path: document.referrer || '' });
             window.sherlockTrack('pricing_view', { from_path: document.referrer || '' });
+          } else if (path === '/reclamo-singolo' || path.endsWith('/reclamo-singolo')) {
+            window.sherlockTrack('paywall_view', { paywall: 'lettera_singola', from_path: document.referrer || '' });
           } else if (path.startsWith('/abbonamento/')) {
             const piano = path.split('/abbonamento/')[1]?.split('/')[0] || '';
+            window.sherlockTrack('paywall_view', { paywall: 'piano_' + piano, from_path: document.referrer || '' });
             window.sherlockTrack('pricing_plan_view', { piano });
           } else if (path === '/app' || path === '/app/' || path.startsWith('/app/')) {
             window.sherlockTrack('app_view', { from_path: document.referrer || '' });
@@ -597,12 +620,15 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
   <PwaUpdateToast />
   {enableGtag && <CookieBanner />}
   <script is:inline>
-    // Su iOS l'app Android non è installabile: riscrivo i link Play Store
-    // per puntare a /app/ (la stessa app WebView servita come PWA).
+    // Solo l'utente Android reale ottiene la scheda Play Store: per tutti gli
+    // altri (desktop, iOS, tablet non-Android) l'app nativa non è installabile
+    // e li portiamo direttamente alla web app in /app/. Sostituisce l'href in
+    // capture phase così i tracker di link (data-track, click delegate del
+    // BaseLayout) leggono il nuovo target come /app/ → start_analysis.
     (function () {
       var ua = navigator.userAgent || '';
-      var isIos = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
-      if (!isIos) return;
+      var isAndroid = /Android/i.test(ua);
+      if (isAndroid) return;
       var links = document.querySelectorAll('a[href*="play.google.com"]');
       for (var i = 0; i < links.length; i++) {
         var a = links[i];
@@ -610,7 +636,10 @@ const firebaseConfig = import.meta.env.PUBLIC_FIREBASE_API_KEY ? {
         a.removeAttribute('target');
         a.removeAttribute('rel');
         var txt = (a.textContent || '').toLowerCase();
-        if (txt.indexOf('scarica') !== -1 || txt.indexOf('prova') !== -1 || txt.indexOf('app') !== -1) {
+        // Rietichetta soltanto i CTA generici "scarica/prova/apri l'app": i
+        // pulsanti hero contestuali ("Analizza una polizza", "Analizza un
+        // diniego") restano intatti — descrivono già l'azione web.
+        if (txt.indexOf('scarica') !== -1 || txt.indexOf('installa') !== -1 || txt === "apri l'app") {
           a.textContent = 'Apri Sherlock';
         }
       }

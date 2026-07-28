@@ -151,6 +151,15 @@ const jsonLd = [
     try {
       const w: any = window;
       const ref = typeof w.sherlockRef === 'function' ? w.sherlockRef() : null;
+      // checkout_started client-side (server-side lo emette anche create-order).
+      try {
+        if (typeof w.sherlockGtag === 'function') {
+          w.sherlockGtag('checkout_started', { piano: 'singolo', value: 3.99, currency: 'EUR' });
+        }
+        if (typeof w.sherlockTrack === 'function') {
+          w.sherlockTrack('checkout_started', { piano: 'singolo', value: 3.99, currency: 'EUR' });
+        }
+      } catch { /* analytics best-effort */ }
       const r = await fetch('/api/paypal/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
