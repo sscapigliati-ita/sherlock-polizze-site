@@ -43,3 +43,4 @@ playwright-report/
 test-results/**
 !test-results/google-play/
 !test-results/google-play/.gitkeep
+.env*

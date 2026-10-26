@@ -206,25 +206,7 @@ export async function paypalRequestId(
   return uuidV5(`${orderId}:${operazione}:sherlock`, SHERLOCK_PP_NAMESPACE);
 }
 
-export async function catturaOrdinePayPal(orderId: string): Promise<CaptureResult> {
-  const token = await getAccessToken();
-  const requestId = await paypalRequestId(orderId, 'capture');
-
-  const r = await fetch(`${baseApi()}/v2/checkout/orders/${orderId}/capture`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      // Idempotency di PayPal: retry con stesso Request-Id restituisce la stessa
-      // risposta senza doppia capture. Evita doppio addebito sull'utente in
-      // scenari di rete instabile o webhook duplicati.
-      'PayPal-Request-Id': requestId,
-    },
-  });
-
-  const data = await r.json();
-  if (!r.ok) throw new Error(data?.message ?? 'PayPal capture fallita');
-
+function parseOrdinePayPal(data: any): CaptureResult {
   const unit = data.purchase_units?.[0];
   const piano = (unit?.reference_id ?? 'mensile') as PianoId;
   // captureId: identificativo univoco della singola capture (diverso dall'orderId).
@@ -253,6 +235,83 @@ export async function catturaOrdinePayPal(orderId: string): Promise<CaptureResul
     captureId,
     paymentEnvironment: paypalEnvironment(),
   };
+}
+
+// Legge l'ordine da PayPal senza modificarlo. Serve al recupero: un ordine può
+// essere già stato catturato (retry, webhook) o ancora solo approvato.
+export async function leggiOrdinePayPal(orderId: string): Promise<CaptureResult> {
+  const token = await getAccessToken();
+  const r = await fetch(`${baseApi()}/v2/checkout/orders/${encodeURIComponent(orderId)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data?.message ?? 'PayPal lettura ordine fallita');
+  return parseOrdinePayPal(data);
+}
+
+// `retry`: dopo una capture fallita il Request-Id stabile farebbe restituire da
+// PayPal la stessa risposta d'errore; un suffisso nuovo permette un vero nuovo
+// tentativo. Il rischio di doppio addebito resta nullo: PayPal cattura un
+// ordine una sola volta (poi risponde ORDER_ALREADY_CAPTURED, gestito sotto).
+export async function catturaOrdinePayPal(
+  orderId: string,
+  opts: { retry?: string } = {},
+): Promise<CaptureResult> {
+  const token = await getAccessToken();
+  const requestId = opts.retry
+    ? await uuidV5(`${orderId}:capture:sherlock:${opts.retry}`, SHERLOCK_PP_NAMESPACE)
+    : await paypalRequestId(orderId, 'capture');
+
+  const r = await fetch(`${baseApi()}/v2/checkout/orders/${encodeURIComponent(orderId)}/capture`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      // Idempotency di PayPal: retry con stesso Request-Id restituisce la stessa
+      // risposta senza doppia capture. Evita doppio addebito sull'utente in
+      // scenari di rete instabile o webhook duplicati.
+      'PayPal-Request-Id': requestId,
+    },
+  });
+
+  const data = await r.json();
+  if (!r.ok) {
+    const giaCatturato = Array.isArray(data?.details)
+      && data.details.some((d: any) => d?.issue === 'ORDER_ALREADY_CAPTURED');
+    if (giaCatturato) return leggiOrdinePayPal(orderId);
+    throw new Error(data?.message ?? 'PayPal capture fallita');
+  }
+  return parseOrdinePayPal(data);
+}
+
+// Verifica la firma di un webhook PayPal tramite l'API ufficiale. Richiede
+// PAYPAL_WEBHOOK_ID (ID del webhook creato nella dashboard developer PayPal).
+export async function verificaWebhookPayPal(
+  headers: Headers,
+  evento: unknown,
+): Promise<boolean> {
+  const webhookId = getEnv('PAYPAL_WEBHOOK_ID');
+  if (!webhookId) {
+    console.error('[paypal-webhook] PAYPAL_WEBHOOK_ID mancante: evento rifiutato');
+    return false;
+  }
+  const token = await getAccessToken();
+  const r = await fetch(`${baseApi()}/v1/notifications/verify-webhook-signature`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      auth_algo: headers.get('paypal-auth-algo'),
+      cert_url: headers.get('paypal-cert-url'),
+      transmission_id: headers.get('paypal-transmission-id'),
+      transmission_sig: headers.get('paypal-transmission-sig'),
+      transmission_time: headers.get('paypal-transmission-time'),
+      webhook_id: webhookId,
+      webhook_event: evento,
+    }),
+  });
+  if (!r.ok) return false;
+  const data = await r.json();
+  return data?.verification_status === 'SUCCESS';
 }
 
 export function calcolaScadenza(piano: PianoId, da: Date = new Date()): string {
