@@ -398,6 +398,102 @@ export async function contaPayPalProcessing(): Promise<PayPalProcessingStats> {
   return stats;
 }
 
+// ===== PayPal — checkout avviati =====
+// create-order non lascia altro stato: un ordine approvato su PayPal ma mai
+// catturato (cliente che non torna, webhook non attivo) sarebbe invisibile in
+// /admin. Questo record leggero permette di confrontare avviati e completati.
+export interface CheckoutAvviato {
+  orderId: string;
+  piano: string;
+  createdAt: string;
+}
+
+const PAYPAL_CHECKOUT_PREFIX = 'paypal_checkout:';
+const CHECKOUT_TTL_SECONDS = 45 * 86_400;
+// Oltre 3 ore un ordine approvato e non catturato è scaduto: non più recuperabile.
+const CHECKOUT_SCADENZA_MS = 3 * 60 * 60 * 1000;
+const _paypalCheckoutFallback = new Map<string, CheckoutAvviato>();
+
+export async function salvaCheckoutAvviato(orderId: string, piano: string): Promise<void> {
+  const oid = orderId.trim();
+  if (!oid) return;
+  const rec: CheckoutAvviato = { orderId: oid, piano, createdAt: new Date().toISOString() };
+  if (!kvConfigurato()) {
+    if (!_paypalCheckoutFallback.has(oid)) _paypalCheckoutFallback.set(oid, rec);
+    return;
+  }
+  await kv().set(`${PAYPAL_CHECKOUT_PREFIX}${oid}`, rec, { nx: true, ex: CHECKOUT_TTL_SECONDS });
+}
+
+export type CheckoutPayPalStats = {
+  avviati: number;
+  completati: number;
+  inCorso: number; // avviati da meno di 3 ore, ancora recuperabili
+  nonCompletati: number; // avviati da più di 3 ore senza ordine completato
+  ultimoNonCompletato?: CheckoutAvviato;
+};
+
+function classificaCheckout(
+  checkout: CheckoutAvviato[],
+  proc: Array<PayPalProcessingRecord | null>,
+): CheckoutPayPalStats {
+  const stats: CheckoutPayPalStats = { avviati: 0, completati: 0, inCorso: 0, nonCompletati: 0 };
+  const scaduto = Date.now() - CHECKOUT_SCADENZA_MS;
+  checkout.forEach((c, i) => {
+    stats.avviati++;
+    if (proc[i]?.status === 'completed') {
+      stats.completati++;
+    } else if (new Date(c.createdAt).getTime() > scaduto) {
+      stats.inCorso++;
+    } else {
+      stats.nonCompletati++;
+      if (!stats.ultimoNonCompletato || c.createdAt > stats.ultimoNonCompletato.createdAt) {
+        stats.ultimoNonCompletato = c;
+      }
+    }
+  });
+  return stats;
+}
+
+export async function contaCheckoutPayPal(): Promise<CheckoutPayPalStats> {
+  if (!kvConfigurato()) {
+    const checkout = [..._paypalCheckoutFallback.values()];
+    return classificaCheckout(checkout, checkout.map((c) => _paypalProcFallback.get(c.orderId) ?? null));
+  }
+
+  const client = kv();
+  let cursor = '0';
+  const keys: string[] = [];
+  do {
+    const [next, k] = (await client.scan(cursor, {
+      match: `${PAYPAL_CHECKOUT_PREFIX}*`,
+      count: 100,
+    })) as [string, string[]];
+    keys.push(...k);
+    cursor = next;
+  } while (cursor !== '0');
+
+  const checkout: CheckoutAvviato[] = [];
+  const proc: Array<PayPalProcessingRecord | null> = [];
+  const batchSize = 500;
+  for (let i = 0; i < keys.length; i += batchSize) {
+    const batch = keys.slice(i, i + batchSize);
+    const recs = ((await client.mget<Array<CheckoutAvviato | null>>(...batch)) ?? []).filter(
+      (r): r is CheckoutAvviato => !!r,
+    );
+    if (recs.length === 0) continue;
+    const procs =
+      (await client.mget<Array<PayPalProcessingRecord | null>>(
+        ...recs.map((r) => `${PAYPAL_PROC_PREFIX}${r.orderId}`),
+      )) ?? [];
+    recs.forEach((r, j) => {
+      checkout.push(r);
+      proc.push(procs[j] ?? null);
+    });
+  }
+  return classificaCheckout(checkout, proc);
+}
+
 // ===== PayPal — context Analytics associato all'ordine =====
 // Salvato in create-order al momento del checkout, letto in capture-order per
 // emettere `purchase` con il vero client_id GA4 della sessione di acquisto

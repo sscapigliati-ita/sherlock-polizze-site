@@ -2,7 +2,7 @@
 export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { leggiStats } from '../../lib/log';
-import { leggiAbbonati, contaFounderVenduti } from '../../lib/storage';
+import { leggiAbbonati, contaFounderVenduti, contaCheckoutPayPal } from '../../lib/storage';
 import { leggiUltimiEventi } from '../../lib/log';
 import { leggiStabilitaApp, invalidaCachePlay } from '../../lib/play';
 import {
@@ -38,6 +38,7 @@ const [
   trafficoAdsRes, seoGuideRes,
   appLinks,
   founderVenduti,
+  checkoutPP,
 ] = await Promise.all([
   leggiStats(),
   leggiAbbonati(),
@@ -48,6 +49,7 @@ const [
   leggiSeoGuide('GA4_PROPERTY_ID_ADS').catch((e: any) => ({ errore: String(e?.message ?? e) }) as SeoGuideResult),
   verificaAppLinks().catch(() => ({ ok: false, status: null as number | null, packageMatch: false, fingerprintsCount: 0, problemi: ['fetch fallito'], checkedAt: new Date().toISOString() })),
   contaFounderVenduti().catch(() => 0),
+  contaCheckoutPayPal().catch(() => ({ avviati: 0, completati: 0, inCorso: 0, nonCompletati: 0 }) as Awaited<ReturnType<typeof contaCheckoutPayPal>>),
 ]);
 const founderRimanenti = Math.max(0, FOUNDER_MAX - founderVenduti);
 const founderPctVenduto = (founderVenduti / FOUNDER_MAX) * 100;
@@ -685,6 +687,40 @@ const fmtSoloData = (iso: string) =>
           );
         })}
       </div>
+    </section>
+
+    <section class="mb-8">
+      <div class="text-xs uppercase tracking-widest text-navy-400 font-bold mb-3">Checkout PayPal (ultimi 45 giorni)</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="rounded-xl border border-navy-700 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Avviati</div>
+          <div class="text-3xl font-extrabold text-white mt-1">{checkoutPP.avviati}</div>
+        </div>
+        <div class="rounded-xl border border-emerald-500/30 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Completati</div>
+          <div class="text-3xl font-extrabold text-emerald-400 mt-1">{checkoutPP.completati}</div>
+        </div>
+        <div class="rounded-xl border border-amber-500/30 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">In corso</div>
+          <div class={`text-3xl font-extrabold mt-1 ${checkoutPP.inCorso > 0 ? 'text-amber-300' : 'text-navy-400'}`}>{checkoutPP.inCorso}</div>
+          <div class="text-[10px] text-navy-500 mt-1">avviati da meno di 3 ore</div>
+        </div>
+        <div class="rounded-xl border border-red-500/30 bg-navy-900 p-4">
+          <div class="text-xs text-navy-400 uppercase tracking-widest">Non completati</div>
+          <div class={`text-3xl font-extrabold mt-1 ${checkoutPP.nonCompletati > 0 ? 'text-red-400' : 'text-navy-400'}`}>{checkoutPP.nonCompletati}</div>
+          <div class="text-[10px] text-navy-500 mt-1">oltre 3 ore, nessun codice emesso</div>
+        </div>
+      </div>
+      {checkoutPP.nonCompletati > 0 && checkoutPP.ultimoNonCompletato && (
+        <div class="mt-3 rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-200">
+          ⚠️ <strong>{checkoutPP.nonCompletati} pagamenti avviati e mai completati.</strong>
+          Ultimo: piano <span class="font-mono">{checkoutPP.ultimoNonCompletato.piano}</span>, ordine
+          <span class="font-mono"> {checkoutPP.ultimoNonCompletato.orderId}</span>,
+          {new Date(checkoutPP.ultimoNonCompletato.createdAt).toLocaleString('it-IT', { timeZone: 'Europe/Rome' })}.
+          Controlla su PayPal (Webhook Events) se l'ordine è stato approvato dal cliente: in quel caso contattalo.
+        </div>
+      )}
+      <div class="text-[10px] text-navy-500 mt-2">Conteggio attivo dal rilascio di questa funzione: i checkout precedenti non sono tracciati.</div>
     </section>
 
     <section class="mb-8">

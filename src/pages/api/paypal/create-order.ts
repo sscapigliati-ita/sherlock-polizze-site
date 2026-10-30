@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { creaOrdinePayPal, PIANI, FOUNDER_MAX, type PianoId } from '../../../lib/paypal';
-import { contaFounderVenduti, salvaPayPalGa4Context } from '../../../lib/storage';
+import { contaFounderVenduti, salvaCheckoutAvviato, salvaPayPalGa4Context } from '../../../lib/storage';
 import { ga4TrackServer } from '../../../lib/ga4';
 import { sanitizeContext } from '../../../lib/analytics-context';
 
@@ -66,6 +66,9 @@ export const POST: APIRoute = async ({ request, url }) => {
       cancelUrl,
       ref,
     });
+    // Traccia il checkout avviato: /admin lo confronta con gli ordini completati
+    // per far emergere i pagamenti approvati ma mai catturati.
+    await salvaCheckoutAvviato(orderId, piano).catch(() => undefined);
     // Salva il context Analytics associato all'ordine (24h TTL) per poterlo
     // rileggere in capture-order e emettere `purchase` server-side con il vero
     // GA4 client_id + session_id della sessione di acquisto — non un
